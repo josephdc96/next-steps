@@ -1,0 +1,103 @@
+{
+  "env": {
+    "jest/globals": true
+  },
+  "extends": [
+    "next/core-web-vitals",
+    "airbnb-base",
+    "prettier",
+    "plugin:security/recommended",
+    "plugin:prettier/recommended",
+    "airbnb-typescript/base"
+  ],
+  "parserOptions": {
+    "project": [
+      "tsconfig.json"
+    ]
+  },
+  "plugins": [
+    "anti-trojan-source",
+    "security",
+    "prettier",
+    "import",
+    "jest"
+  ],
+  "ignorePatterns": [
+    "next.config.js",
+    "jest.*.js"
+  ],
+  "rules": {
+    "@typescript-eslint/indent": "off",
+    "@typescript-eslint/naming-convention": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      {
+        "prefer": "type-imports"
+      }
+    ],
+    "@typescript-eslint/no-redeclare": "warn",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-shadow": "warn",
+    "import/no-extraneous-dependencies": "warn",
+    "no-void": "warn",
+    "camelcase": "off",
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true,
+        "trailingComma": "all"
+      }
+    ],
+    "anti-trojan-source/no-bidi": "error",
+    "class-methods-use-this": "off",
+    "import/no-named-as-default-member": "off",
+    "import/no-named-as-default": "off",
+    "import/prefer-default-export": "off",
+    "max-classes-per-file": "off",
+    "no-template-curly-in-string": "warn",
+    "no-underscore-dangle": "off",
+    "no-unused-vars": "warn",
+    "import/order": [
+      1,
+      {
+        "groups": [
+          "type",
+          "external",
+          "builtin",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "object",
+          "unknown"
+        ],
+        "pathGroups": [
+          {
+            "pattern": ".*/__mocks__/**",
+            "group": "unknown",
+            "position": "after"
+          },
+          {
+            "pattern": ".*/config**",
+            "group": "object",
+            "position": "after"
+          }
+        ],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "desc",
+          "caseInsensitive": true
+        }
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["*.test.ts"],
+      "rules": {
+        "@typescript-eslint/no-shadow": "off"
+      }
+    }
+  ]
+}
