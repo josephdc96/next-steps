@@ -12,6 +12,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { Layout } from '#/components/Layout/Layout';
 
 import { themeObject } from '../styles/theme';
+import { UserProvider } from '@auth0/nextjs-auth0';
 
 export default function App({
   Component,
@@ -44,23 +45,25 @@ export default function App({
         />
       </Head>
 
-      <ColorSchemeProvider
-        colorScheme={currentColorScheme}
-        toggleColorScheme={toggleColorScheme}
-      >
-        <MantineProvider
-          withGlobalStyles
-          withNormalizeCSS
-          theme={{
-            colorScheme: currentColorScheme,
-            ...themeObject,
-          }}
+      <UserProvider>
+        <ColorSchemeProvider
+          colorScheme={currentColorScheme}
+          toggleColorScheme={toggleColorScheme}
         >
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </MantineProvider>
-      </ColorSchemeProvider>
+          <MantineProvider
+            withGlobalStyles
+            withNormalizeCSS
+            theme={{
+              colorScheme: currentColorScheme,
+              ...themeObject,
+            }}
+          >
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </MantineProvider>
+        </ColorSchemeProvider>
+      </UserProvider>
     </>
   );
 }

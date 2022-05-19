@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Personnel } from '../../../../../types/personnel';
-import type { Assignment } from '../../../../../types/assignment';
+import type { Position } from '../../../../../types/position';
 
 import { Firestore } from '@google-cloud/firestore';
 
 const getTeamMembers = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { id } = req.query;
+  const { leaders } = req.query;
 
   if (req.method === 'GET') {
     const db = new Firestore({
@@ -18,17 +18,17 @@ const getTeamMembers = async (req: NextApiRequest, res: NextApiResponse) => {
       .get();
 
     const people: Personnel[] = [];
-    const positions: Map<string, Assignment> = new Map();
+    const positions: Map<string, Position> = new Map();
 
     const snap2 = await db.collection('positions').get();
     snap2.forEach((position) => {
-      positions.set(position.id, { ...position.data() } as Assignment);
+      positions.set(position.id, { ...position.data() } as Position);
     });
 
     snapshot.forEach((person) => {
       const data = person.data();
-      if (data.subteamLead || data.teamLead) return;
-      if (data.leader !== id) return;
+      if (data.teamLead || data.onBreak || data.retired) return;
+      if (!(leaders as string[]).includes(data.leader)) return;
 
       const p: Personnel = {
         ...data,

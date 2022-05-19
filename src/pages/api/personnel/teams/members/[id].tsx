@@ -1,26 +1,20 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { Personnel } from '../../../../types/personnel';
-import type { Position } from '../../../../types/position';
+import type { Personnel } from '../../../../../types/personnel';
+import type { Position } from '../../../../../types/position';
 
 import { Firestore } from '@google-cloud/firestore';
 
-const onBreakPersonnel = async (req: NextApiRequest, res: NextApiResponse) => {
+const getTeamMembers = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
 
-  const db = new Firestore({
-    projectId: 'next-steps-350612',
-  });
-
-  if (req.method === 'PUT') {
-    const doc = db.collection('personnel').doc(id as string);
-    await doc.update({ active: false, ...JSON.parse(req.body) });
-    res.status(200).end();
-  }
-
   if (req.method === 'GET') {
+    const db = new Firestore({
+      projectId: 'next-steps-350612',
+    });
+
     const snapshot = await db
       .collection('personnel')
-      .where('active', '==', false)
+      .where('active', '==', true)
       .get();
 
     const people: Personnel[] = [];
@@ -33,6 +27,9 @@ const onBreakPersonnel = async (req: NextApiRequest, res: NextApiResponse) => {
 
     snapshot.forEach((person) => {
       const data = person.data();
+      if (data.subteamLead || data.teamLead) return;
+      if (data.leader !== id) return;
+
       const p: Personnel = {
         ...data,
         id: person.id,
@@ -52,9 +49,9 @@ const onBreakPersonnel = async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     res.status(200).json(people);
+  } else {
+    res.status(404).end();
   }
+}
 
-  res.status(418).end();
-};
-
-export default onBreakPersonnel;
+export default getTeamMembers;

@@ -3,10 +3,12 @@ import { createStyles } from '@mantine/core';
 export default createStyles((theme) => ({
   Navbar: {},
   user: {
+    paddingLeft: 18,
+    paddingRight: 18,
     height: 60,
   },
   userInfo: {
-    width: 200,
+    width: 150,
     textAlign: 'left',
   },
   colorSchemeToggle: {

@@ -1,9 +1,13 @@
 import type { NextPage } from 'next';
+import Link from 'next/link';
+import { Button } from '@mantine/core';
 
 const Home: NextPage = () => {
   return (
     <>
-      <p>Home</p>
+      <Button component="a" href="/api/auth/login">
+        Login
+      </Button>
     </>
   );
 };

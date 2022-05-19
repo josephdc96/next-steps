@@ -4,8 +4,8 @@ import type { Position } from '../../../../../types/position';
 
 import { Firestore } from '@google-cloud/firestore';
 
-const activeLeaders = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { leaders } = req.query
+const assignees = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { id } = req.query;
 
   if (req.method !== 'GET') {
     res.status(404);
@@ -19,6 +19,8 @@ const activeLeaders = async (req: NextApiRequest, res: NextApiResponse) => {
   const snapshot = await db
     .collection('personnel')
     .where('active', '==', true)
+    .where('onBreak', '==', false)
+    .where('currentMonthAssign', '==', id as string)
     .get();
 
   const people: Personnel[] = [];
@@ -31,9 +33,6 @@ const activeLeaders = async (req: NextApiRequest, res: NextApiResponse) => {
 
   snapshot.forEach((person) => {
     const data = person.data();
-    if (!data.subteamLead && !data.teamLead) return;
-    if (leaders && !(leaders as string[]).includes(person.id)) return;
-
     const p: Personnel = {
       ...data,
       id: person.id,
@@ -55,4 +54,4 @@ const activeLeaders = async (req: NextApiRequest, res: NextApiResponse) => {
   res.status(200).json(people);
 };
 
-export default activeLeaders;
+export default assignees;

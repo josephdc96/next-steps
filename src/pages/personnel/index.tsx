@@ -11,14 +11,15 @@ import {
   Menu,
   SegmentedControl,
   Table,
-  Title,
+  Text,
+  Title, Tooltip, useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import UserModal from '#/components/UserModal/UserModal';
-import BreakModal from '#/components/BreakModal/BreakModal';
 import RetireModal from '#/components/RetireModal/RetireModal';
+import BreakModal from '#/components/BreakModal/BreakModal';
 
 export default function PersonnelPage() {
   const theme = useMantineTheme();
@@ -30,6 +31,8 @@ export default function PersonnelPage() {
   const [changeId, setChangeId] = useState('');
   const [breakVisible, setBreakVisible] = useState(false);
   const [retireVisible, setRetireVisible] = useState(false);
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+
 
   const newUser = () => {
     setEditModal(false);
@@ -47,6 +50,10 @@ export default function PersonnelPage() {
     setChangeId(id);
     setBreakVisible(true);
   };
+
+  const unBreakUser = (id: string) => {
+
+  }
 
   const retireUser = (id: string) => {
     setChangeId(id);
@@ -113,19 +120,31 @@ export default function PersonnelPage() {
             >
               Edit
             </Menu.Item>
-            <Menu.Item
-              icon={<FontAwesomeIcon icon={'bed'} />}
-              onClick={() => breakUser(person.id || '')}
-            >
-              On Break
-            </Menu.Item>
-            <Menu.Item
-              icon={<FontAwesomeIcon icon={'user-slash'} />}
-              color="red"
-              onClick={() => retireUser(person.id || '')}
-            >
-              Retire
-            </Menu.Item>
+            {view === 'active' && (
+              <Menu.Item
+                icon={<FontAwesomeIcon icon={'bed'} />}
+                onClick={() => breakUser(person.id || '')}
+              >
+                On Break
+              </Menu.Item>
+            )}
+            {view === 'break' && (
+              <Menu.Item
+                icon={<FontAwesomeIcon icon="person-circle-check" />}
+                onClick={() => unBreakUser(person.id || '')}
+              >
+                Reactivate User
+              </Menu.Item>
+            )}
+            {(view === 'active' || view === 'break') && (
+              <Menu.Item
+                icon={<FontAwesomeIcon icon={'user-slash'} />}
+                color="red"
+                onClick={() => retireUser(person.id || '')}
+              >
+                Retire
+              </Menu.Item>
+            )}
           </Menu>
         </td>
       </tr>
@@ -148,38 +167,68 @@ export default function PersonnelPage() {
                 value={view}
                 onChange={setView}
               />
-              <Table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Phone Num.</th>
-                    <th>Committed Thru</th>
-                    <th>Signed Comm.</th>
-                    <th>LT Class</th>
-                    <th>Birthday</th>
-                    <th>Email</th>
-                    <th>Age</th>
-                    {view === 'active' && <th>Leader</th>}
-                    {view !== 'active' && <th>Reason</th>}
-                    {view !== 'active' && view !== 'break' && (
-                      <th>Follow Up</th>
-                    )}
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>{rows}</tbody>
-              </Table>
             </Group>
           </Box>
+          <Box
+            style={{
+              overflowX: 'scroll',
+              overflowY: 'scroll',
+              maxHeight: 'calc(100vh - 300px)',
+              width: '100%',
+            }}
+          >
+            <Table>
+              <thead
+                style={{
+                  top: 0,
+                  zIndex: 2,
+                  position: 'sticky',
+                  backgroundColor: colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[1],
+                }}
+              >
+                <tr>
+                  <th>Name</th>
+                  <th>Phone Num.</th>
+                  <th>Committed Thru</th>
+                  <th>Signed Comm.</th>
+                  <th>LT Class</th>
+                  <th>Birthday</th>
+                  <th>Email</th>
+                  <th>Age</th>
+                  {view === 'active' && <th>Leader</th>}
+                  {view !== 'active' && <th>Reason</th>}
+                  {view !== 'active' && view !== 'break' && <th>Follow Up</th>}
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </Table>
+          </Box>
+          <Text size="xs">
+            Legend: <b>Bold: Team Leader</b> | <i>Italics: Subteam Leader</i>
+          </Text>
         </Group>
       </Center>
       <Affix position={{ bottom: 20, right: 20 }}>
         <Button
+          radius="xl"
           leftIcon={<FontAwesomeIcon icon={'user-plus'} />}
           onClick={() => newUser()}
         >
           Add Person
         </Button>
+      </Affix>
+      <Affix position={{ bottom: 20, left: 295 }}>
+        <Tooltip label="Coming soon">
+          <Button
+            color="green"
+            disabled
+            radius="xl"
+            leftIcon={<FontAwesomeIcon icon={'file-excel'} />}
+          >
+            Export to CSV
+          </Button>
+        </Tooltip>
       </Affix>
       <UserModal
         isEdit={editModal}

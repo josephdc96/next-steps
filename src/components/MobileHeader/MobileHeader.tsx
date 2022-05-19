@@ -45,7 +45,7 @@ export const MobileHeader = ({ opened, setOpened }: MobileHeaderProps) => {
         <Image
           src={
             colorScheme === 'dark'
-              ? '/Paradigm_Branding_Logo-black.png'
+              ? '/Paradigm_Branding_Logo-white.png'
               : '/Paradigm_Branding_Logo-black.png'
           }
           alt="Paradigm Logo"
