@@ -3,19 +3,20 @@ import type { Cards } from '../../../../../types/cards';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import dayjs from 'dayjs';
+import { Calendar } from '@mantine/dates';
 import {
-    Affix,
-    Box,
-    Button,
-    Center,
-    Group,
-    Menu, Popover,
-    Table,
-    Title,
-    useMantineTheme,
+  Affix,
+  Box,
+  Button,
+  Center,
+  Group,
+  Menu,
+  Popover,
+  Table,
+  Title,
+  useMantineTheme,
 } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {Calendar} from "@mantine/dates";
 
 export default function WeeksData() {
   const theme = useMantineTheme();
