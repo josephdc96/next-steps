@@ -28,6 +28,11 @@ const getPerson = async (req: NextApiRequest, res: NextApiResponse) => {
     positions.set(position.id, { ...position.data() } as Position);
   });
 
+  if (snapshot.docs.length < 1) {
+    res.status(404).end();
+    return;
+  }
+
   const data = snapshot.docs[0].data();
   const p: Personnel = {
     ...data,

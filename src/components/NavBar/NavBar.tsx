@@ -17,10 +17,10 @@ import {
 import { NavBarItem } from '#/components/NavBar/NavBarItem';
 
 import useStyles from './NavBar.styles';
-import { useUser } from '@auth0/nextjs-auth0';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
 import type { Personnel } from '../../types/personnel';
+import { signIn, useSession } from 'next-auth/react';
 
 interface NavBarProps {
   opened: boolean;
@@ -29,18 +29,18 @@ interface NavBarProps {
 export const NavBar = ({ opened }: NavBarProps) => {
   const { classes } = useStyles();
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-  const { user, error, isLoading } = useUser();
+  const { data: session } = useSession();
   const [person, setPerson] = useState<Personnel | undefined>(undefined);
 
   useEffect(() => {
-    if (user) {
-      fetch(`/api/personnel/active/auth0/${user?.sub}`).then((x) => {
+    if (session) {
+      fetch(`/api/personnel/active/auth0/${session?.id}`).then((x) => {
         x.json().then((json) => {
           setPerson(json);
         });
       });
     }
-  }, [user]);
+  }, [session]);
 
   return (
     <Navbar width={{ base: 275 }} p="md" hiddenBreakpoint="sm" hidden={!opened}>
@@ -79,7 +79,11 @@ export const NavBar = ({ opened }: NavBarProps) => {
                 icon="clipboard-user"
                 path="/assignments"
               />
-              <NavBarItem caption="Card Data" icon="address-card" path="/cards" />
+              <NavBarItem
+                caption="Card Data"
+                icon="address-card"
+                path="/cards"
+              />
             </Group>
           </>
         )}
@@ -87,17 +91,24 @@ export const NavBar = ({ opened }: NavBarProps) => {
       <Navbar.Section>
         <Divider />
         <Space h="sm" />
-        {person && user && (
+        {person && session && (
           <Group spacing="xs" noWrap>
             <Center className={classes.user} aria-label="user">
               <Box className={classes.userInfo}>
                 <Group>
-                  <Avatar radius="md" color="blue" src={user?.picture}>
+                  <Avatar radius="md" color="blue" src={session?.user?.image}>
                     {`${person?.firstName?.at(0)}${person?.lastName?.at(0)}`}
                   </Avatar>
                   <div>
-                    <Text size="md">{`${person?.firstName} ${person?.lastName}`.substring(0, 10)}</Text>
-                    <Text size="xs">{user?.email?.substring(0, 12)}</Text>
+                    <Text size="md">
+                      {`${person?.firstName} ${person?.lastName}`.substring(
+                        0,
+                        10,
+                      )}
+                    </Text>
+                    <Text size="xs">
+                      {session?.user?.email?.substring(0, 12)}
+                    </Text>
                   </div>
                 </Group>
               </Box>
@@ -112,12 +123,8 @@ export const NavBar = ({ opened }: NavBarProps) => {
             </Button>
           </Group>
         )}
-        {(!person || !user) && (
-          <Button
-            component="a"
-            href="/api/auth/login"
-            style={{ width: '100%' }}
-          >
+        {(!person || !session) && (
+          <Button onClick={() => signIn()} style={{ width: '100%' }}>
             Log In
           </Button>
         )}
