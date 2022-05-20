@@ -2,23 +2,27 @@ import type { Cards } from '../../../../../types/cards';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import {
-  Affix,
-  Box, Button,
-  Center,
-  Group, Menu,
-  Table,
-  Title,
-  useMantineTheme,
-} from '@mantine/core';
 import dayjs from 'dayjs';
+import {
+    Affix,
+    Box,
+    Button,
+    Center,
+    Group,
+    Menu, Popover,
+    Table,
+    Title,
+    useMantineTheme,
+} from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {Calendar} from "@mantine/dates";
 
 export default function WeeksData() {
   const theme = useMantineTheme();
   const router = useRouter();
   const { month, year } = router.query;
   const [cards, setCards] = useState<Cards[]>([]);
+  const [dateOpened, setDateOpened] = useState(false);
 
   useEffect(() => {
     if (month && year) {
@@ -69,7 +73,56 @@ export default function WeeksData() {
     <>
       <Center style={{ width: '100%', marginTop: 80 }}>
         <Group direction="column" spacing="md" style={{ width: '80%' }}>
-          <Title order={3}>{`Card details for ${month}/${year}`}</Title>
+          <Group position="apart" style={{ width: '100%' }}>
+            <Button
+              component="a"
+              href={`/cards/${
+                (month as string) === '1'
+                  ? parseInt(year as string, 10) - 1
+                  : year
+              }/${
+                (month as string) === '1'
+                  ? 12
+                  : parseInt(month as string, 10) - 1
+              }/weeks`}
+              variant="outline"
+              compact
+            >
+              <FontAwesomeIcon icon="caret-left" />
+            </Button>
+            <Popover
+              opened={dateOpened}
+              target={
+                <Button
+                  compact
+                  variant="subtle"
+                  onClick={() => setDateOpened(!dateOpened)}
+                >{`${month}/${year}`}</Button>
+              }
+              position="bottom"
+              withArrow
+            >
+              <div>
+                <Calendar />
+              </div>
+            </Popover>
+            <Button
+              component="a"
+              href={`/cards/${
+                (month as string) === '12'
+                  ? parseInt(year as string, 10) + 1
+                  : year
+              }/${
+                (month as string) === '12'
+                  ? 1
+                  : parseInt(month as string, 10) + 1
+              }/weeks`}
+              variant="outline"
+              compact
+            >
+              <FontAwesomeIcon icon="caret-right" />
+            </Button>
+          </Group>
           <Box
             style={{
               overflowX: 'scroll',
