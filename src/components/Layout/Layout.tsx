@@ -65,7 +65,7 @@ export const Layout = ({ children, colorScheme }: LayoutProps) => {
               backgroundColor:
                 theme.colorScheme === 'dark'
                   ? theme.colors.dark[6]
-                  : theme.colors.gray[1],
+                  : theme.colors.gray[2],
             })}
             header={
               matches ? (

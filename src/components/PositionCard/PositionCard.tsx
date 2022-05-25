@@ -37,10 +37,10 @@ export default function PositionCard({ position, edit }: positionCardProps) {
         <Group position="apart" style={{ width: '100%' }}>
           <Text size="xl">{position.name}</Text>
           <Group spacing="xs">
-            <Button variant="subtle" onClick={() => edit(position)}>
+            <Button compact variant="subtle" onClick={() => edit(position)}>
               <FontAwesomeIcon icon="edit" />
             </Button>
-            <Button variant="subtle" color="red">
+            <Button compact variant="subtle" color="red">
               <FontAwesomeIcon icon="trash" />
             </Button>
           </Group>

@@ -6,7 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 export type NavBarItemType = {
   caption: string;
   icon: IconName;
-  path: string;
+  path?: string;
+  onClick?: () => void;
 };
 
 const useStyles = createStyles((theme) => ({
@@ -27,21 +28,25 @@ export function NavBarItem(item: NavBarItemType) {
 
   return (
     <>
-      <Link href={item.path} passHref>
-        <Button className={classes.item} variant="subtle">
-          <Box className={classes.itemContent}>
-            <Group>
-              <Avatar>
-                <FontAwesomeIcon
-                  className={classes.itemIcon}
-                  icon={['fas', item.icon]}
-                />
-              </Avatar>
-              <Text size="sm">{item.caption}</Text>
-            </Group>
-          </Box>
-        </Button>
-      </Link>
+      <Button
+        className={classes.item}
+        variant="subtle"
+        component={item.path ? 'a' : 'button'}
+        href={item.path ? item.path : undefined}
+        onClick={item.onClick ? item.onClick : undefined}
+      >
+        <Box className={classes.itemContent}>
+          <Group>
+            <Avatar>
+              <FontAwesomeIcon
+                className={classes.itemIcon}
+                icon={['fas', item.icon]}
+              />
+            </Avatar>
+            <Text size="sm">{item.caption}</Text>
+          </Group>
+        </Box>
+      </Button>
     </>
   );
 }

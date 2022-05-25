@@ -39,7 +39,16 @@ export default function SubteamsPage() {
   return (
     <>
       <Center style={{ width: '100%', marginTop: 80 }}>
-        <SimpleGrid cols={3} style={{ width: '80%' }}>
+        <SimpleGrid
+          cols={3}
+          style={{ width: '80%' }}
+          breakpoints={[
+            { maxWidth: 'xs', cols: 1 },
+            { maxWidth: 'sm', cols: 2 },
+            { maxWidth: 'md', cols: 1 },
+            { maxWidth: 'lg', cols: 2 },
+          ]}
+        >
           {data.map((subteam, index) => {
             return (
               <SubteamCard key={index} subteam={subteam} edit={editSubteam} />

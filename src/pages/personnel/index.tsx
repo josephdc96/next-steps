@@ -3,7 +3,7 @@ import type { Personnel } from '../../types/personnel';
 import { useCallback, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import {
-  Affix,
+  Affix, Anchor,
   Box,
   Button,
   Center,
@@ -11,7 +11,7 @@ import {
   Menu,
   SegmentedControl,
   Table,
-  Text,
+  Text, TextInput,
   Title, Tooltip, useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';
@@ -20,6 +20,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import UserModal from '#/components/UserModal/UserModal';
 import RetireModal from '#/components/RetireModal/RetireModal';
 import BreakModal from '#/components/BreakModal/BreakModal';
+import { useMediaQuery } from '@mantine/hooks';
 
 export default function PersonnelPage() {
   const theme = useMantineTheme();
@@ -32,7 +33,7 @@ export default function PersonnelPage() {
   const [breakVisible, setBreakVisible] = useState(false);
   const [retireVisible, setRetireVisible] = useState(false);
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-
+  const isMobile = useMediaQuery('(max-width: 800px)');
 
   const newUser = () => {
     setEditModal(false);
@@ -102,12 +103,16 @@ export default function PersonnelPage() {
         }}
       >
         <td>{`${person.firstName} ${person.lastName}`}</td>
-        <td>{person.phoneNum}</td>
+        <td>
+          <Anchor href={`tel:${person.phoneNum}`}>{person.phoneNum}</Anchor>
+        </td>
         <td>{dayjs(person.commitedThru).format('MMM YYYY')}</td>
         <td>{dayjs(person.signedCommitment).format('MMM YYYY')}</td>
         <td>{dayjs(person.ltClass).format('MMM YYYY')}</td>
         <td>{dayjs(person.birthday).format('M/D/YYYY')}</td>
-        <td>{person.email}</td>
+        <td>
+          <Anchor href={`mailto:${person.email}`}>{person.email}</Anchor>
+        </td>
         <td>{-diff}</td>
         {view === 'active' && <td>{leader}</td>}
         {view !== 'active' && <td>{person.reason}</td>}
@@ -158,6 +163,13 @@ export default function PersonnelPage() {
           <Box style={{ width: '100%' }}>
             <Group position="apart" style={{ width: '100%' }}>
               <Title order={3}>Personnel</Title>
+              <TextInput
+                placeholder="Search"
+                style={{
+                  width: 800,
+                }}
+                icon={<FontAwesomeIcon icon="search" />}
+              />
               <SegmentedControl
                 data={[
                   { label: 'Active', value: 'active' },
@@ -218,7 +230,7 @@ export default function PersonnelPage() {
           Add Person
         </Button>
       </Affix>
-      <Affix position={{ bottom: 20, left: 295 }}>
+      <Affix position={{ bottom: 20, left: isMobile ? 20 : 295 }}>
         <Tooltip label="Coming soon">
           <Button
             color="green"
