@@ -2,25 +2,28 @@ import type { Position } from '../../types/position';
 import type { Personnel } from '../../types/personnel';
 
 import { useEffect, useState } from 'react';
-import { Button, Card, Group, Text } from '@mantine/core';
+import { Button, Card, Center, Group, Loader, Text } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import useSWR, { Fetcher } from 'swr';
 
 interface positionCardProps {
   position: Position;
   edit(position: Position): void;
 }
 
-export default function PositionCard({ position, edit }: positionCardProps) {
-  const [assignees, setAssignees] = useState<Personnel[]>([]);
+const fetcher: Fetcher<Personnel[], string[]> = async (url: string) => {
+  const res = await fetch(url);
+  if (res.status !== 200) {
+    throw new Error('An error occurred while fetching the data');
+  }
+  return res.json();
+};
 
-  useEffect(() => {
-    setAssignees([]);
-    fetch(`/api/assignments/${position.id}/assignees`).then((x) => {
-      x.json().then((json: Personnel[]) => {
-        setAssignees(json);
-      });
-    });
-  }, [position]);
+export default function PositionCard({ position, edit }: positionCardProps) {
+  const { data, error, isValidating } = useSWR(
+    [`/api/assignments/${position.id}/assignees`],
+    fetcher,
+  );
 
   return (
     <Card
@@ -46,13 +49,24 @@ export default function PositionCard({ position, edit }: positionCardProps) {
           </Group>
         </Group>
         <Text size="lg">Assignees</Text>
-        {assignees.map((assignee) => {
-          return (
-            <Text key={assignee.id} size="sm">
-              {`${assignee.firstName} ${assignee.lastName}`}
-            </Text>
-          );
-        })}
+        {data && !isValidating && !error && (
+          <>
+            {data.map((assignee) => {
+              return (
+                <Text key={assignee.id} size="sm">
+                  {`${assignee.firstName} ${assignee.lastName}`}
+                </Text>
+              );
+            })}
+          </>
+        )}
+        {isValidating && (
+          <>
+            <Center style={{ width: '100%' }}>
+              <Loader />
+            </Center>
+          </>
+        )}
       </Group>
     </Card>
   );

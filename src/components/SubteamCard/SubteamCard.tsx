@@ -1,8 +1,10 @@
+import type { Fetcher } from 'swr';
 import type { Subteam } from '../../types/subteam';
 import type { Personnel } from '../../types/personnel';
 
+import useSWR from 'swr';
 import { useEffect, useState } from 'react';
-import { Button, Card, Group, Text } from '@mantine/core';
+import { Button, Card, Center, Group, Loader, Text } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface subteamCardProps {
@@ -10,29 +12,31 @@ interface subteamCardProps {
   edit(subteam: Subteam): void;
 }
 
-export default function SubteamCard({ subteam, edit }: subteamCardProps) {
-  const [members, setMembers] = useState<Personnel[]>([]);
-  const [leaders, setLeaders] = useState<Personnel[]>([]);
+const fetcher: Fetcher<Personnel[], string[]> = async (url: string) => {
+  const res = await fetch(url);
+  if (res.status !== 200) {
+    throw new Error('An error occurred while fetching the data');
+  }
+  return res.json();
+};
 
-  useEffect(() => {
-    setMembers([]);
-    setLeaders([]);
-    fetch(`/api/personnel/active/leaders?leaders=${subteam.leaders}`).then(
-      (x) => {
-        x.json().then((json: Personnel[]) => {
-          setLeaders(json);
-          fetch(`/api/personnel/teams/members?leaders=${subteam.leaders}`).then(
-            (y) => {
-              y.json().then((json2: Personnel[]) => {
-                console.log(json2);
-                setMembers(json2);
-              });
-            },
-          );
-        });
-      },
-    );
-  }, [subteam]);
+export default function SubteamCard({ subteam, edit }: subteamCardProps) {
+  const {
+    data: leaders,
+    error: leaderError,
+    isValidating: leaderValidating,
+  } = useSWR(
+    [`/api/personnel/active/leaders?leaders=${subteam.leaders}`],
+    fetcher,
+  );
+  const {
+    data: members,
+    error: memberError,
+    isValidating: memberValidating,
+  } = useSWR(
+    [`/api/personnel/teams/members?leaders=${subteam.leaders}`],
+    fetcher,
+  );
 
   return (
     <Card
@@ -57,24 +61,40 @@ export default function SubteamCard({ subteam, edit }: subteamCardProps) {
             </Button>
           </Group>
         </Group>
-        <Text size="lg">Leaders</Text>
-        {leaders.map((leader) => {
-          return (
-            <Text
-              key={leader.id}
-              size="sm"
-            >{`${leader.firstName} ${leader.lastName}`}</Text>
-          );
-        })}
-        <Text size="lg">Members</Text>
-        {members.map((member) => {
-          return (
-            <Text
-              key={member.id}
-              size="sm"
-            >{`${member.firstName} ${member.lastName}`}</Text>
-          );
-        })}
+        {leaders &&
+          !leaderValidating &&
+          !leaderError &&
+          members &&
+          !memberValidating &&
+          !memberError && (
+            <>
+              <Text size="lg">Leaders</Text>
+              {leaders.map((leader) => {
+                return (
+                  <Text
+                    key={leader.id}
+                    size="sm"
+                  >{`${leader.firstName} ${leader.lastName}`}</Text>
+                );
+              })}
+              <Text size="lg">Members</Text>
+              {members.map((member) => {
+                return (
+                  <Text
+                    key={member.id}
+                    size="sm"
+                  >{`${member.firstName} ${member.lastName}`}</Text>
+                );
+              })}
+            </>
+          )}
+        {(leaderValidating || memberValidating) && (
+          <>
+            <Center style={{ width: '100%' }}>
+              <Loader />
+            </Center>
+          </>
+        )}
       </Group>
     </Card>
   );

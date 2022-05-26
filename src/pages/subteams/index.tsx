@@ -1,16 +1,31 @@
-import { Affix, Box, Button, Center, Group, SimpleGrid } from '@mantine/core';
+import { Affix, Box, Button, Center, Group, Loader, SimpleGrid, Skeleton, useMantineTheme } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useCallback, useEffect, useState } from 'react';
 import { Subteam } from '../../types/subteam';
 import SubteamCard from '#/components/SubteamCard/SubteamCard';
 import SubteamModal from '#/components/SubteamModal/SubteamModal';
 import { Personnel } from '../../types/personnel';
+import type { Fetcher } from 'swr';
+import useSWR from 'swr';
+
+const fetcher: Fetcher<Subteam[], string[]> = async (url: string) => {
+  const res = await fetch(url);
+  if (res.status !== 200) {
+    throw new Error('An error occurred while fetching the data');
+  }
+  return res.json();
+};
 
 export default function SubteamsPage() {
-  const [data, setData] = useState<Subteam[]>([]);
+  const theme = useMantineTheme();
   const [editModal, setEditModal] = useState(false);
   const [modalData, setModalData] = useState<Subteam | undefined>(undefined);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const { data, error, isValidating, mutate } = useSWR(
+    ['/api/subteams'],
+    fetcher,
+  );
 
   const newSubteam = () => {
     setEditModal(false);
@@ -25,16 +40,8 @@ export default function SubteamsPage() {
   };
 
   const refresh = () => {
-    fetch('/api/subteams').then((x) => {
-      x.json().then((json) => {
-        setData(json);
-      });
-    });
+    mutate();
   };
-
-  useEffect(() => {
-    refresh();
-  }, []);
 
   return (
     <>
@@ -49,11 +56,24 @@ export default function SubteamsPage() {
             { maxWidth: 'lg', cols: 2 },
           ]}
         >
-          {data.map((subteam, index) => {
-            return (
-              <SubteamCard key={index} subteam={subteam} edit={editSubteam} />
-            );
-          })}
+          {data && !error && !isValidating && (
+            <>
+              {data.map((subteam, index) => {
+                return (
+                  <SubteamCard
+                    key={index}
+                    subteam={subteam}
+                    edit={editSubteam}
+                  />
+                );
+              })}
+            </>
+          )}
+          {isValidating && (
+            <>
+              <Loader />
+            </>
+          )}
         </SimpleGrid>
       </Center>
       <Affix position={{ right: 20, bottom: 20 }}>

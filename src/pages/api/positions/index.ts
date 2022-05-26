@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { Position } from '../../../types/position';
 
 import { Firestore } from '@google-cloud/firestore';
 
+import { getPositions } from '#/lib/positions/positions';
 
-const getPositions = async (req: NextApiRequest, res: NextApiResponse) => {
+const apiPositions = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
 
   const db = new Firestore({
@@ -12,19 +12,9 @@ const getPositions = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (req.method === 'GET') {
-    const snapshot = await db.collection('positions').get();
-    const positions: Position[] = [];
+    const positions = await getPositions();
 
-    snapshot.forEach((position) => {
-      const data = position.data();
-      const p: Position = {
-        ...data,
-        id: position.id,
-      } as Position;
-      positions.push(p);
-    });
-
-    res.status(200).json(positions);
+    res.status(200).send(JSON.stringify(positions));
     return;
   }
 
@@ -44,4 +34,4 @@ const getPositions = async (req: NextApiRequest, res: NextApiResponse) => {
   res.status(404).end();
 };
 
-export default getPositions;
+export default apiPositions;

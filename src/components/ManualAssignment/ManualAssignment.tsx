@@ -49,6 +49,7 @@ export default function ManualAssignment({
     });
     fetch('/api/positions').then((x) => {
       x.json().then((json: Position[]) => {
+        console.log(json);
         const map = new Map<string, string>();
         const data = json.map((y) => {
           map.set(y.id || '', y.name || '');
