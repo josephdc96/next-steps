@@ -1,8 +1,8 @@
-import type { Assignment } from './assignment';
+import type { Position } from './position';
 
 export interface Personnel {
   id?: string;
-  currentMonthAssign?: Assignment;
+  currentMonthAssign?: string;
   lastName: string;
   phoneNum: string;
   email: string;
@@ -12,11 +12,12 @@ export interface Personnel {
   subteamLead: boolean;
   teamLead: boolean;
   leader?: string;
-  lastMonthAssign?: Assignment;
+  lastMonthAssign?: string;
   commitedThru: Date;
   active: boolean;
   birthday: Date;
   reason?: string;
   followUp?: string;
   onBreak: boolean;
+  auth0id?: string;
 }

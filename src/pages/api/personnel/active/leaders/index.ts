@@ -1,10 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Personnel } from '../../../../../types/personnel';
-import type { Assignment } from '../../../../../types/assignment';
+import type { Position } from '../../../../../types/position';
 
 import { Firestore } from '@google-cloud/firestore';
 
 const activeLeaders = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { leaders } = req.query
+
   if (req.method !== 'GET') {
     res.status(404);
     return;
@@ -20,16 +22,17 @@ const activeLeaders = async (req: NextApiRequest, res: NextApiResponse) => {
     .get();
 
   const people: Personnel[] = [];
-  const positions: Map<string, Assignment> = new Map();
+  const positions: Map<string, Position> = new Map();
 
   const snap2 = await db.collection('positions').get();
   snap2.forEach((position) => {
-    positions.set(position.id, { ...position.data() } as Assignment);
+    positions.set(position.id, { ...position.data() } as Position);
   });
 
   snapshot.forEach((person) => {
     const data = person.data();
     if (!data.subteamLead && !data.teamLead) return;
+    if (leaders && !(leaders as string[]).includes(person.id)) return;
 
     const p: Personnel = {
       ...data,

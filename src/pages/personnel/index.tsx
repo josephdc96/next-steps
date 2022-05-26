@@ -1,28 +1,43 @@
+import type { Fetcher } from 'swr';
 import type { Personnel } from '../../types/personnel';
 
+import useSWR from 'swr';
 import { useCallback, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
+import { useMediaQuery } from '@mantine/hooks';
 import {
   Affix,
+  Anchor,
   Box,
   Button,
   Center,
-  Group,
+  Group, Loader,
   Menu,
   SegmentedControl,
   Table,
+  Text,
+  TextInput,
   Title,
+  Tooltip,
+  useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import UserModal from '#/components/UserModal/UserModal';
-import BreakModal from '#/components/BreakModal/BreakModal';
 import RetireModal from '#/components/RetireModal/RetireModal';
+import BreakModal from '#/components/BreakModal/BreakModal';
+
+const fetcher: Fetcher<Personnel[], string[]> = async (url: string) => {
+  const res = await fetch(url);
+  if (res.status !== 200) {
+    throw new Error('An error occurred while fetching the data');
+  }
+  return res.json();
+};
 
 export default function PersonnelPage() {
   const theme = useMantineTheme();
-  const [data, setData] = useState<Personnel[]>([]);
   const [view, setView] = useState('active');
   const [editModal, setEditModal] = useState(false);
   const [modalData, setModalData] = useState<Personnel | undefined>(undefined);
@@ -30,6 +45,8 @@ export default function PersonnelPage() {
   const [changeId, setChangeId] = useState('');
   const [breakVisible, setBreakVisible] = useState(false);
   const [retireVisible, setRetireVisible] = useState(false);
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const isMobile = useMediaQuery('(max-width: 800px)');
 
   const newUser = () => {
     setEditModal(false);
@@ -48,89 +65,101 @@ export default function PersonnelPage() {
     setBreakVisible(true);
   };
 
+  const unBreakUser = (id: string) => {};
+
   const retireUser = (id: string) => {
     setChangeId(id);
     setRetireVisible(true);
   };
 
-  const refresh = useCallback(() => {
-    fetch(`/api/personnel/${view}`).then((x) => {
-      x.json().then((json) => {
-        const data2 = json.sort((a: Personnel, b: Personnel) => {
-          if (a.firstName > b.firstName) return 1;
-          if (a.firstName < b.firstName) return 1;
-          if (a.lastName > b.lastName) return 1;
-          if (a.lastName < b.lastName) return -1;
-          return 0;
+  const refresh = () => {
+    mutate();
+  };
+
+  const { data, error, isValidating, mutate } = useSWR(
+    [`/api/personnel/${view}`],
+    fetcher,
+  );
+
+  const rows = !data ? (
+    <></>
+  ) : (
+    data.map((person) => {
+      const getLeader = (leader: string): string => {
+        let name = 'Unknown';
+
+        data.forEach((x) => {
+          if (x.id === leader) name = `${x.firstName} ${x.lastName}`;
         });
-        setData(data2);
-      });
-    });
-  }, [view]);
+        return name;
+      };
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+      const today = dayjs(Date.now());
+      const diff = dayjs(person.birthday).diff(today, 'year');
+      const leader = person.leader ? getLeader(person.leader) : 'None';
 
-  const rows = data.map((person) => {
-    const getLeader = (leader: string): string => {
-      let name = 'Unknown';
-
-      data.forEach((x) => {
-        if (x.id === leader) name = `${x.firstName} ${x.lastName}`;
-      });
-      return name;
-    };
-
-    const today = dayjs(Date.now());
-    const diff = dayjs(person.birthday).diff(today, 'year');
-    const leader = person.leader ? getLeader(person.leader) : 'None';
-
-    return (
-      <tr
-        key={person.id}
-        style={{
-          fontWeight: person.teamLead ? 'bold' : 'normal',
-          fontStyle: person.subteamLead ? 'italic' : 'normal',
-        }}
-      >
-        <td>{`${person.firstName} ${person.lastName}`}</td>
-        <td>{person.phoneNum}</td>
-        <td>{dayjs(person.commitedThru).format('MMM YYYY')}</td>
-        <td>{dayjs(person.signedCommitment).format('MMM YYYY')}</td>
-        <td>{dayjs(person.ltClass).format('MMM YYYY')}</td>
-        <td>{dayjs(person.birthday).format('M/D/YYYY')}</td>
-        <td>{person.email}</td>
-        <td>{-diff}</td>
-        {view === 'active' && <td>{leader}</td>}
-        {view !== 'active' && <td>{person.reason}</td>}
-        {view !== 'active' && view !== 'break' && <td>{person.followUp}</td>}
-        <td>
-          <Menu>
-            <Menu.Item
-              icon={<FontAwesomeIcon icon={'edit'} />}
-              onClick={() => editUser(person)}
-            >
-              Edit
-            </Menu.Item>
-            <Menu.Item
-              icon={<FontAwesomeIcon icon={'bed'} />}
-              onClick={() => breakUser(person.id || '')}
-            >
-              On Break
-            </Menu.Item>
-            <Menu.Item
-              icon={<FontAwesomeIcon icon={'user-slash'} />}
-              color="red"
-              onClick={() => retireUser(person.id || '')}
-            >
-              Retire
-            </Menu.Item>
-          </Menu>
-        </td>
-      </tr>
-    );
-  });
+      return (
+        <tr
+          key={person.id}
+          style={{
+            fontWeight: person.teamLead ? 'bold' : 'normal',
+            fontStyle: person.subteamLead ? 'italic' : 'normal',
+          }}
+        >
+          <td>{`${person.firstName} ${person.lastName}`}</td>
+          <td>
+            <Anchor href={`tel:${person.phoneNum}`}>{person.phoneNum}</Anchor>
+          </td>
+          <td>{dayjs(person.commitedThru).format('MMM YYYY')}</td>
+          <td>{dayjs(person.signedCommitment).format('MMM YYYY')}</td>
+          <td>{dayjs(person.ltClass).format('MMM YYYY')}</td>
+          <td>{dayjs(person.birthday).format('M/D/YYYY')}</td>
+          <td>
+            <Anchor href={`mailto:${person.email}`}>{person.email}</Anchor>
+          </td>
+          <td>{-diff}</td>
+          {view === 'active' && <td>{leader}</td>}
+          {view !== 'active' && <td>{person.reason}</td>}
+          {view !== 'active' && view !== 'break' && <td>{person.followUp}</td>}
+          <td>
+            <Menu>
+              <Menu.Item
+                icon={<FontAwesomeIcon icon={'edit'} />}
+                onClick={() => editUser(person)}
+              >
+                Edit
+              </Menu.Item>
+              {view === 'active' && (
+                <Menu.Item
+                  icon={<FontAwesomeIcon icon={'bed'} />}
+                  onClick={() => breakUser(person.id || '')}
+                >
+                  On Break
+                </Menu.Item>
+              )}
+              {view === 'break' && (
+                <Menu.Item
+                  icon={<FontAwesomeIcon icon="person-circle-check" />}
+                  onClick={() => unBreakUser(person.id || '')}
+                >
+                  Reactivate User
+                </Menu.Item>
+              )}
+              {(view === 'active' || view === 'break') && (
+                <Menu.Item
+                  icon={<FontAwesomeIcon icon={'user-slash'} />}
+                  color="red"
+                  onClick={() => retireUser(person.id || '')}
+                >
+                  Retire
+                </Menu.Item>
+              )}
+            </Menu>
+          </td>
+        </tr>
+      );
+    })
+  );
 
   return (
     <>
@@ -139,6 +168,13 @@ export default function PersonnelPage() {
           <Box style={{ width: '100%' }}>
             <Group position="apart" style={{ width: '100%' }}>
               <Title order={3}>Personnel</Title>
+              <TextInput
+                placeholder="Search"
+                style={{
+                  width: 800,
+                }}
+                icon={<FontAwesomeIcon icon="search" />}
+              />
               <SegmentedControl
                 data={[
                   { label: 'Active', value: 'active' },
@@ -148,8 +184,29 @@ export default function PersonnelPage() {
                 value={view}
                 onChange={setView}
               />
+            </Group>
+          </Box>
+          <Box
+            style={{
+              overflowX: 'scroll',
+              overflowY: 'scroll',
+              maxHeight: 'calc(100vh - 300px)',
+              width: '100%',
+            }}
+          >
+            {data && !error && !isValidating && (
               <Table>
-                <thead>
+                <thead
+                  style={{
+                    top: 0,
+                    zIndex: 2,
+                    position: 'sticky',
+                    backgroundColor:
+                      colorScheme === 'dark'
+                        ? theme.colors.dark[8]
+                        : theme.colors.gray[1],
+                  }}
+                >
                   <tr>
                     <th>Name</th>
                     <th>Phone Num.</th>
@@ -169,17 +226,38 @@ export default function PersonnelPage() {
                 </thead>
                 <tbody>{rows}</tbody>
               </Table>
-            </Group>
+            )}
+            {isValidating && (
+              <Center>
+                <Loader />
+              </Center>
+            )}
           </Box>
+          <Text size="xs">
+            Legend: <b>Bold: Team Leader</b> | <i>Italics: Subteam Leader</i>
+          </Text>
         </Group>
       </Center>
       <Affix position={{ bottom: 20, right: 20 }}>
         <Button
+          radius="xl"
           leftIcon={<FontAwesomeIcon icon={'user-plus'} />}
           onClick={() => newUser()}
         >
           Add Person
         </Button>
+      </Affix>
+      <Affix position={{ bottom: 20, left: isMobile ? 20 : 295 }}>
+        <Tooltip label="Coming soon">
+          <Button
+            color="green"
+            disabled
+            radius="xl"
+            leftIcon={<FontAwesomeIcon icon={'file-excel'} />}
+          >
+            Export to CSV
+          </Button>
+        </Tooltip>
       </Affix>
       <UserModal
         isEdit={editModal}
