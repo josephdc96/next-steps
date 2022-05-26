@@ -2,9 +2,16 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Subteam } from '../../../types/subteam';
 
 import { Firestore } from '@google-cloud/firestore';
+import { getSession } from 'next-auth/react';
 
 const subteams = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
+
+  const session = await getSession({ req });
+  if (!session) {
+    res.status(401).end();
+    return;
+  }
 
   const db = new Firestore({
     projectId: 'next-steps-350612',

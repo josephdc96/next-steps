@@ -3,12 +3,19 @@ import type { Personnel } from '../../../../../types/personnel';
 import type { Position } from '../../../../../types/position';
 
 import { Firestore } from '@google-cloud/firestore';
+import { getSession } from 'next-auth/react';
 
 const assignees = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
 
   if (req.method !== 'GET') {
     res.status(404);
+    return;
+  }
+
+  const session = await getSession({ req });
+  if (!session) {
+    res.status(404).end();
     return;
   }
 

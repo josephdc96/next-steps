@@ -1,9 +1,16 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Firestore } from '@google-cloud/firestore';
+import { getSession } from 'next-auth/react';
 
 const assignments = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'POST') {
     res.status(404).end();
+    return;
+  }
+
+  const session = await getSession({ req });
+  if (!session) {
+    res.status(401).end();
     return;
   }
 

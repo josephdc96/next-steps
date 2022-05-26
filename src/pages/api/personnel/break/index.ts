@@ -3,9 +3,16 @@ import type { Personnel } from '../../../../types/personnel';
 import type { Position } from '../../../../types/position';
 
 import { Firestore } from '@google-cloud/firestore';
+import { getSession } from 'next-auth/react';
 
 const onBreakPersonnel = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
+
+  const session = await getSession({ req });
+  if (!session) {
+    res.status(401).end();
+    return;
+  }
 
   const db = new Firestore({
     projectId: 'next-steps-350612',
