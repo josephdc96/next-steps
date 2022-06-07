@@ -32,7 +32,9 @@ export default function SubteamModal({
     },
   });
 
-  const [leaders, setLeaders] = useState<{ value: string, label: string }[]>([]);
+  const [leaders, setLeaders] = useState<{ value: string; label: string }[]>(
+    [],
+  );
   useEffect(() => {
     fetch('/api/personnel/active/leaders').then((res) =>
       res.json().then((json) => {
@@ -101,5 +103,5 @@ export default function SubteamModal({
         </form>
       </Modal>
     </>
-  )
+  );
 }

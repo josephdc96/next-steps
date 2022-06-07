@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import type { NextStepsCard } from '../../types/new-here';
 import type { MonthMeta } from '../../types/cards';
 

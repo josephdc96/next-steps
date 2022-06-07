@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { Firestore } from '@google-cloud/firestore';
 import { getSession } from 'next-auth/react';
 

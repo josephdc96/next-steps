@@ -1,15 +1,17 @@
-# setup base layer
-FROM node:16.13.2-alpine AS base
+FROM node:lts-alpine
 
-WORKDIR /app
 
-#setup web app layer
-COPY package*.json ./
+# create & set working directory
+RUN mkdir -p /usr/src
+WORKDIR /usr/src
 
-RUN npm ci
+# copy source files
+COPY . /usr/src
 
-# Build
-FROM dependencies as build
+# install dependencies
+RUN npm install --force
 
-ARG BUILD_ENV
-ARG BUIL
+# start app
+RUN npm run build
+EXPOSE 3000
+CMD npm run start

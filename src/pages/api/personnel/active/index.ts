@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getActivePersonnel } from '#/lib/personnel/active';\
+import { getActivePersonnel } from '#/lib/personnel/active';
 import { getSession } from 'next-auth/react';
 
 const activePersonnel = async (req: NextApiRequest, res: NextApiResponse) => {

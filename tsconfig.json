@@ -14,7 +14,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "types": ["jest", "@testing-library/jest-dom"],
+    "types": ["jest"],
     "baseUrl": ".",
     "paths": {
       "#/lib/*": ["src/lib/*"],

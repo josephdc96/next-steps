@@ -1,7 +1,17 @@
-import { Affix, Box, Button, Center, Group, Loader, SimpleGrid, Skeleton, useMantineTheme } from '@mantine/core';
+import {
+  Affix,
+  Box,
+  Button,
+  Center,
+  Group,
+  Loader,
+  SimpleGrid,
+  Skeleton,
+  useMantineTheme,
+} from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useCallback, useEffect, useState } from 'react';
-import { Subteam } from '../../types/subteam';
+import type { Subteam } from '../../types/subteam';
 import SubteamCard from '#/components/SubteamCard/SubteamCard';
 import SubteamModal from '#/components/SubteamModal/SubteamModal';
 import { Personnel } from '../../types/personnel';

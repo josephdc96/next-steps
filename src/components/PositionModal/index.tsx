@@ -1,6 +1,13 @@
-import { Position } from '../../types/position';
+import type { Position } from '../../types/position';
 import { useForm } from '@mantine/form';
-import { Button, Divider, Group, Modal, MultiSelect, TextInput } from '@mantine/core';
+import {
+  Button,
+  Divider,
+  Group,
+  Modal,
+  MultiSelect,
+  TextInput,
+} from '@mantine/core';
 import { useEffect } from 'react';
 
 interface PositionModalProps {

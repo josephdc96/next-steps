@@ -1,7 +1,18 @@
 import type { Personnel } from '../../types/personnel';
 
 import { useEffect, useState } from 'react';
-import { Button, Checkbox, Divider, Group, Modal, Select, SimpleGrid, Space, Text, TextInput } from '@mantine/core';
+import {
+  Button,
+  Checkbox,
+  Divider,
+  Group,
+  Modal,
+  Select,
+  SimpleGrid,
+  Space,
+  Text,
+  TextInput,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { DatePicker } from '@mantine/dates';
 
@@ -49,7 +60,9 @@ export default function UserModal({
     },
   });
 
-  const [leaders, setLeaders] = useState<{ value: string, label: string }[]>([]);
+  const [leaders, setLeaders] = useState<{ value: string; label: string }[]>(
+    [],
+  );
   useEffect(() => {
     fetch('/api/personnel/active/leaders').then((res) =>
       res.json().then((json) => {

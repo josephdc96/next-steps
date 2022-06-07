@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint --quiet .",
+    "lint:fix": "npm run lint -- --fix"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
@@ -25,8 +26,7 @@
     "next-auth": "^4.3.4",
     "react": "18.1.0",
     "react-dom": "18.1.0",
-    "swr": "^1.3.0",
-    "victory": "^36.4.0"
+    "swr": "^1.3.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",

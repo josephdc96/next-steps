@@ -39,7 +39,7 @@ export const States: { label: string; value: string }[] = [
   { label: 'Alaska', value: 'AK' },
   { label: 'American Samoa', value: 'AS' },
   { label: 'Arizona', value: 'AZ' },
-  { label: 'Arkansas', value: 'AR'},
+  { label: 'Arkansas', value: 'AR' },
   { label: 'California', value: 'CA' },
   { label: 'Colorado', value: 'CO' },
   { label: 'Delaware', value: 'DE' },

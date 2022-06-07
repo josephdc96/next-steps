@@ -278,7 +278,9 @@ export default function NewHerePage() {
               }
             </Text>
             <Group position="right">
-              <Button color="red" onClick={restart}>Restart</Button>
+              <Button color="red" onClick={restart}>
+                Restart
+              </Button>
             </Group>
           </Group>
         )}
