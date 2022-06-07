@@ -4,7 +4,8 @@ import type { Personnel } from '../../types/personnel';
 import { useEffect, useState } from 'react';
 import { Button, Card, Center, Group, Loader, Text } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import useSWR, { Fetcher } from 'swr';
+import type { Fetcher } from 'swr';
+import useSWR from 'swr';
 
 interface positionCardProps {
   position: Position;

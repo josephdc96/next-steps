@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Position } from '../../types/position';
-import { Affix, Button, Center, Group, Loader, Menu, SimpleGrid } from '@mantine/core';
+import type { Position } from '../../types/position';
+import {
+  Affix,
+  Button,
+  Center,
+  Group,
+  Loader,
+  Menu,
+  SimpleGrid,
+} from '@mantine/core';
 import SubteamCard from '#/components/SubteamCard/SubteamCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SubteamModal from '#/components/SubteamModal/SubteamModal';
@@ -9,7 +17,8 @@ import PositionCard from '#/components/PositionCard/PositionCard';
 import PositionModal from '#/components/PositionModal';
 import ManualAssignment from '#/components/ManualAssignment/ManualAssignment';
 import AutomaticAssignment from '#/components/AutomaticAssignment/AutomaticAssignment';
-import useSWR, { Fetcher } from 'swr';
+import type { Fetcher } from 'swr';
+import useSWR from 'swr';
 
 const fetcher: Fetcher<Position[], string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -24,7 +33,8 @@ export default function AssignmentsPage() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalData, setModalData] = useState<Position | undefined>(undefined);
   const [manualAssignmentVisible, setManualAssignmentVisible] = useState(false);
-  const [automaticAssignmentVisible, setAutomaticAssignmentVisible] = useState(false);
+  const [automaticAssignmentVisible, setAutomaticAssignmentVisible] =
+    useState(false);
 
   const { data, error, isValidating, mutate } = useSWR(
     ['/api/positions'],

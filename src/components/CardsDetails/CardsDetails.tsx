@@ -1,7 +1,15 @@
-import { Card, Center, Group, MantineColor, Text, Title, useMantineTheme } from '@mantine/core';
+import type { MantineColor } from '@mantine/core';
+import {
+  Card,
+  Center,
+  Group,
+  Text,
+  Title,
+  useMantineTheme,
+} from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { MonthMeta } from '../../types/cards';
+import type { IconProp } from '@fortawesome/fontawesome-svg-core';
+import type { MonthMeta } from '../../types/cards';
 import { VictoryBar, VictoryChart } from 'victory';
 
 interface NumberOverviewProps {

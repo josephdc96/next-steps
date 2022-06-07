@@ -14,7 +14,6 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import useStyles from './documents.styles';
 
 const fetcher: Fetcher<Document[], string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -29,7 +28,6 @@ interface DocumentCardProps {
 }
 
 const DocumentCard = ({ card }: DocumentCardProps) => {
-  const { classes } = useStyles();
   const theme = useMantineTheme();
 
   const getColor = (): string => {
@@ -46,7 +44,25 @@ const DocumentCard = ({ card }: DocumentCardProps) => {
   };
 
   return (
-    <Card component="a" href={`/documents/${card.id}`} className={classes.appCard}>
+    <Card
+      component="a"
+      href={`/documents/${card.id}`}
+      styles={{
+        width: 160,
+        height: 150,
+        backgroundColor:
+          theme.colorScheme === 'dark'
+            ? theme.colors.dark[4]
+            : theme.colors.gray[0],
+        '&:hover': {
+          backgroundColor:
+            theme.colorScheme === 'dark'
+              ? theme.colors.dark[3]
+              : theme.colors.gray[2],
+        },
+        padding: theme.spacing.sm,
+      }}
+    >
       <Center style={{ width: '100%', height: '100%', textAlign: 'center' }}>
         <Group direction="column" grow>
           <FontAwesomeIcon icon={card.icon} fontSize={64} color={getColor()} />

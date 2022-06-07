@@ -2,7 +2,15 @@ import type { Position } from '../../types/position';
 import type { Personnel } from '../../types/personnel';
 
 import { useEffect, useState } from 'react';
-import { Button, Group, Modal, ScrollArea, Select, Text, TextInput } from '@mantine/core';
+import {
+  Button,
+  Group,
+  Modal,
+  ScrollArea,
+  Select,
+  Text,
+  TextInput,
+} from '@mantine/core';
 import positions from '../../pages/api/positions';
 
 interface AutomaticAssignmentProps {
@@ -20,7 +28,9 @@ export default function AutomaticAssignment({
   const [positionMap, setPositionMap] = useState<Map<string, string>>(
     new Map(),
   );
-  const [assignments, setAssignments] = useState<{ id: string, position: string }[]>([]);
+  const [assignments, setAssignments] = useState<
+    { id: string; position: string }[]
+  >([]);
 
   useEffect(() => {
     fetch('/api/personnel/active').then((x) => {
@@ -38,7 +48,7 @@ export default function AutomaticAssignment({
             });
             setPositionMap(map2);
             fetch('/api/assignments/random').then((z) => {
-              z.json().then((json3: { id: string, position: string }[]) => {
+              z.json().then((json3: { id: string; position: string }[]) => {
                 setAssignments(json3);
               });
             });

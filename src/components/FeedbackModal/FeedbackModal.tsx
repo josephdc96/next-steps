@@ -20,7 +20,6 @@ export default function FeedbackModal({ opened, onClose }: FeedbackModalProps) {
   }, [opened]);
 
   const submitForm = (values: any) => {
-
     onClose();
   };
 

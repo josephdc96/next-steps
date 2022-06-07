@@ -59,6 +59,6 @@ const getTeamMembers = async (req: NextApiRequest, res: NextApiResponse) => {
   } else {
     res.status(404).end();
   }
-}
+};
 
 export default getTeamMembers;
