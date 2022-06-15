@@ -28,9 +28,22 @@ export interface NextStepsCard {
   whoHelped?: string;
   otherHelp?: string;
   date: string;
-  month: number;
-  year: number;
 }
+
+export const GENDER_DISPLAY_RECORD: Record<Gender, string> = {
+  [Gender.male]: 'Male',
+  [Gender.female]: 'Female',
+};
+
+export const REASON_DISPLAY_RECORD: Record<Reasons, string> = {
+  [Reasons.firstTime]: 'First Time Here!',
+  [Reasons.followJesus]: 'I Want to Follow Jesus',
+  [Reasons.baptism]: 'Be Baptized',
+  [Reasons.membership]: 'Become a Church Member',
+  [Reasons.discipleship]: 'Be Mentored (D1)',
+  [Reasons.serve]: 'Serve (Leadership Training)',
+  [Reasons.joinGroup]: 'Join Group (Group Connect)',
+};
 
 export const States: { label: string; value: string }[] = [
   { label: 'Missouri', value: 'MO' },

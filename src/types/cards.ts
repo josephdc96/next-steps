@@ -13,6 +13,21 @@ export interface Cards {
   unmarked: number;
 }
 
+export interface Card {
+  date: Date;
+  total: number;
+  male: number;
+  female: number;
+  baptism: number;
+  discipleship: number;
+  firstTime: number;
+  followJesus: number;
+  groupConnect: number;
+  membership: number;
+  serve: number;
+  unmarked: number;
+}
+
 export interface MonthMeta {
   total: CardCategoryMeta;
   average: CardCategoryMeta;

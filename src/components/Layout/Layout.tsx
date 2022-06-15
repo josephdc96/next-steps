@@ -69,7 +69,11 @@ export const Layout = ({ children, colorScheme }: LayoutProps) => {
             })}
             header={
               matches ? (
-                <MobileHeader opened={opened} setOpened={setOpened} />
+                <MobileHeader
+                  opened={opened}
+                  setOpened={setOpened}
+                  showBurger
+                />
               ) : undefined
             }
           >
