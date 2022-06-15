@@ -11,7 +11,7 @@ import {
   Group,
   Loader,
   Menu,
-  SegmentedControl,
+  SegmentedControl, Stack,
   Table,
   Text,
   TextInput,
@@ -22,6 +22,8 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { Card } from '../../types/cards';
+import { useState } from 'react';
+import { REASON_DISPLAY_RECORD } from '../../types/new-here';
 
 const fetcher: Fetcher<NextStepsCard[], string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -38,23 +40,31 @@ export default function CardsPage() {
   const rows = !data ? (
     <></>
   ) : (
-    data.map((person) => {
+    data.map((card) => {
       return (
-        <tr>
+        <tr key={`${card.name}${card.date.toString()}`}>
+          <td>{card.name}</td>
+          <td>{card.phoneNum}</td>
+          <td>{card.address}</td>
+          <td>
+            <Stack>
+              {card.reasons.map((reason) => (
+                <Text>{REASON_DISPLAY_RECORD[reason]}</Text>
+              ))}
+            </Stack>
+          </td>
+          <td></td>
           <td></td>
           <td>
             <Anchor href={'/'}></Anchor>
           </td>
           <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
           <td>
-            <Anchor href={'/'}></Anchor>
-          </td>
-          <td></td>
-          <td>
-            <Menu></Menu>
+            <Group spacing="xs">
+              <ActionIcon color="green">
+                <FontAwesomeIcon icon="check" />
+              </ActionIcon>
+            </Group>
           </td>
         </tr>
       );
