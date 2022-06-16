@@ -10,10 +10,12 @@ import { Layout } from '#/components/Layout/Layout';
 import { SessionProvider, signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { CreateLayout } from '../CreateLayout/CreateLayout';
+import { GetServerSidePropsContext } from 'next';
+import { getCookie } from 'cookies-next';
 
 export default function App({
-  pageProps: { session, ...pageProps },
   Component,
+  pageProps: { session, ...pageProps } = {},
   colorScheme,
 }: AppProps & { colorScheme: ColorScheme }) {
   library.add(fas);
@@ -53,3 +55,12 @@ export default function App({
     </>
   );
 }
+
+/**
+ * This ensures that the colorScheme is synced between the server
+ * and the client. This gets the cookie that stores the current colorScheme
+ * and injects it as a prop at build time.
+ */
+App.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
+  colorScheme: getCookie('mantine-color-scheme', ctx) || 'light',
+});

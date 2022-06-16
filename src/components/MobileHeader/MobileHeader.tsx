@@ -10,6 +10,7 @@ import {
   useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 
 interface MobileHeaderProps {
   opened: boolean;
@@ -33,6 +34,7 @@ export const MobileHeader = ({
   const theme = useMantineTheme();
   const { classes } = useStyles();
   const { colorScheme } = useMantineColorScheme();
+  const matches = useMediaQuery('(min-width: 214px)');
 
   return (
     <Header height={60} px="md" py="0">
@@ -50,16 +52,21 @@ export const MobileHeader = ({
           </MediaQuery>
         )}
         {!showBurger && <span />}
-        <Image
-          src={
-            colorScheme === 'dark'
-              ? '/Paradigm_Branding_Logo-white.png'
-              : '/Paradigm_Branding_Logo-black.png'
-          }
-          alt="Paradigm Logo"
-          height={60}
-        />
-        <span style={{ width: 39 }} />
+        {matches && (
+          <Image
+            src={
+              colorScheme === 'dark'
+                ? '/Paradigm_Branding_Logo-white.png'
+                : '/Paradigm_Branding_Logo-black.png'
+            }
+            style={{
+              maxWidth: 140,
+            }}
+            alt="Paradigm Logo"
+            height={40}
+          />
+        )}
+        <span />
       </Group>
     </Header>
   );

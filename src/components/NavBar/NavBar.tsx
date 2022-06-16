@@ -91,6 +91,7 @@ export const NavBar = ({ opened }: NavBarProps) => {
                   icon="clipboard-user"
                   path="/assignments"
                 />
+                <NavBarItem caption="Cards" icon="contact-card" path="/cards" />
                 <NavBarItem
                   caption="Documents"
                   icon="file-text"

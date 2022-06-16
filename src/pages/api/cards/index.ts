@@ -23,8 +23,6 @@ const getCards = async (req: NextApiRequest, res: NextApiResponse) => {
     const { sort, sortDirection, startDate, endDate, host, completed, boxes } =
       req.query;
 
-    console.log(host);
-
     const snapshot = await db.collection('cards').get();
 
     const cards: NextStepsCard[] = [];
@@ -41,6 +39,18 @@ const getCards = async (req: NextApiRequest, res: NextApiResponse) => {
 
       if (host && typeof host === 'string') {
         if (data.whoHelped !== host) return;
+      } else if (host) {
+        if (!(host as string[]).includes(data.whoHelped)) return;
+      }
+
+      if (boxes && typeof boxes === 'string') {
+        if (!data.reasons.includes(Number.parseInt(boxes, 10))) return;
+      } else if (boxes) {
+        let valid = false;
+        (boxes as string[]).forEach((box) => {
+          if (data.reasons.includes(Number.parseInt(box, 10))) valid = true;
+        });
+        if (!valid) return;
       }
 
       if (completed && typeof completed === 'string' && completed === 'true') {
@@ -94,6 +104,16 @@ const getCards = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     res.status(200).json(sorted);
+  }
+
+  if (req.method === 'POST') {
+    const body = JSON.parse(req.body);
+    console.log(body);
+    body.dob = new Date(body.dob);
+    body.date = new Date(body.date);
+
+    await db.collection('cards').add(body);
+    res.status(200).end();
   }
 };
 

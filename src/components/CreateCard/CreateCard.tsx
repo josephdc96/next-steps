@@ -19,12 +19,16 @@ import {
 
 import { REASON_DISPLAY_RECORD, Reasons, States } from '../../types/new-here';
 
-export default function CreateCard() {
+interface CreateCardProps {
+  onSubmit(): void;
+}
+
+export default function CreateCard({ onSubmit }: CreateCardProps) {
   const form = useForm({
     initialValues: {
       name: '',
       gender: 'male',
-      dob: '',
+      dob: new Date(),
       phoneNum: '',
       email: '',
       address: '',
@@ -42,7 +46,6 @@ export default function CreateCard() {
       confidential: false,
       host: '',
       otherHost: '',
-      date: new Date(),
     },
   });
 
@@ -51,7 +54,7 @@ export default function CreateCard() {
   );
 
   useEffect(() => {
-    fetch('/api/personnel/active/leaders').then((res) => {
+    fetch('/api/personnel/active').then((res) => {
       res.json().then((json) => {
         const data: any[] = [];
 
@@ -69,7 +72,12 @@ export default function CreateCard() {
     form.reset();
   }, []);
 
+  const sleep = (ms: number) =>
+    // eslint-disable-next-line no-promise-executor-return
+    new Promise((resolve) => setTimeout(resolve, ms));
+
   const submitCard = (values: any) => {
+    console.log(values);
     const checks: Reasons[] = [];
     if (values.firstTime) checks.push(Reasons.firstTime);
     if (values.followJesus) checks.push(Reasons.followJesus);
@@ -80,18 +88,33 @@ export default function CreateCard() {
     if (values.joinGroup) checks.push(Reasons.joinGroup);
 
     const card: NextStepsCard = {
-      ...values,
+      name: values.name,
+      gender: values.gender === 'male' ? 0 : 1,
+      dob: values.dob,
+      phoneNum: values.phoneNum,
+      email: values.email,
+      address: values.address,
+      city: values.city,
+      state: values.state,
+      zip: values.zip,
       reasons: checks,
-      whoHelped: values.whoHelped === 'other' ? undefined : values.whoHelped,
+      prayerRequests: values.prayerRequests,
+      confidential: values.confidential,
+      whoHelped: values.host,
+      otherHelp: values.otherHelp,
+      date: new Date(),
+      completed: false,
     };
 
-    fetch('/api/cards', { method: 'POST', body: JSON.stringify(card)});
+    fetch('/api/cards', { method: 'POST', body: JSON.stringify(card) }).then(
+      () => onSubmit(),
+    );
   };
 
   return (
     <>
       <Box>
-        <form onSubmit={submitCard}>
+        <form onSubmit={form.onSubmit(submitCard)}>
           <Group direction="column" spacing="sm" grow>
             <TextInput
               style={{ flexGrow: 1 }}
@@ -157,7 +180,7 @@ export default function CreateCard() {
               />
               <Checkbox
                 label={REASON_DISPLAY_RECORD[Reasons.followJesus]}
-                {...form.getInputProps('firstTime', { type: 'checkbox' })}
+                {...form.getInputProps('followJesus', { type: 'checkbox' })}
               />
               <Checkbox
                 label={REASON_DISPLAY_RECORD[Reasons.baptism]}

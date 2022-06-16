@@ -16,7 +16,7 @@ export enum Reasons {
 export interface NextStepsCard {
   name: string;
   gender: Gender;
-  dob: string;
+  dob: Date;
   phoneNum: string;
   email: string;
   address: string;
@@ -25,9 +25,11 @@ export interface NextStepsCard {
   zip: string;
   reasons: Reasons[];
   prayerRequests?: string;
+  confidential: boolean;
   whoHelped?: string;
   otherHelp?: string;
-  date: string;
+  date: Date;
+  completed: boolean;
 }
 
 export const GENDER_DISPLAY_RECORD: Record<Gender, string> = {
@@ -43,6 +45,16 @@ export const REASON_DISPLAY_RECORD: Record<Reasons, string> = {
   [Reasons.discipleship]: 'Be Mentored (D1)',
   [Reasons.serve]: 'Serve (Leadership Training)',
   [Reasons.joinGroup]: 'Join Group (Group Connect)',
+};
+
+export const REASON_TRANSLATOR: Record<string, Reasons> = {
+  firstTime: Reasons.firstTime,
+  followJesus: Reasons.followJesus,
+  baptism: Reasons.baptism,
+  membership: Reasons.membership,
+  discipleship: Reasons.discipleship,
+  serve: Reasons.serve,
+  joinGroup: Reasons.joinGroup,
 };
 
 export const States: { label: string; value: string }[] = [
