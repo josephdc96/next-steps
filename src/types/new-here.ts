@@ -19,10 +19,10 @@ export interface NextStepsCard {
   dob: string;
   phoneNum: string;
   email: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zip?: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
   reasons: Reasons[];
   prayerRequests?: string;
   whoHelped?: string;
