@@ -20,6 +20,10 @@ export default function FeedbackModal({ opened, onClose }: FeedbackModalProps) {
   }, [opened]);
 
   const submitForm = (values: any) => {
+    fetch('/api/feedback', {
+      method: 'POST',
+      body: JSON.stringify(values),
+    });
     onClose();
   };
 

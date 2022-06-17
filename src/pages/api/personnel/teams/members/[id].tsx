@@ -55,7 +55,18 @@ const getTeamMembers = async (req: NextApiRequest, res: NextApiResponse) => {
       people.push(p);
     });
 
-    res.status(200).json(people);
+    const sorted = people.sort((a, b) => {
+      if (a.firstName < b.firstName) return -1;
+      if (a.firstName > b.firstName) return 1;
+      if (a.firstName === b.firstName) {
+        if (a.lastName < b.lastName) return -1;
+        if (a.lastName > b.lastName) return 1;
+        return 0;
+      }
+      return 0;
+    });
+
+    res.status(200).json(sorted);
   } else {
     res.status(404).end();
   }
