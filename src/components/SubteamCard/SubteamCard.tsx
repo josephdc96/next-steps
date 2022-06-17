@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface subteamCardProps {
   subteam: Subteam;
+  canEdit: boolean;
   edit(subteam: Subteam): void;
 }
 
@@ -20,7 +21,11 @@ const fetcher: Fetcher<Personnel[], string[]> = async (url: string) => {
   return res.json();
 };
 
-export default function SubteamCard({ subteam, edit }: subteamCardProps) {
+export default function SubteamCard({
+  subteam,
+  canEdit,
+  edit,
+}: subteamCardProps) {
   const {
     data: leaders,
     error: leaderError,
@@ -52,14 +57,16 @@ export default function SubteamCard({ subteam, edit }: subteamCardProps) {
       <Group direction="column" spacing="md">
         <Group position="apart" style={{ width: '100%' }}>
           <Text size="xl">{subteam.name}</Text>
-          <Group spacing="xs">
-            <Button variant="subtle" onClick={() => edit(subteam)}>
-              <FontAwesomeIcon icon="edit" />
-            </Button>
-            <Button variant="subtle" color="red">
-              <FontAwesomeIcon icon="trash" />
-            </Button>
-          </Group>
+          {canEdit && (
+            <Group spacing="xs">
+              <Button variant="subtle" onClick={() => edit(subteam)}>
+                <FontAwesomeIcon icon="edit" />
+              </Button>
+              <Button variant="subtle" color="red">
+                <FontAwesomeIcon icon="trash" />
+              </Button>
+            </Group>
+          )}
         </Group>
         {leaders &&
           !leaderValidating &&

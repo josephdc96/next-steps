@@ -1,22 +1,17 @@
-import {
-  Affix,
-  Box,
-  Button,
-  Center,
-  Group,
-  Loader,
-  SimpleGrid,
-  Skeleton,
-  useMantineTheme,
-} from '@mantine/core';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useCallback, useEffect, useState } from 'react';
-import type { Subteam } from '../../types/subteam';
-import SubteamCard from '#/components/SubteamCard/SubteamCard';
-import SubteamModal from '#/components/SubteamModal/SubteamModal';
-import { Personnel } from '../../types/personnel';
 import type { Fetcher } from 'swr';
+import type { Subteam } from '#/types/subteam';
+
 import useSWR from 'swr';
+import { useEffect, useState } from 'react';
+import { Affix, Button, Center, Loader, SimpleGrid } from '@mantine/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import SubteamModal from '#/components/SubteamModal/SubteamModal';
+import SubteamCard from '#/components/SubteamCard/SubteamCard';
+import type { Asset, UsrSession } from '#/lib/auth/contract';
+import { UserRole } from '#/types/personnel';
+import { authorizeAction } from '#/lib/auth/authz';
+import { useSession } from 'next-auth/react';
 
 const fetcher: Fetcher<Subteam[], string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -26,11 +21,17 @@ const fetcher: Fetcher<Subteam[], string[]> = async (url: string) => {
   return res.json();
 };
 
+const editAsset: Asset = {
+  role: [UserRole.Admin, UserRole.TeamLeader, UserRole.SubTeamLeader],
+};
+
 export default function SubteamsPage() {
-  const theme = useMantineTheme();
+  const { data: session } = useSession();
+
   const [editModal, setEditModal] = useState(false);
   const [modalData, setModalData] = useState<Subteam | undefined>(undefined);
   const [modalVisible, setModalVisible] = useState(false);
+  const [canEdit, setCanEdit] = useState(false);
 
   const { data, error, isValidating, mutate } = useSWR(
     ['/api/subteams'],
@@ -53,6 +54,14 @@ export default function SubteamsPage() {
     mutate();
   };
 
+  useEffect(() => {
+    if (session) {
+      setCanEdit(
+        authorizeAction(editAsset, (session as UsrSession).roles).authorized,
+      );
+    }
+  }, [session]);
+
   return (
     <>
       <Center style={{ width: '100%', marginTop: 80 }}>
@@ -74,6 +83,7 @@ export default function SubteamsPage() {
                     key={index}
                     subteam={subteam}
                     edit={editSubteam}
+                    canEdit={canEdit}
                   />
                 );
               })}
@@ -86,15 +96,17 @@ export default function SubteamsPage() {
           )}
         </SimpleGrid>
       </Center>
-      <Affix position={{ right: 20, bottom: 20 }}>
-        <Button
-          radius="xl"
-          leftIcon={<FontAwesomeIcon icon="plus" />}
-          onClick={() => newSubteam()}
-        >
-          New Subteam
-        </Button>
-      </Affix>
+      {canEdit && (
+        <Affix position={{ right: 20, bottom: 20 }}>
+          <Button
+            radius="xl"
+            leftIcon={<FontAwesomeIcon icon="plus" />}
+            onClick={() => newSubteam()}
+          >
+            New Subteam
+          </Button>
+        </Affix>
+      )}
       <SubteamModal
         isEdit={editModal}
         opened={modalVisible}

@@ -20,4 +20,13 @@ export interface Personnel {
   followUp?: string;
   onBreak: boolean;
   auth0id?: string;
+  roles?: UserRole[];
+}
+
+export enum UserRole {
+  Leader = 0,
+  SubTeamLeader,
+  TeamLeader,
+  Admin,
+  SuperUser,
 }

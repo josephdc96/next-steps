@@ -1,5 +1,10 @@
+import type { Fetcher } from 'swr';
+import type { Position } from '#/types/position';
+import type { Asset, UsrSession } from '#/lib/auth/contract';
+
+import useSWR from 'swr';
 import { useEffect, useState } from 'react';
-import type { Position } from '../../types/position';
+import { useSession } from 'next-auth/react';
 import {
   Affix,
   Button,
@@ -9,16 +14,14 @@ import {
   Menu,
   SimpleGrid,
 } from '@mantine/core';
-import SubteamCard from '#/components/SubteamCard/SubteamCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import SubteamModal from '#/components/SubteamModal/SubteamModal';
-import { Subteam } from '../../types/subteam';
-import PositionCard from '#/components/PositionCard/PositionCard';
+
+import { UserRole } from '#/types/personnel';
+import { authorizeAction } from '#/lib/auth/authz';
 import PositionModal from '#/components/PositionModal';
+import PositionCard from '#/components/PositionCard/PositionCard';
 import ManualAssignment from '#/components/ManualAssignment/ManualAssignment';
 import AutomaticAssignment from '#/components/AutomaticAssignment/AutomaticAssignment';
-import type { Fetcher } from 'swr';
-import useSWR from 'swr';
 
 const fetcher: Fetcher<Position[], string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -28,13 +31,20 @@ const fetcher: Fetcher<Position[], string[]> = async (url: string) => {
   return res.json();
 };
 
+const editAsset: Asset = {
+  role: [UserRole.Admin, UserRole.TeamLeader, UserRole.SubTeamLeader],
+};
+
 export default function AssignmentsPage() {
+  const { data: session } = useSession();
+
   const [editModal, setEditModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalData, setModalData] = useState<Position | undefined>(undefined);
   const [manualAssignmentVisible, setManualAssignmentVisible] = useState(false);
   const [automaticAssignmentVisible, setAutomaticAssignmentVisible] =
     useState(false);
+  const [canEdit, setCanEdit] = useState(false);
 
   const { data, error, isValidating, mutate } = useSWR(
     ['/api/positions'],
@@ -57,6 +67,14 @@ export default function AssignmentsPage() {
     mutate();
   };
 
+  useEffect(() => {
+    if (session) {
+      setCanEdit(
+        authorizeAction(editAsset, (session as UsrSession).roles).authorized,
+      );
+    }
+  }, [session]);
+
   return (
     <>
       <Center style={{ width: '100%', marginTop: 80 }}>
@@ -78,6 +96,7 @@ export default function AssignmentsPage() {
                     key={index}
                     position={position}
                     edit={editPosition}
+                    canEdit={canEdit}
                   />
                 );
               })}
@@ -90,34 +109,36 @@ export default function AssignmentsPage() {
           )}
         </SimpleGrid>
       </Center>
-      <Affix position={{ right: 20, bottom: 20 }}>
-        <Group spacing="md">
-          <Menu
-            control={
-              <Button
-                radius="xl"
-                leftIcon={<FontAwesomeIcon icon="arrows-rotate" />}
-              >
-                New Assignments
-              </Button>
-            }
-          >
-            <Menu.Item onClick={() => setManualAssignmentVisible(true)}>
-              Manually Assign
-            </Menu.Item>
-            <Menu.Item onClick={() => setAutomaticAssignmentVisible(true)}>
-              Automatically Assign
-            </Menu.Item>
-          </Menu>
-          <Button
-            radius="xl"
-            leftIcon={<FontAwesomeIcon icon="plus" />}
-            onClick={() => newPosition()}
-          >
-            New Position
-          </Button>
-        </Group>
-      </Affix>
+      {canEdit && (
+        <Affix position={{ right: 20, bottom: 20 }}>
+          <Group spacing="md">
+            <Menu
+              control={
+                <Button
+                  radius="xl"
+                  leftIcon={<FontAwesomeIcon icon="arrows-rotate" />}
+                >
+                  New Assignments
+                </Button>
+              }
+            >
+              <Menu.Item onClick={() => setManualAssignmentVisible(true)}>
+                Manually Assign
+              </Menu.Item>
+              <Menu.Item onClick={() => setAutomaticAssignmentVisible(true)}>
+                Automatically Assign
+              </Menu.Item>
+            </Menu>
+            <Button
+              radius="xl"
+              leftIcon={<FontAwesomeIcon icon="plus" />}
+              onClick={() => newPosition()}
+            >
+              New Position
+            </Button>
+          </Group>
+        </Affix>
+      )}
       <PositionModal
         isEdit={editModal}
         opened={modalVisible}

@@ -21,7 +21,7 @@ export default function App({
   library.add(fas);
   const router = useRouter();
 
-  if (router.pathname.startsWith('/cards/create')) {
+  if (router.pathname.startsWith('/next-steps')) {
     return (
       <>
         <Head>

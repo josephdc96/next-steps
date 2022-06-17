@@ -1,8 +1,8 @@
 import type { Fetcher } from 'swr';
-import type { Personnel } from '../../types/personnel';
-
 import useSWR from 'swr';
-import { useCallback, useEffect, useState } from 'react';
+import type { Personnel } from '../../types/personnel';
+import { UserRole } from '../../types/personnel';
+import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { useMediaQuery } from '@mantine/hooks';
 import {
@@ -28,6 +28,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import UserModal from '#/components/UserModal/UserModal';
 import RetireModal from '#/components/RetireModal/RetireModal';
 import BreakModal from '#/components/BreakModal/BreakModal';
+import type { Asset, UsrSession } from '#/lib/auth/contract';
+import { useSession } from 'next-auth/react';
+import { authorizeAction } from '#/lib/auth/authz';
 
 const fetcher: Fetcher<Personnel[], string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -48,6 +51,7 @@ export default function PersonnelPage() {
   const [retireVisible, setRetireVisible] = useState(false);
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const isMobile = useMediaQuery('(max-width: 800px)');
+  const { data: session } = useSession();
 
   const newUser = () => {
     setEditModal(false);
