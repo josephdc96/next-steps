@@ -66,7 +66,11 @@ const DocumentCard = ({ card }: DocumentCardProps) => {
       >
         <Center style={{ width: '100%', height: '100%', textAlign: 'center' }}>
           <Group direction="column" grow>
-            <FontAwesomeIcon icon={card.icon} fontSize={64} color={getColor()} />
+            <FontAwesomeIcon
+              icon={card.icon}
+              fontSize={64}
+              color={getColor()}
+            />
             <Text size="md">{card.name}</Text>
           </Group>
         </Center>

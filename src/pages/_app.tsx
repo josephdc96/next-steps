@@ -10,7 +10,7 @@ import { Layout } from '#/components/Layout/Layout';
 import { SessionProvider, signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { CreateLayout } from '../CreateLayout/CreateLayout';
-import { GetServerSidePropsContext } from 'next';
+import type { GetServerSidePropsContext } from 'next';
 import { getCookie } from 'cookies-next';
 
 export default function App({
