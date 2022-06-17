@@ -40,9 +40,16 @@ export const NavBar = ({ opened }: NavBarProps) => {
   useEffect(() => {
     if (session) {
       fetch(`/api/personnel/active/auth0/${session?.id}`).then((x) => {
-        x.json().then((json) => {
-          setPerson(json);
-        });
+        x.json()
+          .then((json) => {
+            setPerson(json);
+          })
+          .catch((err) => {
+            setPerson({
+              firstName: session.user?.name,
+              lastName: '',
+            } as Personnel);
+          });
       });
       fetch('/api/me/routes').then((x) => {
         x.json().then((json) => {
