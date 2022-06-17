@@ -1,0 +1,46 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  checks:
+    runs-on: self-hosted
+    steps:
+      - name: checkout git
+        uses: actions/checkout@v3
+
+      - name: Read .nvmrc
+        id: node_version
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: setup node
+        uses: actions/setup-node@v3.1.1
+        with:
+          node-version: ${{ steps.node_version.outputs.NODE_VERSION }}
+
+      - name: install
+        run: npm ci
+
+      - name: test
+        run: npm test
+
+      - name: lint
+        run: npm run lint
+
+      - name: build
+        run: npm run build
+
+  next-steps:
+    runs-on: self-hosted
+    steps:
+      - name: checkout git
+        uses: actions/checkout@v3
+
+      - name: build docker image
+        run: |
+          docker build \
+          -t next-steps/next-steps:test \
+          -f ./Dockerfile .
