@@ -10,10 +10,12 @@ import {
   useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 
 interface MobileHeaderProps {
   opened: boolean;
   setOpened: Dispatch<SetStateAction<boolean>>;
+  showBurger?: boolean;
 }
 
 const useStyles = createStyles(() => ({
@@ -24,34 +26,47 @@ const useStyles = createStyles(() => ({
   },
 }));
 
-export const MobileHeader = ({ opened, setOpened }: MobileHeaderProps) => {
+export const MobileHeader = ({
+  opened,
+  setOpened,
+  showBurger,
+}: MobileHeaderProps) => {
   const theme = useMantineTheme();
   const { classes } = useStyles();
   const { colorScheme } = useMantineColorScheme();
+  const matches = useMediaQuery('(min-width: 214px)');
 
   return (
     <Header height={60} px="md" py="0">
       <Group className={classes.header} position="apart">
-        <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-          <Burger
-            opened={opened}
-            onClick={() => setOpened((o) => !o)}
-            size="sm"
-            color={theme.colors.gray[6]}
-            mr="xl"
-            data-testid={'hamburger'}
+        {showBurger && (
+          <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+            <Burger
+              opened={opened}
+              onClick={() => setOpened((o) => !o)}
+              size="sm"
+              color={theme.colors.gray[6]}
+              mr="xl"
+              data-testid={'hamburger'}
+            />
+          </MediaQuery>
+        )}
+        {!showBurger && <span />}
+        {matches && (
+          <Image
+            src={
+              colorScheme === 'dark'
+                ? '/Paradigm_Branding_Logo-white.png'
+                : '/Paradigm_Branding_Logo-black.png'
+            }
+            style={{
+              maxWidth: 140,
+            }}
+            alt="Paradigm Logo"
+            height={40}
           />
-        </MediaQuery>
-        <Image
-          src={
-            colorScheme === 'dark'
-              ? '/Paradigm_Branding_Logo-white.png'
-              : '/Paradigm_Branding_Logo-black.png'
-          }
-          alt="Paradigm Logo"
-          height={60}
-        />
-        <span style={{ width: 39 }} />
+        )}
+        <span />
       </Group>
     </Header>
   );

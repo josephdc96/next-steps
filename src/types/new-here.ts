@@ -16,21 +16,47 @@ export enum Reasons {
 export interface NextStepsCard {
   name: string;
   gender: Gender;
-  dob: string;
+  dob: Date;
   phoneNum: string;
   email: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zip?: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
   reasons: Reasons[];
   prayerRequests?: string;
+  confidential: boolean;
   whoHelped?: string;
   otherHelp?: string;
-  date: string;
-  month: number;
-  year: number;
+  date: Date;
+  completed: boolean;
+  id?: string;
 }
+
+export const GENDER_DISPLAY_RECORD: Record<Gender, string> = {
+  [Gender.male]: 'Male',
+  [Gender.female]: 'Female',
+};
+
+export const REASON_DISPLAY_RECORD: Record<Reasons, string> = {
+  [Reasons.firstTime]: 'First Time Here!',
+  [Reasons.followJesus]: 'I Want to Follow Jesus',
+  [Reasons.baptism]: 'Be Baptized',
+  [Reasons.membership]: 'Become a Church Member',
+  [Reasons.discipleship]: 'Be Mentored (D1)',
+  [Reasons.serve]: 'Serve (Leadership Training)',
+  [Reasons.joinGroup]: 'Join Group (Group Connect)',
+};
+
+export const REASON_TRANSLATOR: Record<string, Reasons> = {
+  firstTime: Reasons.firstTime,
+  followJesus: Reasons.followJesus,
+  baptism: Reasons.baptism,
+  membership: Reasons.membership,
+  discipleship: Reasons.discipleship,
+  serve: Reasons.serve,
+  joinGroup: Reasons.joinGroup,
+};
 
 export const States: { label: string; value: string }[] = [
   { label: 'Missouri', value: 'MO' },

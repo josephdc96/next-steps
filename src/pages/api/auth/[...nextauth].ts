@@ -11,7 +11,6 @@ export default NextAuth({
   ],
   callbacks: {
     async jwt({ token, user, account, profile, isNewUser }) {
-      console.log(token);
       return token;
     },
     async session({ session, user, token }) {

@@ -4,6 +4,7 @@ import type { Document } from '../../../types/documents';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Link from 'next/link';
 
 export default function DocumentsPage() {
   const router = useRouter();
@@ -25,16 +26,16 @@ export default function DocumentsPage() {
           {data && (
             <>
               <Group spacing="md">
-                <ActionIcon
-                  color="blue"
-                  size="lg"
-                  radius="xl"
-                  variant="outline"
-                  component="a"
-                  href="/documents"
-                >
-                  <FontAwesomeIcon icon="caret-left" />
-                </ActionIcon>
+                <Link href='/documents'>
+                  <ActionIcon
+                    color="blue"
+                    size="lg"
+                    radius="xl"
+                    variant="outline"
+                  >
+                    <FontAwesomeIcon icon="caret-left" />
+                  </ActionIcon>
+                </Link>
                 <Title order={3}>{data.name}</Title>
               </Group>
               <iframe

@@ -189,8 +189,8 @@ export default function PersonnelPage() {
           </Box>
           <Box
             style={{
-              overflowX: 'scroll',
-              overflowY: 'scroll',
+              overflowX: 'auto',
+              overflowY: 'auto',
               maxHeight: 'calc(100vh - 300px)',
               width: '100%',
             }}

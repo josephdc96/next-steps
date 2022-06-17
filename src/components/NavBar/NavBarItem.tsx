@@ -28,25 +28,47 @@ export function NavBarItem(item: NavBarItemType) {
 
   return (
     <>
-      <Button
-        className={classes.item}
-        variant="subtle"
-        component={item.path ? 'a' : 'button'}
-        href={item.path ? item.path : undefined}
-        onClick={item.onClick ? item.onClick : undefined}
-      >
-        <Box className={classes.itemContent}>
-          <Group>
-            <Avatar>
-              <FontAwesomeIcon
-                className={classes.itemIcon}
-                icon={['fas', item.icon]}
-              />
-            </Avatar>
-            <Text size="sm">{item.caption}</Text>
-          </Group>
-        </Box>
-      </Button>
+      {item.path && (
+        <Link href={item.path} passHref>
+          <Button
+            className={classes.item}
+            variant="subtle"
+            component={item.path ? 'a' : 'button'}
+          >
+            <Box className={classes.itemContent}>
+              <Group>
+                <Avatar>
+                  <FontAwesomeIcon
+                    className={classes.itemIcon}
+                    icon={['fas', item.icon]}
+                  />
+                </Avatar>
+                <Text size="sm">{item.caption}</Text>
+              </Group>
+            </Box>
+          </Button>
+        </Link>
+      )}
+      {item.onClick && (
+        <Button
+          className={classes.item}
+          variant="subtle"
+          component={item.path ? 'a' : 'button'}
+          onClick={item.onClick}
+        >
+          <Box className={classes.itemContent}>
+            <Group>
+              <Avatar>
+                <FontAwesomeIcon
+                  className={classes.itemIcon}
+                  icon={['fas', item.icon]}
+                />
+              </Avatar>
+              <Text size="sm">{item.caption}</Text>
+            </Group>
+          </Box>
+        </Button>
+      )}
     </>
   );
 }
