@@ -30,6 +30,7 @@ export interface NextStepsCard {
   otherHelp?: string;
   date: Date;
   completed: boolean;
+  id?: string;
 }
 
 export const GENDER_DISPLAY_RECORD: Record<Gender, string> = {

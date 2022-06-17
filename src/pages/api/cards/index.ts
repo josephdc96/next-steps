@@ -61,6 +61,7 @@ const getCards = async (req: NextApiRequest, res: NextApiResponse) => {
         ...data,
         dob: data.dob.toDate(),
         date: data.date.toDate(),
+        id: card.id,
       } as NextStepsCard;
       cards.push(c);
     });

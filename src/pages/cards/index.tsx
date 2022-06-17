@@ -187,7 +187,8 @@ export default function CardsPage() {
                       leftIcon={<FontAwesomeIcon icon="sort" />}
                     >
                       Sort by
-                    </Button>}
+                    </Button>
+                  }
                 >
                   <Menu.Item
                     icon={
@@ -268,79 +269,85 @@ export default function CardsPage() {
             style={{ alignItems: 'flex-start', width: '100%' }}
             noWrap
           >
-            <MantineCard
+            <ScrollArea
+              offsetScrollbars
               style={{
                 minWidth: 250,
                 width: 250,
-                backgroundColor:
-                  colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
+                height: 'calc(100vh - 236px)',
               }}
             >
-              <Stack>
-                <Title order={4}>Filters</Title>
-                <Divider />
-                <ScrollArea style={{ height: 400 }}>
+              <MantineCard
+                style={{
+                  backgroundColor:
+                    colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
+                }}
+              >
+                <Stack>
+                  <Title order={4}>Filters</Title>
+                  <Divider />
+                  <ScrollArea style={{ height: 400 }}>
+                    <CheckboxGroup
+                      label="Hosts"
+                      value={hostFilter}
+                      orientation="vertical"
+                      onChange={(value) => setHostFilter(value)}
+                    >
+                      {leaders.map((leader) => (
+                        <Checkbox
+                          key={`chk_${leader.value}`}
+                          label={leader.label}
+                          value={leader.value}
+                        />
+                      ))}
+                    </CheckboxGroup>
+                  </ScrollArea>
+                  <Divider />
                   <CheckboxGroup
-                    label="Hosts"
-                    value={hostFilter}
+                    label="Reasons"
+                    value={boxesFilter}
+                    onChange={setBoxesFilter}
                     orientation="vertical"
-                    onChange={(value) => setHostFilter(value)}
                   >
-                    {leaders.map((leader) => (
+                    {REASONS_VALUES.map((reason) => (
                       <Checkbox
-                        key={`chk_${leader.value}`}
-                        label={leader.label}
-                        value={leader.value}
+                        key={`chk_${reason.value}`}
+                        label={reason.label}
+                        value={reason.value}
                       />
                     ))}
                   </CheckboxGroup>
-                </ScrollArea>
-                <Divider />
-                <CheckboxGroup
-                  label="Reasons"
-                  value={boxesFilter}
-                  onChange={setBoxesFilter}
-                  orientation="vertical"
-                >
-                  {REASONS_VALUES.map((reason) => (
-                    <Checkbox
-                      key={`chk_${reason.value}`}
-                      label={reason.label}
-                      value={reason.value}
-                    />
-                  ))}
-                </CheckboxGroup>
-                <Divider />
-                <DatePicker
-                  value={startDate}
-                  onChange={(date) => setStartDate(date || new Date())}
-                  clearable={false}
-                  label="Start Date"
-                />
-                <DatePicker
-                  value={endDate}
-                  onChange={(date) => setEndDate(date || new Date())}
-                  clearable={false}
-                  label="End Date"
-                />
-                <Divider />
-                <SegmentedControl
-                  data={[
-                    { value: 'complete', label: 'Completed' },
-                    { value: 'all', label: 'All' },
-                  ]}
-                  value={completed ? 'complete' : 'all'}
-                  onChange={(value) => {
-                    setCompleted(value === 'complete');
-                  }}
-                />
-              </Stack>
-            </MantineCard>
-            <Box
+                  <Divider />
+                  <DatePicker
+                    value={startDate}
+                    onChange={(date) => setStartDate(date || new Date())}
+                    clearable={false}
+                    label="Start Date"
+                  />
+                  <DatePicker
+                    value={endDate}
+                    onChange={(date) => setEndDate(date || new Date())}
+                    clearable={false}
+                    label="End Date"
+                  />
+                  <Divider />
+                  <SegmentedControl
+                    data={[
+                      { value: 'complete', label: 'Completed' },
+                      { value: 'all', label: 'All' },
+                    ]}
+                    value={completed ? 'complete' : 'all'}
+                    onChange={(value) => {
+                      setCompleted(value === 'complete');
+                    }}
+                  />
+                </Stack>
+              </MantineCard>
+            </ScrollArea>
+            <ScrollArea
+              offsetScrollbars
               style={{
-                overflowX: 'auto',
-                overflowY: 'auto',
-                maxHeight: 'calc(100vh - 300px)',
+                height: 'calc(100vh - 236px)',
                 flexGrow: 1,
               }}
             >
@@ -350,6 +357,7 @@ export default function CardsPage() {
                     <CardsListCard
                       key={`${card.name}${card.date.toString()}`}
                       card={card}
+                      refresh={() => mutate()}
                     />
                   ))}
                 </Stack>
@@ -359,7 +367,7 @@ export default function CardsPage() {
                   <Loader />
                 </Center>
               )}
-            </Box>
+            </ScrollArea>
           </Group>
         </Group>
       </Center>

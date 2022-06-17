@@ -4,7 +4,8 @@ import type { NextStepsCard } from '../../../types/new-here';
 import { ReactNode, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import {
-  Box, Button,
+  Box,
+  Button,
   Card,
   Checkbox,
   Grid,
@@ -27,9 +28,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface RowProps {
   card: NextStepsCard;
+  refresh(): void;
 }
 
-const CardsListCard = ({ card }: RowProps) => {
+const CardsListCard = ({ card, refresh }: RowProps) => {
   const theme = useMantineTheme();
   const { colorScheme } = useMantineColorScheme();
 
@@ -56,7 +58,7 @@ const CardsListCard = ({ card }: RowProps) => {
           colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
       }}
     >
-      <Group direction="row" style={{ alignItems: 'flex-start' }}>
+      <Group direction="row" style={{ alignItems: 'flex-start' }} noWrap>
         <Group direction="column" spacing="md" grow style={{ flexGrow: 1 }}>
           <Group direction="row">
             <TextInput
@@ -149,8 +151,8 @@ const CardsListCard = ({ card }: RowProps) => {
             </Grid.Col>
           </Grid>
         </Group>
-        <Group direction="column" spacing="md" grow style={{ width: '25%' }}>
-          <Group direction="row" style={{ alignItems: 'flex-end' }}>
+        <Group direction="column" spacing="md" grow style={{ minWidth: 300 }}>
+          <Group direction="row" style={{ alignItems: 'flex-end' }} noWrap>
             <TextInput
               label="Hosted By"
               disabled
@@ -159,8 +161,16 @@ const CardsListCard = ({ card }: RowProps) => {
             />
             <Button
               leftIcon={<FontAwesomeIcon icon="envelope" />}
-              variant={completed ? 'filled' : 'outline'}
-              color={completed ? 'green' : 'blue'}
+              variant={card.completed ? 'filled' : 'outline'}
+              color={card.completed ? 'green' : 'blue'}
+              onClick={() => {
+                fetch(
+                  `/api/cards/complete?id=${card.id}&status=${
+                    card.completed ? 'false' : 'true'
+                  }`,
+                  { method: 'PUT' },
+                ).then(refresh);
+              }}
             >
               Card Written
             </Button>
