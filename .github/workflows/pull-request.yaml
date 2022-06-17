@@ -7,7 +7,7 @@ on:
 
 jobs:
   checks:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: checkout git
         uses: actions/checkout@v3
@@ -34,7 +34,7 @@ jobs:
         run: npm run build
 
   next-steps:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: checkout git
         uses: actions/checkout@v3
