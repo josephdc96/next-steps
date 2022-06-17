@@ -26,7 +26,7 @@ export default function DocumentsPage() {
           {data && (
             <>
               <Group spacing="md">
-                <Link href='/documents'>
+                <Link href="/documents">
                   <ActionIcon
                     color="blue"
                     size="lg"

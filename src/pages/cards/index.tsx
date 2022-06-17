@@ -20,9 +20,11 @@ import {
   Divider,
   Group,
   Loader,
-  Menu, Modal,
+  Menu,
+  Modal,
   MultiSelect,
-  Popover, ScrollArea,
+  Popover,
+  ScrollArea,
   SegmentedControl,
   Select,
   Stack,
@@ -38,7 +40,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import {
   GENDER_DISPLAY_RECORD,
-  REASON_DISPLAY_RECORD, REASON_TRANSLATOR,
+  REASON_DISPLAY_RECORD,
+  REASON_TRANSLATOR,
   Reasons,
 } from '../../types/new-here';
 import { Card } from '../../types/cards';

@@ -1,5 +1,7 @@
-import { ReactNode, useState } from 'react';
-import { AppShell, ColorScheme, ColorSchemeProvider, MantineProvider, MantineTheme } from '@mantine/core';
+import type { ReactNode } from 'react';
+import { useState } from 'react';
+import type { ColorScheme, MantineTheme } from '@mantine/core';
+import { AppShell, ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import { setCookies } from 'cookies-next';
 import { themeObject } from '../styles/theme';
 import { MobileHeader } from '#/components/MobileHeader/MobileHeader';
