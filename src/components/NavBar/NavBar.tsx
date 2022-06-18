@@ -122,13 +122,13 @@ export const NavBar = ({ opened }: NavBarProps) => {
                     </Avatar>
                     <div>
                       <Text size="md">
-                        {`${person?.firstName} ${person?.lastName}`.substring(
+                        {`${`${person?.firstName} ${person?.lastName}`.substring(
                           0,
-                          10,
-                        )}
+                          9,
+                        )}...`}
                       </Text>
                       <Text size="xs">
-                        {session?.user?.email?.substring(0, 12)}
+                        {`${session?.user?.email?.substring(0, 12)}...`}
                       </Text>
                     </div>
                   </Group>

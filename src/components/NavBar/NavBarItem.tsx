@@ -1,6 +1,7 @@
 import type { IconName } from '@fortawesome/free-solid-svg-icons';
-import { Avatar, Box, Button, createStyles, Group, Text } from '@mantine/core';
+
 import Link from 'next/link';
+import { Avatar, Box, Button, createStyles, Group, Text } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export type NavBarItemType = {

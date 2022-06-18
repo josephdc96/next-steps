@@ -9,8 +9,6 @@ export interface Personnel {
   signedCommitment: Date;
   ltClass: Date;
   firstName: string;
-  subteamLead: boolean;
-  teamLead: boolean;
   leader?: string;
   lastMonthAssign?: string;
   commitedThru: Date;

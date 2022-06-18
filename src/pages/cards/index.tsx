@@ -10,6 +10,7 @@ import { DatePicker } from '@mantine/dates';
 import {
   ActionIcon,
   Affix,
+  Alert,
   Anchor,
   Box,
   Button,
@@ -84,7 +85,9 @@ export default function CardsPage() {
 
   const [boxesFilter, setBoxesFilter] = useState<string[]>([]);
   const [hostFilter, setHostFilter] = useState<string[]>([]);
-  const [startDate, setStartDate] = useState(new Date('01/01/2001'));
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().setDate(new Date().getDate() - 7)),
+  );
   const [endDate, setEndDate] = useState(new Date());
   const [completed, setCompleted] = useState(false);
 
@@ -93,19 +96,19 @@ export default function CardsPage() {
   const { data, error, isValidating, mutate } = useSWR([url], fetcher);
 
   useEffect(() => {
-    fetch('/api/personnel/active').then((res) => {
+    fetch('/api/personnel/active?include_admin=true').then((res) => {
       res.json().then((json) => {
-        const data: any[] = [];
+        const data2: any[] = [];
 
         json.forEach((leader: Personnel) => {
-          data.push({
+          data2.push({
             value: leader.id,
             label: `${leader.firstName} ${leader.lastName}`,
           });
         });
-        data.push({ value: 'other', label: 'Other' });
+        data2.push({ value: 'other', label: 'Other' });
 
-        setLeaders(data);
+        setLeaders(data2);
       });
     });
 
@@ -153,17 +156,23 @@ export default function CardsPage() {
           <Box style={{ width: '100%' }}>
             <Group position="apart" style={{ width: '100%' }} noWrap>
               <Title order={3}>Next Steps Cards</Title>
-              <TextInput
-                placeholder="Search"
-                style={{
-                  width: 800,
-                  backgroundColor:
-                    theme.colorScheme === 'dark'
-                      ? theme.colors.dark[7]
-                      : theme.white,
-                }}
-                icon={<FontAwesomeIcon icon="search" />}
-              />
+              <Tooltip
+                label="Coming Soon"
+                style={{ maxWidth: 800, width: 800 }}
+              >
+                <TextInput
+                  placeholder="Search"
+                  disabled
+                  style={{
+                    flexGrow: 1,
+                    backgroundColor:
+                      theme.colorScheme === 'dark'
+                        ? theme.colors.dark[7]
+                        : theme.white,
+                  }}
+                  icon={<FontAwesomeIcon icon="search" />}
+                />
+              </Tooltip>
               <Group spacing="sm" noWrap>
                 <Button
                   size="sm"
@@ -255,14 +264,17 @@ export default function CardsPage() {
                     Completed
                   </Menu.Item>
                 </Menu>
-                <Button
-                  size="sm"
-                  variant="filled"
-                  color="green"
-                  leftIcon={<FontAwesomeIcon icon="file-excel" />}
-                >
-                  Export
-                </Button>
+                <Tooltip label="Coming Soon">
+                  <Button
+                    size="sm"
+                    variant="filled"
+                    color="green"
+                    disabled
+                    leftIcon={<FontAwesomeIcon icon="file-excel" />}
+                  >
+                    Export
+                  </Button>
+                </Tooltip>
               </Group>
             </Group>
           </Box>
@@ -355,20 +367,35 @@ export default function CardsPage() {
               }}
             >
               {data && !error && !isValidating && (
-                <Stack>
-                  {data.map((card) => (
-                    <CardsListCard
-                      key={`${card.name}${card.date.toString()}`}
-                      card={card}
-                      refresh={() => mutate()}
-                    />
-                  ))}
-                </Stack>
+                <>
+                  {data.length > 0 && (
+                    <Stack>
+                      {data.map((card) => (
+                        <CardsListCard
+                          key={`${card.name}${card.date.toString()}`}
+                          card={card}
+                          refresh={() => mutate()}
+                        />
+                      ))}
+                    </Stack>
+                  )}
+                  {data.length === 0 && (
+                    <Alert color="blue" title="No Data">
+                      There are no cards for the selected filters.
+                    </Alert>
+                  )}
+                </>
               )}
               {isValidating && (
                 <Center>
                   <Loader />
                 </Center>
+              )}
+              {error && (
+                <Alert color="red" title="Something is wrong!">
+                  There was an error. Try refreshing and if the issue persists
+                  please let us know using the feedback button on the left.
+                </Alert>
               )}
             </ScrollArea>
           </Group>

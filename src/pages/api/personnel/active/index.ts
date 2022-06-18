@@ -4,6 +4,8 @@ import { getSession } from 'next-auth/react';
 
 const activePersonnel = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getSession({ req });
+  const { include_admin } = req.query;
+
   if (!session) {
     res.status(401).end();
     return;
@@ -14,7 +16,7 @@ const activePersonnel = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const people = await getActivePersonnel();
+  const people = await getActivePersonnel(!!include_admin);
   const sorted = people.sort((a, b) => {
     if (a.firstName < b.firstName) return -1;
     if (a.firstName > b.firstName) return 1;

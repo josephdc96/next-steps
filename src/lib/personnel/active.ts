@@ -1,8 +1,11 @@
 import type { Personnel } from '../../types/personnel';
 
 import { Firestore } from '@google-cloud/firestore';
+import { UserRole } from '../../types/personnel';
 
-export const getActivePersonnel = async (): Promise<Personnel[]> => {
+export const getActivePersonnel = async (
+  include_admin: boolean = false,
+): Promise<Personnel[]> => {
   const db = new Firestore({
     projectId: 'next-steps-350612',
   });
@@ -17,6 +20,9 @@ export const getActivePersonnel = async (): Promise<Personnel[]> => {
 
   snapshot.forEach((person) => {
     const data = person.data();
+    if (data.roles && data.roles.includes(UserRole.Admin) && !include_admin)
+      return;
+
     const p: Personnel = {
       ...data,
       id: person.id,

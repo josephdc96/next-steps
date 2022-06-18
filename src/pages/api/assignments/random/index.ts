@@ -3,6 +3,7 @@ import type { Personnel } from '../../../../types/personnel';
 
 import { getPositions } from '#/lib/positions/positions';
 import { getActivePersonnel } from '#/lib/personnel/active';
+import { UserRole } from '../../../../types/personnel';
 
 const randomAssignments = async (req: NextApiRequest, res: NextApiResponse) => {
   const getAssignment = (person: Personnel, nestedIndex: number): string => {
@@ -37,7 +38,11 @@ const randomAssignments = async (req: NextApiRequest, res: NextApiResponse) => {
 
   personnel.forEach((person) => {
     let id: string | undefined;
-    if (!person.teamLead) {
+    if (
+      person.roles &&
+      !person.roles.includes(UserRole.TeamLeader) &&
+      !person.roles.includes(UserRole.Admin)
+    ) {
       id = getAssignment(person, 1);
     }
     const team = assignments.get(id) || [];

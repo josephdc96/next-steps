@@ -4,6 +4,7 @@ import type { Position } from '../../../../../types/position';
 
 import { Firestore } from '@google-cloud/firestore';
 import { getSession } from 'next-auth/react';
+import { UserRole } from '../../../../../types/personnel';
 
 const activeLeaders = async (req: NextApiRequest, res: NextApiResponse) => {
   const { leaders } = req.query;
@@ -38,7 +39,16 @@ const activeLeaders = async (req: NextApiRequest, res: NextApiResponse) => {
 
   snapshot.forEach((person) => {
     const data = person.data();
-    if (!data.subteamLead && !data.teamLead) return;
+
+    if (
+      !data.roles ||
+      (!data.roles.includes(UserRole.Admin) &&
+        !data.roles.includes(UserRole.TeamLeader) &&
+        !data.roles.includes(UserRole.SubTeamLeader))
+    ) {
+      return;
+    }
+
     if (leaders && !(leaders as string[]).includes(person.id)) return;
 
     const p: Personnel = {
