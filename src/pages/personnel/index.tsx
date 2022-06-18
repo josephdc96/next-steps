@@ -2,7 +2,7 @@ import type { Fetcher } from 'swr';
 import useSWR from 'swr';
 import type { Personnel } from '../../types/personnel';
 import { UserRole } from '../../types/personnel';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import dayjs from 'dayjs';
 import { useMediaQuery } from '@mantine/hooks';
 import {
@@ -28,9 +28,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import UserModal from '#/components/UserModal/UserModal';
 import RetireModal from '#/components/RetireModal/RetireModal';
 import BreakModal from '#/components/BreakModal/BreakModal';
-import type { Asset, UsrSession } from '#/lib/auth/contract';
 import { useSession } from 'next-auth/react';
-import { authorizeAction } from '#/lib/auth/authz';
 
 const fetcher: Fetcher<Personnel[], string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -82,7 +80,7 @@ export default function PersonnelPage() {
   };
 
   const { data, error, isValidating, mutate } = useSWR(
-    [`/api/personnel/${view}`],
+    [`/api/personnel/${view}?include_admin=true`],
     fetcher,
   );
 
@@ -107,8 +105,16 @@ export default function PersonnelPage() {
         <tr
           key={person.id}
           style={{
-            fontWeight: person.teamLead ? 'bold' : 'normal',
-            fontStyle: person.subteamLead ? 'italic' : 'normal',
+            fontWeight:
+              person.roles?.includes(UserRole.TeamLeader) ||
+              person.roles?.includes(UserRole.Admin)
+                ? 'bold'
+                : 'normal',
+            fontStyle:
+              person.roles?.includes(UserRole.SubTeamLeader) ||
+              person.roles?.includes(UserRole.Admin)
+                ? 'italic'
+                : 'normal',
           }}
         >
           <td>{`${person.firstName} ${person.lastName}`}</td>
@@ -239,7 +245,10 @@ export default function PersonnelPage() {
             )}
           </Box>
           <Text size="xs">
-            Legend: <b>Bold: Team Leader</b> | <i>Italics: Subteam Leader</i>
+            Legend: <b>Bold: Team Leader</b> | <i>Italics: Subteam Leader</i> |{' '}
+            <b>
+              <i>Bold Italics: Paradigm Staff Member</i>
+            </b>
           </Text>
         </Group>
       </Center>

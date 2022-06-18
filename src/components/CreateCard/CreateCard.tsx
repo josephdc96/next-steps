@@ -54,7 +54,7 @@ export default function CreateCard({ onSubmit }: CreateCardProps) {
   );
 
   useEffect(() => {
-    fetch('/api/personnel/active').then((res) => {
+    fetch('/api/personnel/active?include_admin=true').then((res) => {
       res.json().then((json) => {
         const data: any[] = [];
 

@@ -7,6 +7,7 @@ import {
   Divider,
   Group,
   Modal,
+  MultiSelect,
   Select,
   SimpleGrid,
   Space,
@@ -15,6 +16,8 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { DatePicker } from '@mantine/dates';
+import { UserRole } from '../../types/personnel';
+import { Gender } from '#/types/new-here';
 
 interface UserModalProps {
   isEdit: boolean;
@@ -22,6 +25,30 @@ interface UserModalProps {
   user?: Personnel;
   onClose(): void;
 }
+
+const ROLE_STRING_RECORD: Record<UserRole, string> = {
+  [UserRole.Admin]: 'Admin',
+  [UserRole.TeamLeader]: 'TeamLeader',
+  [UserRole.SubTeamLeader]: 'SubTeamLeader',
+  [UserRole.Leader]: 'Leader',
+  [UserRole.SuperUser]: 'SuperUser',
+};
+
+const STRING_ROLE_RECORD: Record<string, UserRole> = {
+  Admin: UserRole.Admin,
+  TeamLeader: UserRole.TeamLeader,
+  SubTeamLeader: UserRole.SubTeamLeader,
+  Leader: UserRole.Leader,
+  SuperUser: UserRole.SuperUser,
+};
+
+const ROLE_VALUES = [
+  { value: 'Admin', label: 'Paradigm Staff' },
+  { value: 'TeamLeader', label: 'Team Leader' },
+  { value: 'SubTeamLeader', label: 'Subteam Leader' },
+  { value: 'Leader', label: 'Leader' },
+  { value: 'SuperUser', label: 'Super User' },
+];
 
 export default function UserModal({
   isEdit,
@@ -39,8 +66,9 @@ export default function UserModal({
         ? new Date(user?.signedCommitment)
         : new Date(),
       ltClass: user?.ltClass ? new Date(user?.ltClass) : new Date(),
-      subteamLead: user?.subteamLead || false,
-      teamLead: user?.teamLead || false,
+      roles: (user?.roles || [UserRole.Leader]).map(
+        (role) => ROLE_STRING_RECORD[role],
+      ),
       leader: user?.leader,
       commitedThru: user?.commitedThru
         ? new Date(user?.commitedThru)
@@ -81,16 +109,21 @@ export default function UserModal({
     form.reset();
   }, [opened]);
 
-  const submitForm = (values: Personnel) => {
+  const submitForm = (values: any) => {
+    const result = {
+      ...values,
+      roles: (values.roles as string[]).map((role) => STRING_ROLE_RECORD[role]),
+    };
+
     if (isEdit) {
       fetch(`/api/personnel?id=${user?.id}`, {
         method: 'PUT',
-        body: JSON.stringify(values),
+        body: JSON.stringify(result),
       }).then(() => onClose());
     } else {
       fetch('/api/personnel', {
         method: 'POST',
-        body: JSON.stringify(values),
+        body: JSON.stringify(result),
       }).then(() => onClose());
     }
   };
@@ -130,21 +163,18 @@ export default function UserModal({
               {...form.getInputProps('email')}
             />
             <Divider />
-            <Group spacing="md" grow>
-              <Checkbox
-                label="Team Leader"
-                disabled={form.values.subteamLead}
-                {...form.getInputProps('teamLead', { type: 'checkbox' })}
-              />
-              <Checkbox
-                label="Subteam Leader"
-                disabled={form.values.teamLead}
-                {...form.getInputProps('subteamLead', { type: 'checkbox' })}
-              />
-            </Group>
+            <MultiSelect
+              data={ROLE_VALUES}
+              label="Roles"
+              required
+              {...form.getInputProps('roles')}
+            />
             <Divider />
             <Select
-              disabled={form.values.teamLead}
+              disabled={
+                form.values.roles.includes('TeamLeader') ||
+                form.values.roles.includes('Admin')
+              }
               data={leaders}
               label="Leader"
               {...form.getInputProps('leader')}
