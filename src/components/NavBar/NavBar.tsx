@@ -1,3 +1,8 @@
+import type { Personnel } from '../../types/personnel';
+import type { NavBarRoute } from '#/types/navbar-item';
+
+import { useEffect, useState } from 'react';
+import { signIn, useSession } from 'next-auth/react';
 import {
   Avatar,
   Box,
@@ -13,15 +18,12 @@ import {
   Title,
   useMantineColorScheme,
 } from '@mantine/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { NavBarItem } from '#/components/NavBar/NavBarItem';
+import FeedbackModal from '#/components/FeedbackModal/FeedbackModal';
 
 import useStyles from './NavBar.styles';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useEffect, useState } from 'react';
-import type { Personnel } from '../../types/personnel';
-import { signIn, useSession } from 'next-auth/react';
-import FeedbackModal from '#/components/FeedbackModal/FeedbackModal';
 
 interface NavBarProps {
   opened: boolean;
@@ -33,12 +35,25 @@ export const NavBar = ({ opened }: NavBarProps) => {
   const { data: session } = useSession();
   const [person, setPerson] = useState<Personnel | undefined>(undefined);
   const [modalOpen, setModalOpen] = useState(false);
+  const [navbarItems, setNavbarItems] = useState<NavBarRoute[]>([]);
 
   useEffect(() => {
     if (session) {
       fetch(`/api/personnel/active/auth0/${session?.id}`).then((x) => {
+        x.json()
+          .then((json) => {
+            setPerson(json);
+          })
+          .catch((err) => {
+            setPerson({
+              firstName: session.user?.name,
+              lastName: '',
+            } as Personnel);
+          });
+      });
+      fetch('/api/me/routes').then((x) => {
         x.json().then((json) => {
-          setPerson(json);
+          setNavbarItems(json);
         });
       });
     }
@@ -75,28 +90,14 @@ export const NavBar = ({ opened }: NavBarProps) => {
             <>
               <Space h="md" />
               <Group spacing="sm" direction="column">
-                <NavBarItem caption="Home" icon="home" path="/" />
-                <NavBarItem
-                  caption="Personnel"
-                  icon="person"
-                  path="/personnel"
-                />
-                <NavBarItem
-                  caption="Subteams"
-                  icon="people-group"
-                  path="/subteams"
-                />
-                <NavBarItem
-                  caption="Assignments"
-                  icon="clipboard-user"
-                  path="/assignments"
-                />
-                <NavBarItem caption="Cards" icon="contact-card" path="/cards" />
-                <NavBarItem
-                  caption="Documents"
-                  icon="file-text"
-                  path="/documents"
-                />
+                {navbarItems.map((item) => (
+                  <NavBarItem
+                    key={item.caption}
+                    caption={item.caption}
+                    icon={item.icon}
+                    path={item.path}
+                  />
+                ))}
                 <NavBarItem
                   caption="Feedback"
                   icon="envelope"

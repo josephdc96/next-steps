@@ -22,7 +22,8 @@
       "#/layouts/*": ["src/layouts/*"],
       "#/hooks/*": ["src/hooks/*"],
       "#/providers/*": ["src/providers/*"],
-      "#/config/*": ["src/config/*"]
+      "#/config/*": ["src/config/*"],
+      "#/types/*": ["src/types/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

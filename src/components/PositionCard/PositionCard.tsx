@@ -9,6 +9,7 @@ import useSWR from 'swr';
 
 interface positionCardProps {
   position: Position;
+  canEdit: boolean;
   edit(position: Position): void;
 }
 
@@ -20,7 +21,11 @@ const fetcher: Fetcher<Personnel[], string[]> = async (url: string) => {
   return res.json();
 };
 
-export default function PositionCard({ position, edit }: positionCardProps) {
+export default function PositionCard({
+  position,
+  canEdit,
+  edit,
+}: positionCardProps) {
   const { data, error, isValidating } = useSWR(
     [`/api/assignments/${position.id}/assignees`],
     fetcher,
@@ -40,14 +45,16 @@ export default function PositionCard({ position, edit }: positionCardProps) {
       <Group direction="column" spacing="md">
         <Group position="apart" style={{ width: '100%' }}>
           <Text size="xl">{position.name}</Text>
-          <Group spacing="xs">
-            <Button compact variant="subtle" onClick={() => edit(position)}>
-              <FontAwesomeIcon icon="edit" />
-            </Button>
-            <Button compact variant="subtle" color="red">
-              <FontAwesomeIcon icon="trash" />
-            </Button>
-          </Group>
+          {canEdit && (
+            <Group spacing="xs">
+              <Button compact variant="subtle" onClick={() => edit(position)}>
+                <FontAwesomeIcon icon="edit" />
+              </Button>
+              <Button compact variant="subtle" color="red">
+                <FontAwesomeIcon icon="trash" />
+              </Button>
+            </Group>
+          )}
         </Group>
         <Text size="lg">Assignees</Text>
         {data && !isValidating && !error && (
