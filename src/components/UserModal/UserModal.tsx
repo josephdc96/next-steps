@@ -2,10 +2,20 @@ import type { Personnel } from '../../types/personnel';
 import { UserRole } from '../../types/personnel';
 
 import { useEffect, useState } from 'react';
-import { Button, Divider, Group, Modal, MultiSelect, Select, SimpleGrid, Text, TextInput } from '@mantine/core';
+import {
+  Button,
+  Divider,
+  Group,
+  Modal,
+  MultiSelect,
+  Select,
+  SimpleGrid,
+  Text,
+  TextInput,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { DatePicker } from '@mantine/dates';
-import { Asset, UsrSession } from '#/lib/auth/contract';
+import type { Asset, UsrSession } from '#/lib/auth/contract';
 import { useSession } from 'next-auth/react';
 import { authorizeAction } from '#/lib/auth/authz';
 import Auth0 from 'next-auth/providers/auth0';
