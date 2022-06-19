@@ -1,23 +1,14 @@
 import type { Personnel } from '../../types/personnel';
+import { UserRole } from '../../types/personnel';
 
 import { useEffect, useState } from 'react';
-import {
-  Button,
-  Checkbox,
-  Divider,
-  Group,
-  Modal,
-  MultiSelect,
-  Select,
-  SimpleGrid,
-  Space,
-  Text,
-  TextInput,
-} from '@mantine/core';
+import { Button, Divider, Group, Modal, MultiSelect, Select, SimpleGrid, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { DatePicker } from '@mantine/dates';
-import { UserRole } from '../../types/personnel';
-import { Gender } from '#/types/new-here';
+import { Asset, UsrSession } from '#/lib/auth/contract';
+import { useSession } from 'next-auth/react';
+import { authorizeAction } from '#/lib/auth/authz';
+import Auth0 from 'next-auth/providers/auth0';
 
 interface UserModalProps {
   isEdit: boolean;
@@ -50,12 +41,17 @@ const ROLE_VALUES = [
   { value: 'SuperUser', label: 'Super User' },
 ];
 
+const Auth0Asset: Asset = {
+  role: [UserRole.SuperUser],
+};
+
 export default function UserModal({
   isEdit,
   opened,
   user,
   onClose,
 }: UserModalProps) {
+  const { data: session } = useSession();
   const form = useForm({
     initialValues: {
       firstName: user?.firstName || '',
@@ -78,6 +74,7 @@ export default function UserModal({
       leftReason: user?.reason,
       followUp: user?.followUp,
       onBreak: user?.onBreak || false,
+      auth0Id: user?.auth0Id || false,
     },
     validate: {
       email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
@@ -91,6 +88,8 @@ export default function UserModal({
   const [leaders, setLeaders] = useState<{ value: string; label: string }[]>(
     [],
   );
+  const [isSuperUser, setIsSuperUser] = useState(false);
+
   useEffect(() => {
     fetch('/api/personnel/active/leaders').then((res) =>
       res.json().then((json) => {
@@ -107,7 +106,12 @@ export default function UserModal({
       }),
     );
     form.reset();
-  }, [opened]);
+    if (session) {
+      setIsSuperUser(
+        authorizeAction(Auth0Asset, (session as UsrSession).roles).authorized,
+      );
+    }
+  }, [opened, session]);
 
   const submitForm = (values: any) => {
     const result = {
@@ -169,6 +173,12 @@ export default function UserModal({
               required
               {...form.getInputProps('roles')}
             />
+            {isSuperUser && (
+              <TextInput
+                label="Auth0 User ID"
+                {...form.getInputProps('auth0Id')}
+              />
+            )}
             <Divider />
             <Select
               disabled={

@@ -67,7 +67,7 @@ export const routes: NavBarRoute[] = [
   {
     caption: 'Documents',
     icon: 'file-text',
-    path: '/',
+    path: '/documents',
     asset: {
       role: [UserRole.Admin, UserRole.TeamLeader, UserRole.SuperUser],
     },

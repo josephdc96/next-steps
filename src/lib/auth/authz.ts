@@ -4,7 +4,7 @@ import { UserRole } from '#/types/personnel';
 import { Authorized, Unauthorized } from '#/lib/auth/audit';
 
 export function authorizeAction(asset: Asset, roles: UserRole[]): Authz {
-  if (roles.includes(UserRole.Admin)) {
+  if (roles.includes(UserRole.SuperUser)) {
     return Authorized(asset, 'user is a superuser');
   }
 
