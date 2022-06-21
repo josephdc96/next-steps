@@ -2,7 +2,7 @@ import type { Personnel } from '../../types/personnel';
 import type { NavBarRoute } from '#/types/navbar-item';
 
 import { useEffect, useState } from 'react';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import {
   Avatar,
   Box,
@@ -11,6 +11,7 @@ import {
   Divider,
   Group,
   Image,
+  Menu,
   Navbar,
   ScrollArea,
   Space,
@@ -64,7 +65,7 @@ export const NavBar = ({ opened }: NavBarProps) => {
       <Navbar
         width={{ base: 275 }}
         p="md"
-        hiddenBreakpoint="sm"
+        hiddenBreakpoint="lg"
         hidden={!opened}
       >
         <Navbar.Section>
@@ -114,26 +115,38 @@ export const NavBar = ({ opened }: NavBarProps) => {
           <Space h="sm" />
           {person && session && (
             <Group spacing="xs" noWrap>
-              <Center className={classes.user} aria-label="user">
-                <Box className={classes.userInfo}>
-                  <Group>
-                    <Avatar radius="md" color="blue" src={session?.user?.image}>
-                      {`${person?.firstName?.at(0)}${person?.lastName?.at(0)}`}
-                    </Avatar>
-                    <div>
-                      <Text size="md">
-                        {`${`${person?.firstName} ${person?.lastName}`.substring(
-                          0,
-                          9,
-                        )}...`}
-                      </Text>
-                      <Text size="xs">
-                        {`${session?.user?.email?.substring(0, 12)}...`}
-                      </Text>
-                    </div>
-                  </Group>
-                </Box>
-              </Center>
+              <Menu
+                control={
+                  <Center className={classes.user} aria-label="user">
+                    <Box className={classes.userInfo}>
+                      <Group>
+                        <Avatar
+                          radius="md"
+                          color="blue"
+                          src={session?.user?.image}
+                        >
+                          {`${person?.firstName?.at(0)}${person?.lastName?.at(
+                            0,
+                          )}`}
+                        </Avatar>
+                        <div>
+                          <Text size="md">
+                            {`${`${person?.firstName} ${person?.lastName}`.substring(
+                              0,
+                              9,
+                            )}...`}
+                          </Text>
+                          <Text size="xs">
+                            {`${session?.user?.email?.substring(0, 12)}...`}
+                          </Text>
+                        </div>
+                      </Group>
+                    </Box>
+                  </Center>
+                }
+              >
+                <Menu.Item onClick={() => signOut()}>Log out</Menu.Item>
+              </Menu>
               <Button
                 variant="filled"
                 color={colorScheme === 'dark' ? 'blue' : 'yellow'}

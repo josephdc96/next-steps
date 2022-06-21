@@ -3,7 +3,14 @@ import type { Subteam } from '#/types/subteam';
 
 import useSWR from 'swr';
 import { useEffect, useState } from 'react';
-import { Affix, Button, Center, Loader, SimpleGrid } from '@mantine/core';
+import {
+  Affix,
+  Button,
+  Center,
+  Group,
+  Loader,
+  SimpleGrid,
+} from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import SubteamModal from '#/components/SubteamModal/SubteamModal';
@@ -12,6 +19,9 @@ import type { Asset, UsrSession } from '#/lib/auth/contract';
 import { UserRole } from '#/types/personnel';
 import { authorizeAction } from '#/lib/auth/authz';
 import { useSession } from 'next-auth/react';
+import { MobileHeader } from '#/components/MobileHeader/MobileHeader';
+import { HeaderButton } from '#/components/MobileHeader/HeaderButton';
+import { useMediaQuery } from '@mantine/hooks';
 
 const fetcher: Fetcher<Subteam[], string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -27,6 +37,7 @@ const editAsset: Asset = {
 
 export default function SubteamsPage() {
   const { data: session } = useSession();
+  const isMobile = useMediaQuery('(max-width: 800px)');
 
   const [editModal, setEditModal] = useState(false);
   const [modalData, setModalData] = useState<Subteam | undefined>(undefined);
@@ -64,7 +75,20 @@ export default function SubteamsPage() {
 
   return (
     <>
-      <Center style={{ width: '100%', marginTop: 80 }}>
+      <MobileHeader
+        right={
+          <Group>
+            {canEdit && (
+              <HeaderButton
+                caption="New Subteam"
+                icon="plus"
+                onClick={() => newSubteam()}
+              />
+            )}
+          </Group>
+        }
+      />
+      <Center style={{ width: '100%', marginTop: isMobile ? 20 : 80 }}>
         <SimpleGrid
           cols={3}
           style={{ width: '80%' }}
@@ -96,17 +120,6 @@ export default function SubteamsPage() {
           )}
         </SimpleGrid>
       </Center>
-      {canEdit && (
-        <Affix position={{ right: 20, bottom: 20 }}>
-          <Button
-            radius="xl"
-            leftIcon={<FontAwesomeIcon icon="plus" />}
-            onClick={() => newSubteam()}
-          >
-            New Subteam
-          </Button>
-        </Affix>
-      )}
       <SubteamModal
         isEdit={editModal}
         opened={modalVisible}

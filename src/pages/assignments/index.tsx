@@ -20,8 +20,11 @@ import { UserRole } from '#/types/personnel';
 import { authorizeAction } from '#/lib/auth/authz';
 import PositionModal from '#/components/PositionModal';
 import PositionCard from '#/components/PositionCard/PositionCard';
+import { MobileHeader } from '#/components/MobileHeader/MobileHeader';
 import ManualAssignment from '#/components/ManualAssignment/ManualAssignment';
 import AutomaticAssignment from '#/components/AutomaticAssignment/AutomaticAssignment';
+import { HeaderButton } from '#/components/MobileHeader/HeaderButton';
+import { useMediaQuery } from '@mantine/hooks';
 
 const fetcher: Fetcher<Position[], string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -37,6 +40,7 @@ const editAsset: Asset = {
 
 export default function AssignmentsPage() {
   const { data: session } = useSession();
+  const isMobile = useMediaQuery('(max-width: 800px)');
 
   const [editModal, setEditModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -77,7 +81,48 @@ export default function AssignmentsPage() {
 
   return (
     <>
-      <Center style={{ width: '100%', marginTop: 80 }}>
+      <MobileHeader
+        right={
+          <>
+            {canEdit && (
+              <Group spacing="md">
+                <Menu
+                  control={
+                    <Button
+                      radius="xl"
+                      leftIcon={
+                        isMobile ? undefined : (
+                          <FontAwesomeIcon icon={'arrows-rotate'} />
+                        )
+                      }
+                    >
+                      <>
+                        {!isMobile && <>New Assignments</>}
+                        {isMobile && <FontAwesomeIcon icon="arrows-rotate" />}
+                      </>
+                    </Button>
+                  }
+                >
+                  <Menu.Item onClick={() => setManualAssignmentVisible(true)}>
+                    Manually Assign
+                  </Menu.Item>
+                  <Menu.Item
+                    onClick={() => setAutomaticAssignmentVisible(true)}
+                  >
+                    Automatically Assign
+                  </Menu.Item>
+                </Menu>
+                <HeaderButton
+                  caption="New Position"
+                  icon="plus"
+                  onClick={() => newPosition()}
+                />
+              </Group>
+            )}
+          </>
+        }
+      />
+      <Center style={{ width: '100%', marginTop: isMobile ? 20 : 80 }}>
         <SimpleGrid
           cols={3}
           style={{ width: '80%' }}
@@ -109,36 +154,6 @@ export default function AssignmentsPage() {
           )}
         </SimpleGrid>
       </Center>
-      {canEdit && (
-        <Affix position={{ right: 20, bottom: 20 }}>
-          <Group spacing="md">
-            <Menu
-              control={
-                <Button
-                  radius="xl"
-                  leftIcon={<FontAwesomeIcon icon="arrows-rotate" />}
-                >
-                  New Assignments
-                </Button>
-              }
-            >
-              <Menu.Item onClick={() => setManualAssignmentVisible(true)}>
-                Manually Assign
-              </Menu.Item>
-              <Menu.Item onClick={() => setAutomaticAssignmentVisible(true)}>
-                Automatically Assign
-              </Menu.Item>
-            </Menu>
-            <Button
-              radius="xl"
-              leftIcon={<FontAwesomeIcon icon="plus" />}
-              onClick={() => newPosition()}
-            >
-              New Position
-            </Button>
-          </Group>
-        </Affix>
-      )}
       <PositionModal
         isEdit={editModal}
         opened={modalVisible}
