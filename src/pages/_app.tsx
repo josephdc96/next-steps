@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 import { CreateLayout } from '../CreateLayout/CreateLayout';
 import type { GetServerSidePropsContext } from 'next';
 import { getCookie } from 'cookies-next';
+import { MobileProvider } from '#/providers/MobileProvider';
 
 export default function App({
   Component,
@@ -48,9 +49,11 @@ export default function App({
         />
       </Head>
       <SessionProvider session={session}>
-        <Layout colorScheme={colorScheme}>
-          <Component {...pageProps} />
-        </Layout>
+        <MobileProvider>
+          <Layout colorScheme={colorScheme}>
+            <Component {...pageProps} />
+          </Layout>
+        </MobileProvider>
       </SessionProvider>
     </>
   );

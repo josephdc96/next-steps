@@ -12,6 +12,8 @@ import { NavBar } from '#/components/NavBar/NavBar';
 import { MobileHeader } from '../MobileHeader/MobileHeader';
 import { themeObject } from '../../styles/theme';
 import { signIn, useSession } from 'next-auth/react';
+import { MobileProvider } from '#/providers/MobileProvider';
+import useMobile from '#/lib/hooks/useMobile';
 
 interface LayoutProps {
   children: ReactNode;
@@ -19,7 +21,7 @@ interface LayoutProps {
 }
 
 export const Layout = ({ children, colorScheme }: LayoutProps) => {
-  const [opened, setOpened] = useState(false);
+  const { opened } = useMobile();
   const matches = useMediaQuery('(max-width: 800px)');
 
   const router = useRouter();
@@ -60,22 +62,14 @@ export const Layout = ({ children, colorScheme }: LayoutProps) => {
           <AppShell
             navbar={<NavBar opened={opened} />}
             fixed
-            navbarOffsetBreakpoint="sm"
+            navbarOffsetBreakpoint="lg"
             sx={(theme: MantineTheme) => ({
               backgroundColor:
                 theme.colorScheme === 'dark'
                   ? theme.colors.dark[6]
                   : theme.colors.gray[2],
             })}
-            header={
-              matches ? (
-                <MobileHeader
-                  opened={opened}
-                  setOpened={setOpened}
-                  showBurger
-                />
-              ) : undefined
-            }
+            header={<MobileHeader />}
           >
             {children}
           </AppShell>

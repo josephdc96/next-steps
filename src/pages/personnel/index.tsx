@@ -12,6 +12,7 @@ import {
   Button,
   Center,
   Group,
+  Header,
   Loader,
   Menu,
   SegmentedControl,
@@ -29,6 +30,8 @@ import UserModal from '#/components/UserModal/UserModal';
 import RetireModal from '#/components/RetireModal/RetireModal';
 import BreakModal from '#/components/BreakModal/BreakModal';
 import { useSession } from 'next-auth/react';
+import { MobileHeader } from '#/components/MobileHeader/MobileHeader';
+import { HeaderButton } from '#/components/MobileHeader/HeaderButton';
 
 const fetcher: Fetcher<Personnel[], string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -48,7 +51,8 @@ export default function PersonnelPage() {
   const [breakVisible, setBreakVisible] = useState(false);
   const [retireVisible, setRetireVisible] = useState(false);
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-  const isMobile = useMediaQuery('(max-width: 800px)');
+  const isMobile = useMediaQuery('(max-width: 1200px)');
+  const is300 = useMediaQuery('(max-width: 350px)');
   const { data: session } = useSession();
 
   const newUser = () => {
@@ -174,18 +178,39 @@ export default function PersonnelPage() {
 
   return (
     <>
-      <Center style={{ width: '100%', marginTop: 80 }}>
+      <MobileHeader
+        center={
+          !is300 ? (
+            <TextInput
+              placeholder="Search"
+              style={{ width: '35%', maxWidth: 800 }}
+              icon={<FontAwesomeIcon icon="search" />}
+            />
+          ) : undefined
+        }
+        right={
+          <Group spacing="sm" noWrap>
+            {is300 && <HeaderButton icon="search" caption="Search" />}
+            <HeaderButton
+              icon="user-plus"
+              caption="Add Person"
+              onClick={() => newUser()}
+            />
+            <HeaderButton
+              color="green"
+              disabled
+              caption="Export to CSV"
+              icon="file-excel"
+              onClick={() => {}}
+            />
+          </Group>
+        }
+      />
+      <Center style={{ width: '100%', marginTop: isMobile ? 20 : 80 }}>
         <Group direction="column" spacing="md" style={{ width: '80%' }}>
           <Box style={{ width: '100%' }}>
             <Group position="apart" style={{ width: '100%' }}>
               <Title order={3}>Personnel</Title>
-              <TextInput
-                placeholder="Search"
-                style={{
-                  width: 800,
-                }}
-                icon={<FontAwesomeIcon icon="search" />}
-              />
               <SegmentedControl
                 data={[
                   { label: 'Active', value: 'active' },
@@ -252,27 +277,6 @@ export default function PersonnelPage() {
           </Text>
         </Group>
       </Center>
-      <Affix position={{ bottom: 20, right: 20 }}>
-        <Button
-          radius="xl"
-          leftIcon={<FontAwesomeIcon icon={'user-plus'} />}
-          onClick={() => newUser()}
-        >
-          Add Person
-        </Button>
-      </Affix>
-      <Affix position={{ bottom: 20, left: isMobile ? 20 : 295 }}>
-        <Tooltip label="Coming soon">
-          <Button
-            color="green"
-            disabled
-            radius="xl"
-            leftIcon={<FontAwesomeIcon icon={'file-excel'} />}
-          >
-            Export to CSV
-          </Button>
-        </Tooltip>
-      </Affix>
       <UserModal
         isEdit={editModal}
         opened={modalVisible}

@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, ReactNode, SetStateAction } from 'react';
 
 import {
   Burger,
@@ -11,11 +11,12 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
+import useMobile from '#/lib/hooks/useMobile';
 
 interface MobileHeaderProps {
-  opened: boolean;
-  setOpened: Dispatch<SetStateAction<boolean>>;
-  showBurger?: boolean;
+  hideBurger?: boolean;
+  center?: ReactNode;
+  right?: ReactNode;
 }
 
 const useStyles = createStyles(() => ({
@@ -27,23 +28,25 @@ const useStyles = createStyles(() => ({
 }));
 
 export const MobileHeader = ({
-  opened,
-  setOpened,
-  showBurger,
+  hideBurger,
+  center,
+  right,
 }: MobileHeaderProps) => {
   const theme = useMantineTheme();
   const { classes } = useStyles();
   const { colorScheme } = useMantineColorScheme();
-  const matches = useMediaQuery('(min-width: 214px)');
+  const matches = useMediaQuery('(min-width: 1200px)');
+  const is375 = useMediaQuery('(max-width: 375px)');
+  const { opened, setOpened } = useMobile();
 
   return (
     <Header height={60} px="md" py="0">
       <Group className={classes.header} position="apart">
-        {showBurger && (
-          <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+        {!hideBurger && (
+          <MediaQuery largerThan="lg" styles={{ display: 'none' }}>
             <Burger
               opened={opened}
-              onClick={() => setOpened((o) => !o)}
+              onClick={() => setOpened(!opened)}
               size="sm"
               color={theme.colors.gray[6]}
               mr="xl"
@@ -51,8 +54,9 @@ export const MobileHeader = ({
             />
           </MediaQuery>
         )}
-        {!showBurger && <span />}
-        {matches && (
+        {(hideBurger || matches) && <span />}
+        {center && <>{center}</>}
+        {!center && !is375 && (
           <Image
             src={
               colorScheme === 'dark'
@@ -66,7 +70,9 @@ export const MobileHeader = ({
             height={40}
           />
         )}
-        <span />
+        {!center && is375 && <span />}
+        {right && <>{right}</>}
+        {!right && <span />}
       </Group>
     </Header>
   );

@@ -25,6 +25,7 @@ import {
   Reasons,
 } from '../../../types/new-here';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useMediaQuery } from '@mantine/hooks';
 
 interface RowProps {
   card: NextStepsCard;
@@ -37,6 +38,8 @@ const CardsListCard = ({ card, refresh }: RowProps) => {
 
   const [host, setHost] = useState('');
   const [completed, setCompleted] = useState(false);
+
+  const is1600 = useMediaQuery('(max-width: 1600px');
 
   useEffect(() => {
     if (!card.whoHelped) {
@@ -58,7 +61,11 @@ const CardsListCard = ({ card, refresh }: RowProps) => {
           colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
       }}
     >
-      <Group direction="row" style={{ alignItems: 'flex-start' }} noWrap>
+      <Group
+        direction="row"
+        style={{ alignItems: 'flex-start' }}
+        noWrap={!is1600}
+      >
         <Group direction="column" spacing="md" grow style={{ flexGrow: 1 }}>
           <Group direction="row">
             <TextInput
@@ -151,7 +158,12 @@ const CardsListCard = ({ card, refresh }: RowProps) => {
             </Grid.Col>
           </Grid>
         </Group>
-        <Group direction="column" spacing="md" grow style={{ minWidth: 300 }}>
+        <Group
+          direction="column"
+          spacing="md"
+          grow
+          style={{ minWidth: 300, width: is1600 ? '100%' : undefined }}
+        >
           <Group direction="row" style={{ alignItems: 'flex-end' }} noWrap>
             <TextInput
               label="Hosted By"

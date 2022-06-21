@@ -6,6 +6,7 @@ import useSWR from 'swr';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import dayjs from 'dayjs';
+import { useMediaQuery, useViewportSize } from '@mantine/hooks';
 import { DatePicker } from '@mantine/dates';
 import {
   ActionIcon,
@@ -39,6 +40,10 @@ import {
 } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import { MobileHeader } from '#/components/MobileHeader/MobileHeader';
+import CreateCard from '#/components/CreateCard/CreateCard';
+import CardsListCard from '#/components/CardsPage/CardsList/CardsListCard';
+
 import {
   GENDER_DISPLAY_RECORD,
   REASON_DISPLAY_RECORD,
@@ -46,9 +51,7 @@ import {
   Reasons,
 } from '../../types/new-here';
 import { Card } from '../../types/cards';
-import { useMediaQuery, useViewportSize } from '@mantine/hooks';
-import CardsListCard from '#/components/CardsPage/CardsList/CardsListCard';
-import CreateCard from '#/components/CreateCard/CreateCard';
+import { HeaderButton } from '#/components/MobileHeader/HeaderButton';
 
 const fetcher: Fetcher<NextStepsCard[], string[]> = async (url: string) => {
   console.log(url);
@@ -70,7 +73,9 @@ const REASONS_VALUES = [
 ];
 
 export default function CardsPage() {
-  const isMobile = useMediaQuery('(max-width: 800px)');
+  const isMobile = useMediaQuery('(max-width: 1200px)');
+  const is850 = useMediaQuery('(max-width: 850px)');
+  const is300 = useMediaQuery('(max-width: 350px)');
   const { colorScheme } = useMantineColorScheme();
   const theme = useMantineTheme();
 
@@ -79,6 +84,7 @@ export default function CardsPage() {
   );
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
 
   const [sort, setSort] = useState('name');
   const [sortDirection, setSortDirection] = useState('ascending');
@@ -139,143 +145,322 @@ export default function CardsPage() {
     completed,
   ]);
 
-  const changeSort = (sortName: string) => {
-    if (sort === sortName) {
-      if (sortDirection === 'ascending') setSortDirection('descending');
-      if (sortDirection === 'descending') setSortDirection('ascending');
-    } else {
-      setSortDirection('ascending');
-      setSort(sortName);
-    }
+  const FilterPanel = () => {
+    return (
+      <Stack>
+        <Title order={4}>Filters</Title>
+        <Divider />
+        <ScrollArea style={{ height: 400 }}>
+          <CheckboxGroup
+            label="Hosts"
+            value={hostFilter}
+            orientation="vertical"
+            onChange={(value) => setHostFilter(value)}
+          >
+            {leaders.map((leader) => (
+              <Checkbox
+                key={`chk_${leader.value}`}
+                label={leader.label}
+                value={leader.value}
+              />
+            ))}
+          </CheckboxGroup>
+        </ScrollArea>
+        <Divider />
+        <CheckboxGroup
+          label="Reasons"
+          value={boxesFilter}
+          onChange={setBoxesFilter}
+          orientation="vertical"
+        >
+          {REASONS_VALUES.map((reason) => (
+            <Checkbox
+              key={`chk_${reason.value}`}
+              label={reason.label}
+              value={reason.value}
+            />
+          ))}
+        </CheckboxGroup>
+        <Divider />
+        <DatePicker
+          value={startDate}
+          onChange={(date) => setStartDate(date || new Date())}
+          clearable={false}
+          label="Start Date"
+        />
+        <DatePicker
+          value={endDate}
+          onChange={(date) => setEndDate(date || new Date())}
+          clearable={false}
+          label="End Date"
+        />
+        <Divider />
+        <SegmentedControl
+          data={[
+            { value: 'complete', label: 'Completed' },
+            { value: 'all', label: 'All' },
+          ]}
+          value={completed ? 'complete' : 'all'}
+          onChange={(value) => {
+            setCompleted(value === 'complete');
+          }}
+        />
+      </Stack>
+    );
   };
 
   return (
     <>
-      <Center style={{ width: '100%', marginTop: 80 }}>
+      <MobileHeader
+        center={
+          is300 ? (
+            <Tooltip
+              label="Coming Soon"
+              style={{ maxWidth: 800, width: '40%' }}
+            >
+              <TextInput
+                placeholder="Search"
+                disabled
+                style={{
+                  backgroundColor:
+                    theme.colorScheme === 'dark'
+                      ? theme.colors.dark[7]
+                      : theme.white,
+                }}
+                icon={<FontAwesomeIcon icon="search" />}
+              />
+            </Tooltip>
+          ) : undefined
+        }
+        right={
+          is850 ? (
+            <Group spacing="sm" noWrap>
+              {is300 && <HeaderButton icon="search" caption="Search" />}
+              <Popover
+                opened={filterOpen}
+                onClose={() => setFilterOpen(false)}
+                position="bottom"
+                placement="end"
+                target={
+                  <HeaderButton
+                    icon="filter"
+                    caption="Filter"
+                    onClick={() => setFilterOpen(!filterOpen)}
+                  />
+                }
+              >
+                <ScrollArea
+                  offsetScrollbars
+                  type="auto"
+                  style={{ height: 'calc(100vh - 120px)' }}
+                >
+                  <FilterPanel />
+                </ScrollArea>
+              </Popover>
+              <Menu
+                control={
+                  <Button radius="xl">
+                    <FontAwesomeIcon icon="ellipsis-vertical" />
+                  </Button>
+                }
+              >
+                <Menu.Item
+                  icon={<FontAwesomeIcon icon="plus" />}
+                  onClick={() => setCreateModalVisible(true)}
+                >
+                  Add Card
+                </Menu.Item>
+                <Menu.Item
+                  icon={<FontAwesomeIcon icon="refresh" />}
+                  onClick={() => mutate()}
+                >
+                  Refresh
+                </Menu.Item>
+                <Menu.Item
+                  icon={<FontAwesomeIcon icon="file-excel" />}
+                  disabled
+                  color="green"
+                >
+                  Export
+                </Menu.Item>
+                <Divider />
+                <Menu.Label>Sort Direction</Menu.Label>
+                <Menu.Item
+                  icon={
+                    sortDirection === 'ascending' ? (
+                      <FontAwesomeIcon icon="check" />
+                    ) : undefined
+                  }
+                  onClick={() => setSortDirection('ascending')}
+                >
+                  Ascending
+                </Menu.Item>
+                <Menu.Item
+                  icon={
+                    sortDirection === 'descending' ? (
+                      <FontAwesomeIcon icon="check" />
+                    ) : undefined
+                  }
+                  onClick={() => setSortDirection('descending')}
+                >
+                  Descending
+                </Menu.Item>
+                <Divider />
+                <Menu.Label>Sort</Menu.Label>
+                <Menu.Item
+                  icon={
+                    sort === 'name' ? (
+                      <FontAwesomeIcon icon="check" />
+                    ) : undefined
+                  }
+                  onClick={() => setSort('name')}
+                >
+                  Name
+                </Menu.Item>
+                <Menu.Item
+                  icon={
+                    sort === 'host' ? (
+                      <FontAwesomeIcon icon="check" />
+                    ) : undefined
+                  }
+                  onClick={() => setSort('host')}
+                >
+                  Host
+                </Menu.Item>
+                <Menu.Item
+                  icon={
+                    sort === 'date' ? (
+                      <FontAwesomeIcon icon="check" />
+                    ) : undefined
+                  }
+                  onClick={() => setSort('date')}
+                >
+                  Date
+                </Menu.Item>
+                <Menu.Item
+                  icon={
+                    sort === 'completed' ? (
+                      <FontAwesomeIcon icon="check" />
+                    ) : undefined
+                  }
+                  onClick={() => setSort('completed')}
+                >
+                  Completed
+                </Menu.Item>
+              </Menu>
+            </Group>
+          ) : (
+            <Group spacing="sm" noWrap>
+              <Button
+                size="sm"
+                variant="subtle"
+                color="dark"
+                onClick={() => setCreateModalVisible(true)}
+              >
+                <FontAwesomeIcon icon="plus" />
+              </Button>
+              <Button
+                size="sm"
+                variant="subtle"
+                color="dark"
+                onClick={() => mutate()}
+              >
+                <FontAwesomeIcon icon="refresh" />
+              </Button>
+              <Menu
+                control={
+                  <Button
+                    size="sm"
+                    variant="subtle"
+                    color="dark"
+                    leftIcon={<FontAwesomeIcon icon="sort" />}
+                  >
+                    Sort by
+                  </Button>
+                }
+              >
+                <Menu.Item
+                  icon={
+                    sortDirection === 'ascending' ? (
+                      <FontAwesomeIcon icon="check" />
+                    ) : undefined
+                  }
+                  onClick={() => setSortDirection('ascending')}
+                >
+                  Ascending
+                </Menu.Item>
+                <Menu.Item
+                  icon={
+                    sortDirection === 'descending' ? (
+                      <FontAwesomeIcon icon="check" />
+                    ) : undefined
+                  }
+                  onClick={() => setSortDirection('descending')}
+                >
+                  Descending
+                </Menu.Item>
+                <Divider />
+                <Menu.Item
+                  icon={
+                    sort === 'name' ? (
+                      <FontAwesomeIcon icon="check" />
+                    ) : undefined
+                  }
+                  onClick={() => setSort('name')}
+                >
+                  Name
+                </Menu.Item>
+                <Menu.Item
+                  icon={
+                    sort === 'host' ? (
+                      <FontAwesomeIcon icon="check" />
+                    ) : undefined
+                  }
+                  onClick={() => setSort('host')}
+                >
+                  Host
+                </Menu.Item>
+                <Menu.Item
+                  icon={
+                    sort === 'date' ? (
+                      <FontAwesomeIcon icon="check" />
+                    ) : undefined
+                  }
+                  onClick={() => setSort('date')}
+                >
+                  Date
+                </Menu.Item>
+                <Menu.Item
+                  icon={
+                    sort === 'completed' ? (
+                      <FontAwesomeIcon icon="check" />
+                    ) : undefined
+                  }
+                  onClick={() => setSort('completed')}
+                >
+                  Completed
+                </Menu.Item>
+              </Menu>
+              <Tooltip label="Coming Soon">
+                <Button
+                  size="sm"
+                  variant="filled"
+                  color="green"
+                  disabled
+                  leftIcon={<FontAwesomeIcon icon="file-excel" />}
+                >
+                  Export
+                </Button>
+              </Tooltip>
+            </Group>
+          )
+        }
+      />
+      <Center style={{ width: '100%', marginTop: isMobile ? 20 : 80 }}>
         <Group direction="column" spacing={40} style={{ width: '95%' }}>
           <Box style={{ width: '100%' }}>
             <Group position="apart" style={{ width: '100%' }} noWrap>
               <Title order={3}>Next Steps Cards</Title>
-              <Tooltip
-                label="Coming Soon"
-                style={{ maxWidth: 800, width: 800 }}
-              >
-                <TextInput
-                  placeholder="Search"
-                  disabled
-                  style={{
-                    flexGrow: 1,
-                    backgroundColor:
-                      theme.colorScheme === 'dark'
-                        ? theme.colors.dark[7]
-                        : theme.white,
-                  }}
-                  icon={<FontAwesomeIcon icon="search" />}
-                />
-              </Tooltip>
-              <Group spacing="sm" noWrap>
-                <Button
-                  size="sm"
-                  variant="subtle"
-                  color="dark"
-                  onClick={() => setCreateModalVisible(true)}
-                >
-                  <FontAwesomeIcon icon="plus" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="subtle"
-                  color="dark"
-                  onClick={() => mutate()}
-                >
-                  <FontAwesomeIcon icon="refresh" />
-                </Button>
-                <Menu
-                  control={
-                    <Button
-                      size="sm"
-                      variant="subtle"
-                      color="dark"
-                      leftIcon={<FontAwesomeIcon icon="sort" />}
-                    >
-                      Sort by
-                    </Button>
-                  }
-                >
-                  <Menu.Item
-                    icon={
-                      sortDirection === 'ascending' ? (
-                        <FontAwesomeIcon icon="check" />
-                      ) : undefined
-                    }
-                    onClick={() => setSortDirection('ascending')}
-                  >
-                    Ascending
-                  </Menu.Item>
-                  <Menu.Item
-                    icon={
-                      sortDirection === 'descending' ? (
-                        <FontAwesomeIcon icon="check" />
-                      ) : undefined
-                    }
-                    onClick={() => setSortDirection('descending')}
-                  >
-                    Descending
-                  </Menu.Item>
-                  <Divider />
-                  <Menu.Item
-                    icon={
-                      sort === 'name' ? (
-                        <FontAwesomeIcon icon="check" />
-                      ) : undefined
-                    }
-                    onClick={() => setSort('name')}
-                  >
-                    Name
-                  </Menu.Item>
-                  <Menu.Item
-                    icon={
-                      sort === 'host' ? (
-                        <FontAwesomeIcon icon="check" />
-                      ) : undefined
-                    }
-                    onClick={() => setSort('host')}
-                  >
-                    Host
-                  </Menu.Item>
-                  <Menu.Item
-                    icon={
-                      sort === 'date' ? (
-                        <FontAwesomeIcon icon="check" />
-                      ) : undefined
-                    }
-                    onClick={() => setSort('date')}
-                  >
-                    Date
-                  </Menu.Item>
-                  <Menu.Item
-                    icon={
-                      sort === 'completed' ? (
-                        <FontAwesomeIcon icon="check" />
-                      ) : undefined
-                    }
-                    onClick={() => setSort('completed')}
-                  >
-                    Completed
-                  </Menu.Item>
-                </Menu>
-                <Tooltip label="Coming Soon">
-                  <Button
-                    size="sm"
-                    variant="filled"
-                    color="green"
-                    disabled
-                    leftIcon={<FontAwesomeIcon icon="file-excel" />}
-                  >
-                    Export
-                  </Button>
-                </Tooltip>
-              </Group>
             </Group>
           </Box>
           <Group
@@ -284,85 +469,35 @@ export default function CardsPage() {
             style={{ alignItems: 'flex-start', width: '100%' }}
             noWrap
           >
-            <ScrollArea
-              offsetScrollbars
-              style={{
-                minWidth: 250,
-                width: 250,
-                height: 'calc(100vh - 236px)',
-              }}
-            >
-              <MantineCard
+            {!is850 && (
+              <ScrollArea
+                offsetScrollbars
+                type="auto"
                 style={{
-                  backgroundColor:
-                    colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
+                  minWidth: 250,
+                  width: 250,
+                  height: 'calc(100vh - 256px)',
                 }}
               >
-                <Stack>
-                  <Title order={4}>Filters</Title>
-                  <Divider />
-                  <ScrollArea style={{ height: 400 }}>
-                    <CheckboxGroup
-                      label="Hosts"
-                      value={hostFilter}
-                      orientation="vertical"
-                      onChange={(value) => setHostFilter(value)}
-                    >
-                      {leaders.map((leader) => (
-                        <Checkbox
-                          key={`chk_${leader.value}`}
-                          label={leader.label}
-                          value={leader.value}
-                        />
-                      ))}
-                    </CheckboxGroup>
-                  </ScrollArea>
-                  <Divider />
-                  <CheckboxGroup
-                    label="Reasons"
-                    value={boxesFilter}
-                    onChange={setBoxesFilter}
-                    orientation="vertical"
-                  >
-                    {REASONS_VALUES.map((reason) => (
-                      <Checkbox
-                        key={`chk_${reason.value}`}
-                        label={reason.label}
-                        value={reason.value}
-                      />
-                    ))}
-                  </CheckboxGroup>
-                  <Divider />
-                  <DatePicker
-                    value={startDate}
-                    onChange={(date) => setStartDate(date || new Date())}
-                    clearable={false}
-                    label="Start Date"
-                  />
-                  <DatePicker
-                    value={endDate}
-                    onChange={(date) => setEndDate(date || new Date())}
-                    clearable={false}
-                    label="End Date"
-                  />
-                  <Divider />
-                  <SegmentedControl
-                    data={[
-                      { value: 'complete', label: 'Completed' },
-                      { value: 'all', label: 'All' },
-                    ]}
-                    value={completed ? 'complete' : 'all'}
-                    onChange={(value) => {
-                      setCompleted(value === 'complete');
-                    }}
-                  />
-                </Stack>
-              </MantineCard>
-            </ScrollArea>
+                <MantineCard
+                  style={{
+                    backgroundColor:
+                      colorScheme === 'dark'
+                        ? theme.colors.dark[7]
+                        : theme.white,
+                  }}
+                >
+                  <FilterPanel />
+                </MantineCard>
+              </ScrollArea>
+            )}
             <ScrollArea
               offsetScrollbars
+              type="auto"
               style={{
-                height: 'calc(100vh - 236px)',
+                height: isMobile
+                  ? 'calc(100vh - 196px)'
+                  : 'calc(100vh - 256px)',
                 flexGrow: 1,
               }}
             >

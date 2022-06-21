@@ -46,7 +46,7 @@ export const CreateLayout = ({ children, colorScheme }: LayoutProps) => {
                   ? theme.colors.dark[6]
                   : theme.colors.gray[2],
             })}
-            header={<MobileHeader opened={false} setOpened={() => {}} />}
+            header={<MobileHeader hideBurger />}
           >
             {children}
           </AppShell>
