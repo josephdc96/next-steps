@@ -1,11 +1,14 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 import { hasRoles } from '#/lib/auth/authn';
-import { getSingleUserByAuth0, getSingleUserById } from '#/lib/personnel/single';
-import { UsrSession } from '#/lib/auth/contract';
+import {
+  getSingleUserByAuth0,
+  getSingleUserById,
+} from '#/lib/personnel/single';
+import type { UsrSession } from '#/lib/auth/contract';
 import { getCardsFromDb } from '#/lib/cards/getCards';
 import { getPosition } from '#/lib/positions/positions';
-import { Homepage } from '#/types/homepage';
+import type { Homepage } from '#/types/homepage';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getSession({ req });

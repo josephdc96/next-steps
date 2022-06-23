@@ -36,4 +36,4 @@ export const getPosition = async (id: string): Promise<Position> => {
   } as Position;
 
   return p;
-}
+};
