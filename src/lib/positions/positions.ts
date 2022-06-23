@@ -21,3 +21,19 @@ export const getPositions = async (): Promise<Position[]> => {
 
   return positions;
 };
+
+export const getPosition = async (id: string): Promise<Position> => {
+  const db = new Firestore({
+    projectId: 'next-steps-350612',
+  });
+
+  const snapshot = await db.doc(`/positions/${id}`).get();
+  const data = snapshot.data();
+  if (!data) throw Error('Position not found');
+  const p: Position = {
+    ...data,
+    id: snapshot.id,
+  } as Position;
+
+  return p;
+}
