@@ -172,7 +172,9 @@ const CardsListCard = ({ card, refresh }: RowProps) => {
               style={{ flexGrow: 1 }}
             />
             <Button
-              leftIcon={<FontAwesomeIcon icon="envelope" />}
+              leftIcon={
+                card.completed ? <FontAwesomeIcon icon="check" /> : undefined
+              }
               variant={card.completed ? 'filled' : 'outline'}
               color={card.completed ? 'green' : 'blue'}
               onClick={() => {
@@ -184,7 +186,7 @@ const CardsListCard = ({ card, refresh }: RowProps) => {
                 ).then(refresh);
               }}
             >
-              Card Written
+              {card.completed ? 'Card Written' : 'Needs Follow-Up'}
             </Button>
           </Group>
           <Textarea

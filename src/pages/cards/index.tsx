@@ -98,6 +98,7 @@ export default function CardsPage() {
   const [completed, setCompleted] = useState(false);
 
   const [url, setUrl] = useState('/api/cards');
+  const [csv, setCsv] = useState('/api/cards/csv');
 
   const { data, error, isValidating, mutate } = useSWR([url], fetcher);
 
@@ -120,21 +121,27 @@ export default function CardsPage() {
 
     let newUrl = `/api/cards?sort=${sort}&sortDirection=${sortDirection}`;
     newUrl = `${newUrl}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
+    let newCsv = `/api/cards/csv?sort=${sort}&sortDirection=${sortDirection}`;
+    newCsv = `${newCsv}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
     if (hostFilter.length > 0) {
       hostFilter.forEach((host) => {
         newUrl = `${newUrl}&host=${host}`;
+        newCsv = `${newCsv}&host=${host}`;
       });
     }
     if (completed) {
       newUrl = `${newUrl}&completed=true`;
+      newCsv = `${newCsv}&completed=true`;
     }
     if (boxesFilter.length > 0) {
       boxesFilter.forEach((box) => {
         const boxEnum = REASON_TRANSLATOR[box];
         newUrl = `${newUrl}&boxes=${boxEnum}`;
+        newCsv = `${newCsv}&boxes=${boxEnum}`;
       });
     }
     setUrl(newUrl);
+    setCsv(newCsv);
   }, [
     sort,
     sortDirection,
@@ -278,7 +285,8 @@ export default function CardsPage() {
                 </Menu.Item>
                 <Menu.Item
                   icon={<FontAwesomeIcon icon="file-excel" />}
-                  disabled
+                  component="a"
+                  href={csv}
                   color="green"
                 >
                   Export
@@ -441,22 +449,21 @@ export default function CardsPage() {
                   Completed
                 </Menu.Item>
               </Menu>
-              <Tooltip label="Coming Soon">
-                <Button
-                  size="sm"
-                  variant="filled"
-                  color="green"
-                  disabled
-                  leftIcon={<FontAwesomeIcon icon="file-excel" />}
-                >
-                  Export
-                </Button>
-              </Tooltip>
+              <Button
+                size="sm"
+                variant="filled"
+                color="green"
+                component="a"
+                href={csv}
+                leftIcon={<FontAwesomeIcon icon="file-excel" />}
+              >
+                Export
+              </Button>
             </Group>
           )
         }
       />
-      <Center style={{ width: '100%', marginTop: isMobile ? 20 : 80 }}>
+      <Center style={{ width: '100%', marginTop: 20 }}>
         <Group direction="column" spacing={40} style={{ width: '95%' }}>
           <Box style={{ width: '100%' }}>
             <Group position="apart" style={{ width: '100%' }} noWrap>
