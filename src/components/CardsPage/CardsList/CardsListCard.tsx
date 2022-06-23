@@ -1,45 +1,46 @@
 import type { Personnel } from '../../../types/personnel';
+import { UserRole } from '../../../types/personnel';
 import type { NextStepsCard } from '../../../types/new-here';
 
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import {
-  Box,
   Button,
   Card,
   Checkbox,
   Grid,
   Group,
-  Paper,
-  Stack,
-  Text,
   Textarea,
   TextInput,
   useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';
 
-import {
-  GENDER_DISPLAY_RECORD,
-  REASON_DISPLAY_RECORD,
-  Reasons,
-} from '../../../types/new-here';
+import { GENDER_DISPLAY_RECORD, REASON_DISPLAY_RECORD, Reasons } from '#/types/new-here';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useMediaQuery } from '@mantine/hooks';
+import { Asset, UsrSession } from '#/lib/auth/contract';
+import { useSession } from 'next-auth/react';
+import { authorizeAction } from '#/lib/auth/authz';
 
 interface RowProps {
   card: NextStepsCard;
   refresh(): void;
 }
 
+const leaderAsset: Asset = {
+  role: [UserRole.SubTeamLeader, UserRole.TeamLeader, UserRole.Admin],
+};
+
 const CardsListCard = ({ card, refresh }: RowProps) => {
   const theme = useMantineTheme();
+  const { data: session } = useSession();
   const { colorScheme } = useMantineColorScheme();
 
   const [host, setHost] = useState('');
-  const [completed, setCompleted] = useState(false);
 
   const is1600 = useMediaQuery('(max-width: 1600px');
+  const [canDelete, setCanDelete] = useState(false)
 
   useEffect(() => {
     if (!card.whoHelped) {
@@ -47,12 +48,18 @@ const CardsListCard = ({ card, refresh }: RowProps) => {
       return;
     }
 
+    if (session) {
+      setCanDelete(
+        authorizeAction(leaderAsset, (session as UsrSession).roles).authorized,
+      );
+    }
+
     fetch(`/api/personnel/active/${card.whoHelped}`).then((x) =>
       x.json().then((person: Personnel) => {
         setHost(`${person.firstName} ${person.lastName}`);
       }),
     );
-  }, [card]);
+  }, [card, session]);
 
   return (
     <Card
@@ -164,6 +171,20 @@ const CardsListCard = ({ card, refresh }: RowProps) => {
           grow
           style={{ minWidth: 300, width: is1600 ? '100%' : undefined }}
         >
+          <Group direction="row" position="right">
+            <Button variant="subtle" leftIcon={<FontAwesomeIcon icon="edit" />}>
+              Edit
+            </Button>
+            {canDelete && (
+              <Button
+                variant="subtle"
+                color="red"
+                leftIcon={<FontAwesomeIcon icon="trash" />}
+              >
+                Delete
+              </Button>
+            )}
+          </Group>
           <Group direction="row" style={{ alignItems: 'flex-end' }} noWrap>
             <TextInput
               label="Hosted By"
