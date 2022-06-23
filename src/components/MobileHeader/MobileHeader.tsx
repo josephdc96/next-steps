@@ -35,26 +35,24 @@ export const MobileHeader = ({
   const theme = useMantineTheme();
   const { classes } = useStyles();
   const { colorScheme } = useMantineColorScheme();
-  const matches = useMediaQuery('(min-width: 1200px)');
+  const matches = useMediaQuery('(max-width: 1200px)');
   const is375 = useMediaQuery('(max-width: 375px)');
   const { opened, setOpened } = useMobile();
 
   return (
     <Header height={60} px="md" py="0">
       <Group className={classes.header} position="apart">
-        {!hideBurger && (
-          <MediaQuery largerThan="lg" styles={{ display: 'none' }}>
-            <Burger
-              opened={opened}
-              onClick={() => setOpened(!opened)}
-              size="sm"
-              color={theme.colors.gray[6]}
-              mr="xl"
-              data-testid={'hamburger'}
-            />
-          </MediaQuery>
+        {!hideBurger && matches && (
+          <Burger
+            opened={opened}
+            onClick={() => setOpened(!opened)}
+            size="sm"
+            color={theme.colors.gray[6]}
+            mr="xl"
+            data-testid={'hamburger'}
+          />
         )}
-        {(hideBurger || matches) && <span />}
+        {(hideBurger || !matches) && <span />}
         {center && <>{center}</>}
         {!center && !is375 && (
           <Image
