@@ -70,6 +70,7 @@ const Home: NextPage = () => {
                           key={`${card.name} ${card.date}`}
                           card={card}
                           refresh={mutate}
+                          edit={() => {}}
                         />
                       ))}
                     </Stack>

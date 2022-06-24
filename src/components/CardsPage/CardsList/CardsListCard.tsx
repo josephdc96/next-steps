@@ -9,7 +9,7 @@ import {
   Card,
   Checkbox,
   Grid,
-  Group,
+  Group, Space,
   Textarea,
   TextInput,
   useMantineColorScheme,
@@ -26,13 +26,14 @@ import { authorizeAction } from '#/lib/auth/authz';
 interface RowProps {
   card: NextStepsCard;
   refresh(): void;
+  edit(): void;
 }
 
 const leaderAsset: Asset = {
   role: [UserRole.SubTeamLeader, UserRole.TeamLeader, UserRole.Admin],
 };
 
-const CardsListCard = ({ card, refresh }: RowProps) => {
+const CardsListCard = ({ card, refresh, edit }: RowProps) => {
   const theme = useMantineTheme();
   const { data: session } = useSession();
   const { colorScheme } = useMantineColorScheme();
@@ -40,7 +41,11 @@ const CardsListCard = ({ card, refresh }: RowProps) => {
   const [host, setHost] = useState('');
 
   const is1600 = useMediaQuery('(max-width: 1600px');
-  const [canDelete, setCanDelete] = useState(false)
+  const [canDelete, setCanDelete] = useState(false);
+
+  const deleteCard = () => {
+    fetch(`/api/cards/${card.id}`, { method: 'DELETE' }).then(() => refresh());
+  };
 
   useEffect(() => {
     if (!card.whoHelped) {
@@ -68,6 +73,22 @@ const CardsListCard = ({ card, refresh }: RowProps) => {
           colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
       }}
     >
+      <Group direction="row" position="right">
+        <Button variant="subtle" leftIcon={<FontAwesomeIcon icon="edit" />} onClick={edit}>
+          Edit
+        </Button>
+        {canDelete && (
+          <Button
+            variant="subtle"
+            color="red"
+            onClick={deleteCard}
+            leftIcon={<FontAwesomeIcon icon="trash" />}
+          >
+            Delete
+          </Button>
+        )}
+      </Group>
+      <Space h="sm" />
       <Group
         direction="row"
         style={{ alignItems: 'flex-start' }}
@@ -171,20 +192,6 @@ const CardsListCard = ({ card, refresh }: RowProps) => {
           grow
           style={{ minWidth: 300, width: is1600 ? '100%' : undefined }}
         >
-          <Group direction="row" position="right">
-            <Button variant="subtle" leftIcon={<FontAwesomeIcon icon="edit" />}>
-              Edit
-            </Button>
-            {canDelete && (
-              <Button
-                variant="subtle"
-                color="red"
-                leftIcon={<FontAwesomeIcon icon="trash" />}
-              >
-                Delete
-              </Button>
-            )}
-          </Group>
           <Group direction="row" style={{ alignItems: 'flex-end' }} noWrap>
             <TextInput
               label="Hosted By"
