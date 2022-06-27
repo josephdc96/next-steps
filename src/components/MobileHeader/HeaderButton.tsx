@@ -22,19 +22,17 @@ export const HeaderButton = ({
   const isMobile = useMediaQuery('(max-width: 1200px)');
 
   return (
-    <Tooltip label={caption} color={color}>
-      <Button
-        disabled={disabled}
-        color={color}
-        radius="xl"
-        leftIcon={isMobile ? undefined : <FontAwesomeIcon icon={icon} />}
-        onClick={onClick}
-      >
-        <>
-          {!isMobile && <>{caption}</>}
-          {isMobile && <FontAwesomeIcon icon={icon} />}
-        </>
-      </Button>
-    </Tooltip>
+    <Button
+      disabled={disabled}
+      color={color}
+      radius="xl"
+      leftIcon={isMobile ? undefined : <FontAwesomeIcon icon={icon} />}
+      onClick={onClick}
+    >
+      <>
+        {!isMobile && <>{caption}</>}
+        {isMobile && <FontAwesomeIcon icon={icon} />}
+      </>
+    </Button>
   );
 };

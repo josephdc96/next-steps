@@ -1,6 +1,6 @@
 import type { Fetcher } from 'swr';
 import type { Personnel } from '../../types/personnel';
-import type { NextStepsCard } from '../../types/new-here';
+import type { FilterValues, NextStepsCard } from '../../types/new-here';
 
 import useSWR from 'swr';
 import { useEffect, useState } from 'react';
@@ -44,33 +44,18 @@ import { MobileHeader } from '#/components/MobileHeader/MobileHeader';
 import CreateCard from '#/components/CreateCard/CreateCard';
 import CardsListCard from '#/components/CardsPage/CardsList/CardsListCard';
 
-import {
-  GENDER_DISPLAY_RECORD,
-  REASON_DISPLAY_RECORD,
-  REASON_TRANSLATOR,
-  Reasons,
-} from '../../types/new-here';
-import { Card } from '../../types/cards';
+import { REASON_TRANSLATOR } from '#/types/new-here';
+
 import { HeaderButton } from '#/components/MobileHeader/HeaderButton';
+import { FilterPanel } from '#/components/CardsPage/FilterPanel/FilterPanel';
 
 const fetcher: Fetcher<NextStepsCard[], string[]> = async (url: string) => {
-  console.log(url);
   const res = await fetch(url);
   if (res.status !== 200) {
     throw new Error('An error occurred while fetching the cards');
   }
   return res.json();
 };
-
-const REASONS_VALUES = [
-  { value: 'firstTime', label: REASON_DISPLAY_RECORD[Reasons.firstTime] },
-  { value: 'followJesus', label: REASON_DISPLAY_RECORD[Reasons.followJesus] },
-  { value: 'baptism', label: REASON_DISPLAY_RECORD[Reasons.baptism] },
-  { value: 'membership', label: REASON_DISPLAY_RECORD[Reasons.membership] },
-  { value: 'discipleship', label: REASON_DISPLAY_RECORD[Reasons.discipleship] },
-  { value: 'serve', label: REASON_DISPLAY_RECORD[Reasons.serve] },
-  { value: 'joinGroup', label: REASON_DISPLAY_RECORD[Reasons.joinGroup] },
-];
 
 export default function CardsPage() {
   const isMobile = useMediaQuery('(max-width: 1200px)');
@@ -79,10 +64,6 @@ export default function CardsPage() {
   const { colorScheme } = useMantineColorScheme();
   const theme = useMantineTheme();
 
-  const [leaders, setLeaders] = useState<{ value: string; label: string }[]>(
-    [],
-  );
-
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [editCard, setEditCard] = useState<NextStepsCard | undefined>(
@@ -90,17 +71,19 @@ export default function CardsPage() {
   );
 
   const [filterOpen, setFilterOpen] = useState(false);
+  const [leaders, setLeaders] = useState<{ value: string; label: string }[]>(
+    [],
+  );
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().setDate(new Date().getDate() - 6)),
+  );
+  const [endDate, setEndDate] = useState(new Date());
+  const [hostFilter, setHostFilter] = useState<string[]>([]);
+  const [completed, setCompleted] = useState(false);
+  const [boxesFilter, setBoxesFilter] = useState<string[]>([]);
 
   const [sort, setSort] = useState('name');
   const [sortDirection, setSortDirection] = useState('ascending');
-
-  const [boxesFilter, setBoxesFilter] = useState<string[]>([]);
-  const [hostFilter, setHostFilter] = useState<string[]>([]);
-  const [startDate, setStartDate] = useState(
-    new Date(new Date().setDate(new Date().getDate() - 7)),
-  );
-  const [endDate, setEndDate] = useState(new Date());
-  const [completed, setCompleted] = useState(false);
 
   const [url, setUrl] = useState('/api/cards');
   const [csv, setCsv] = useState('/api/cards/csv');
@@ -157,70 +140,6 @@ export default function CardsPage() {
     completed,
   ]);
 
-  const FilterPanel = () => {
-    return (
-      <Stack>
-        <Title order={4}>Filters</Title>
-        <Divider />
-        <ScrollArea style={{ height: 400 }}>
-          <CheckboxGroup
-            label="Hosts"
-            value={hostFilter}
-            orientation="vertical"
-            onChange={(value) => setHostFilter(value)}
-          >
-            {leaders.map((leader) => (
-              <Checkbox
-                key={`chk_${leader.value}`}
-                label={leader.label}
-                value={leader.value}
-              />
-            ))}
-          </CheckboxGroup>
-        </ScrollArea>
-        <Divider />
-        <CheckboxGroup
-          label="Reasons"
-          value={boxesFilter}
-          onChange={setBoxesFilter}
-          orientation="vertical"
-        >
-          {REASONS_VALUES.map((reason) => (
-            <Checkbox
-              key={`chk_${reason.value}`}
-              label={reason.label}
-              value={reason.value}
-            />
-          ))}
-        </CheckboxGroup>
-        <Divider />
-        <DatePicker
-          value={startDate}
-          onChange={(date) => setStartDate(date || new Date())}
-          clearable={false}
-          label="Start Date"
-        />
-        <DatePicker
-          value={endDate}
-          onChange={(date) => setEndDate(date || new Date())}
-          clearable={false}
-          label="End Date"
-        />
-        <Divider />
-        <SegmentedControl
-          data={[
-            { value: 'complete', label: 'Completed' },
-            { value: 'all', label: 'All' },
-          ]}
-          value={completed ? 'complete' : 'all'}
-          onChange={(value) => {
-            setCompleted(value === 'complete');
-          }}
-        />
-      </Stack>
-    );
-  };
-
   return (
     <>
       <MobileHeader
@@ -248,27 +167,11 @@ export default function CardsPage() {
           is1000 ? (
             <Group spacing="sm" noWrap>
               {is300 && <HeaderButton icon="search" caption="Search" />}
-              <Popover
-                opened={filterOpen}
-                onClose={() => setFilterOpen(false)}
-                position="bottom"
-                placement="end"
-                target={
-                  <HeaderButton
-                    icon="filter"
-                    caption="Filter"
-                    onClick={() => setFilterOpen(!filterOpen)}
-                  />
-                }
-              >
-                <ScrollArea
-                  offsetScrollbars
-                  type="auto"
-                  style={{ height: 'calc(100vh - 120px)' }}
-                >
-                  <FilterPanel />
-                </ScrollArea>
-              </Popover>
+              <HeaderButton
+                icon="filter"
+                caption="Filter"
+                onClick={() => setFilterOpen(!filterOpen)}
+              />
               <Menu
                 control={
                   <Button radius="xl">
@@ -507,7 +410,25 @@ export default function CardsPage() {
                         : theme.white,
                   }}
                 >
-                  <FilterPanel />
+                  <FilterPanel
+                    leaders={leaders}
+                    values={{
+                      startDate,
+                      endDate,
+                      completed,
+                      boxes: boxesFilter,
+                      hosts: hostFilter,
+                    }}
+                    apply={(values) => {
+                      setStartDate(values.startDate);
+                      setEndDate(values.endDate);
+                      setCompleted(values.completed);
+                      setBoxesFilter(values.boxes);
+                      setHostFilter(values.hosts);
+                      mutate();
+                      setFilterOpen(false);
+                    }}
+                  />
                 </MantineCard>
               </ScrollArea>
             )}
@@ -578,6 +499,37 @@ export default function CardsPage() {
             mutate();
           }}
         />
+      </Modal>
+      <Modal
+        opened={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        title="Filters"
+      >
+        <ScrollArea
+          offsetScrollbars
+          type="auto"
+          style={{ height: 'calc(100vh - 180px)', maxHeight: 1034 }}
+        >
+          <FilterPanel
+            leaders={leaders}
+            values={{
+              startDate,
+              endDate,
+              completed,
+              boxes: boxesFilter,
+              hosts: hostFilter,
+            }}
+            apply={(values) => {
+              setStartDate(values.startDate);
+              setEndDate(values.endDate);
+              setCompleted(values.completed);
+              setBoxesFilter(values.boxes);
+              setHostFilter(values.hosts);
+              mutate();
+              setFilterOpen(false);
+            }}
+          />
+        </ScrollArea>
       </Modal>
     </>
   );

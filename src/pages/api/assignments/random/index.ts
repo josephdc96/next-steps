@@ -39,9 +39,10 @@ const randomAssignments = async (req: NextApiRequest, res: NextApiResponse) => {
   personnel.forEach((person) => {
     let id: string | undefined;
     if (
-      person.roles &&
-      !person.roles.includes(UserRole.TeamLeader) &&
-      !person.roles.includes(UserRole.Admin)
+      (person.roles &&
+        !person.roles.includes(UserRole.TeamLeader) &&
+        !person.roles.includes(UserRole.Admin)) ||
+      !person.roles
     ) {
       id = getAssignment(person, 1);
     }
