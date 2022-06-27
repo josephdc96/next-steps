@@ -30,12 +30,14 @@ const createPersonnel = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     await db.collection('personnel').add(body);
     res.status(200).end();
+    return;
   }
 
   if (req.method === 'PUT') {
     const doc = db.collection('personnel').doc(id as string);
     await doc.update(body);
     res.status(200).end();
+    return;
   }
 
   res.status(418).end();

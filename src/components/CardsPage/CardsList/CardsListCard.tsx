@@ -1,32 +1,46 @@
 import type { Personnel } from '../../../types/personnel';
-import { UserRole } from '../../../types/personnel';
 import type { NextStepsCard } from '../../../types/new-here';
+import type { Asset, UsrSession } from '#/lib/auth/contract';
 
 import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import dayjs from 'dayjs';
+import { useMediaQuery } from '@mantine/hooks';
 import {
+  Accordion,
   Button,
   Card,
+  Center,
   Checkbox,
+  Divider,
   Grid,
-  Group, Space,
+  Group,
+  Loader,
+  Menu,
+  Space,
+  Stack,
+  Text,
   Textarea,
   TextInput,
+  Title,
   useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';
-
-import { GENDER_DISPLAY_RECORD, REASON_DISPLAY_RECORD, Reasons } from '#/types/new-here';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useMediaQuery } from '@mantine/hooks';
-import { Asset, UsrSession } from '#/lib/auth/contract';
-import { useSession } from 'next-auth/react';
+
+import {
+  GENDER_DISPLAY_RECORD,
+  REASON_DISPLAY_RECORD,
+  Reasons,
+} from '#/types/new-here';
 import { authorizeAction } from '#/lib/auth/authz';
+
+import { UserRole } from '../../../types/personnel';
 
 interface RowProps {
   card: NextStepsCard;
   refresh(): void;
-  edit(): void;
+  edit?: () => void;
 }
 
 const leaderAsset: Asset = {
@@ -40,8 +54,11 @@ const CardsListCard = ({ card, refresh, edit }: RowProps) => {
 
   const [host, setHost] = useState('');
 
-  const is1600 = useMediaQuery('(max-width: 1600px');
+  const is700 = useMediaQuery('(min-width: 700px');
+  const is600 = useMediaQuery('(min-width: 600px');
+  const is500 = useMediaQuery('(min-width: 500px');
   const [canDelete, setCanDelete] = useState(false);
+  const [showConfidential, setShowConfidential] = useState(!card.confidential);
 
   const deleteCard = () => {
     fetch(`/api/cards/${card.id}`, { method: 'DELETE' }).then(() => refresh());
@@ -73,8 +90,212 @@ const CardsListCard = ({ card, refresh, edit }: RowProps) => {
           colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
       }}
     >
+      <Group direction="row" position="apart">
+        <Stack spacing="xs" style={{ width: '100%' }}>
+          <Group position="apart">
+            <Title order={3}>{card.name}</Title>
+            <Group direction="row" spacing="md">
+              {is500 && (
+                <>
+                  {edit && (
+                    <Button
+                      variant="subtle"
+                      leftIcon={
+                        is700 ? <FontAwesomeIcon icon="edit" /> : undefined
+                      }
+                      onClick={edit}
+                    >
+                      {is700 ? 'Edit' : <FontAwesomeIcon icon="edit" />}
+                    </Button>
+                  )}
+                  {canDelete && (
+                    <Button
+                      variant="subtle"
+                      color="red"
+                      onClick={deleteCard}
+                      leftIcon={
+                        is700 ? <FontAwesomeIcon icon="trash" /> : undefined
+                      }
+                    >
+                      {is700 ? 'Delete' : <FontAwesomeIcon icon="trash" />}
+                    </Button>
+                  )}
+                  <Button
+                    leftIcon={
+                      card.completed && is600 ? (
+                        <FontAwesomeIcon icon="check" />
+                      ) : undefined
+                    }
+                    variant={card.completed ? 'filled' : 'outline'}
+                    color={card.completed ? 'green' : 'yellow'}
+                    style={{ width: is600 ? 155 : undefined }}
+                    onClick={() => {
+                      fetch(
+                        `/api/cards/complete?id=${card.id}&status=${
+                          card.completed ? 'false' : 'true'
+                        }`,
+                        { method: 'PUT' },
+                      ).then(refresh);
+                    }}
+                  >
+                    {card.completed && is600 && <>Card Written</>}
+                    {!card.completed && is600 && <>Needs Follow-Up</>}
+                    {!card.completed && !is600 && (
+                      <FontAwesomeIcon icon="exclamation-triangle" />
+                    )}
+                    {card.completed && !is600 && (
+                      <FontAwesomeIcon icon="check" />
+                    )}
+                  </Button>
+                </>
+              )}
+              {!is500 && (
+                <Menu
+                  control={
+                    <Button variant="outline">
+                      <FontAwesomeIcon icon="ellipsis-vertical" />
+                    </Button>
+                  }
+                  placement="end"
+                >
+                  {edit && (
+                    <Menu.Item icon={<FontAwesomeIcon icon="edit" />}>
+                      Edit
+                    </Menu.Item>
+                  )}
+                  {canDelete && (
+                    <Menu.Item
+                      color="red"
+                      icon={<FontAwesomeIcon icon="trash" />}
+                    >
+                      Delete
+                    </Menu.Item>
+                  )}
+                  <Divider />
+                  <Menu.Item
+                    color={card.completed ? 'green' : 'yellow'}
+                    icon={
+                      <FontAwesomeIcon
+                        icon={card.completed ? 'check' : 'exclamation-triangle'}
+                      />
+                    }
+                  >
+                    {card.completed ? 'Card Written' : 'Needs Follow-Up'}
+                  </Menu.Item>
+                </Menu>
+              )}
+            </Group>
+          </Group>
+          <Text color="dimmed">
+            Hosted by {host !== '' ? host : <Loader size="sm" />}
+          </Text>
+        </Stack>
+      </Group>
+      <Space h="md" />
+      <Accordion>
+        <Accordion.Item label="Details">
+          <Grid>
+            <Grid.Col sm={6} span={12}>
+              Name: {card.name}
+            </Grid.Col>
+            <Grid.Col sm={3} span={12}>
+              Gender: {GENDER_DISPLAY_RECORD[card.gender]}
+            </Grid.Col>
+            <Grid.Col sm={3} span={12}>
+              DOB: {dayjs(card.dob).format('M/D/YYYY')}
+            </Grid.Col>
+            <Grid.Col sm={6} span={12}>
+              Email: {card.email}
+            </Grid.Col>
+            <Grid.Col sm={6} span={12}>
+              Phone #: {card.phoneNum}
+            </Grid.Col>
+            <Grid.Col span={12}>
+              {`Address: ${card.address} ${card.city}, ${card.state} ${card.zip}`}
+            </Grid.Col>
+            <Grid.Col xs={6} span={12} xl={3}>
+              <Checkbox
+                disabled
+                checked={card.reasons.includes(Reasons.firstTime)}
+                label={REASON_DISPLAY_RECORD[Reasons.firstTime]}
+              />
+            </Grid.Col>
+            <Grid.Col xs={6} span={12} xl={3}>
+              <Checkbox
+                disabled
+                checked={card.reasons.includes(Reasons.followJesus)}
+                label={REASON_DISPLAY_RECORD[Reasons.followJesus]}
+              />
+            </Grid.Col>
+            <Grid.Col xs={6} span={12} xl={3}>
+              <Checkbox
+                disabled
+                checked={card.reasons.includes(Reasons.baptism)}
+                label={REASON_DISPLAY_RECORD[Reasons.baptism]}
+              />
+            </Grid.Col>
+            <Grid.Col xs={6} span={12} xl={3}>
+              <Checkbox
+                disabled
+                checked={card.reasons.includes(Reasons.membership)}
+                label={REASON_DISPLAY_RECORD[Reasons.membership]}
+              />
+            </Grid.Col>
+            <Grid.Col xs={6} span={12} xl={3}>
+              <Checkbox
+                disabled
+                checked={card.reasons.includes(Reasons.discipleship)}
+                label={REASON_DISPLAY_RECORD[Reasons.discipleship]}
+              />
+            </Grid.Col>
+            <Grid.Col xs={6} span={12} xl={3}>
+              <Checkbox
+                disabled
+                checked={card.reasons.includes(Reasons.serve)}
+                label={REASON_DISPLAY_RECORD[Reasons.serve]}
+              />
+            </Grid.Col>
+            <Grid.Col xs={6} span={12} xl={3}>
+              <Checkbox
+                disabled
+                checked={card.reasons.includes(Reasons.joinGroup)}
+                label={REASON_DISPLAY_RECORD[Reasons.joinGroup]}
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>Prayer Requests:</Grid.Col>
+            <Grid.Col span={12}>
+              <Stack>
+                {card.confidential && (
+                  <Checkbox
+                    label="Show confidential?"
+                    checked={showConfidential}
+                    onChange={(event) =>
+                      setShowConfidential(event.currentTarget.checked)
+                    }
+                  />
+                )}
+                {showConfidential && <Text>{card.prayerRequests}</Text>}
+              </Stack>
+            </Grid.Col>
+          </Grid>
+        </Accordion.Item>
+      </Accordion>
+    </Card>
+  );
+
+  /* return (
+    <Card
+      style={{
+        backgroundColor:
+          colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
+      }}
+    >
       <Group direction="row" position="right">
-        <Button variant="subtle" leftIcon={<FontAwesomeIcon icon="edit" />} onClick={edit}>
+        <Button
+          variant="subtle"
+          leftIcon={<FontAwesomeIcon icon="edit" />}
+          onClick={edit}
+        >
           Edit
         </Button>
         {canDelete && (
@@ -226,7 +447,7 @@ const CardsListCard = ({ card, refresh, edit }: RowProps) => {
         </Group>
       </Group>
     </Card>
-  );
+  ); */
 };
 
 export default CardsListCard;
