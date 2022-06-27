@@ -23,6 +23,7 @@ import { Subteam } from '#/types/subteam';
 import { Personnel } from '#/types/personnel';
 import { UsrSession } from '#/lib/auth/contract';
 import CardsListCard from '#/components/CardsPage/CardsList/CardsListCard';
+import { useMediaQuery } from '@mantine/hooks';
 
 const fetcher: Fetcher<Homepage, string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -34,6 +35,7 @@ const fetcher: Fetcher<Homepage, string[]> = async (url: string) => {
 
 const Home: NextPage = () => {
   const { data: session } = useSession();
+  const is1000 = useMediaQuery('(min-width: 1000px)');
   const { data, error, isValidating, mutate } = useSWR(
     ['/api/me/homepage'],
     fetcher,
@@ -42,7 +44,11 @@ const Home: NextPage = () => {
   return (
     <>
       <Center style={{ width: '100%', marginTop: 20 }}>
-        <Group direction="column" spacing="xl" style={{ width: '80%' }}>
+        <Group
+          direction="column"
+          spacing="xl"
+          style={{ width: is1000 ? '80%' : '95%' }}
+        >
           {data && !error && !isValidating && (
             <>
               <Title order={1}>Welcome {data.user.firstName}!</Title>
@@ -60,7 +66,7 @@ const Home: NextPage = () => {
               {data.recentCards.length > 0 && (
                 <>
                   <ScrollArea
-                    style={{ height: 'calc(100vh - 308px)' }}
+                    style={{ height: 'calc(100vh - 308px)', width: '100%' }}
                     offsetScrollbars
                     type="auto"
                   >

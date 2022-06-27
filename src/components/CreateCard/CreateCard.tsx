@@ -1,5 +1,6 @@
 import type { Personnel } from '../../types/personnel';
 import type { NextStepsCard } from '../../types/new-here';
+import { REASON_DISPLAY_RECORD, Reasons, States } from '../../types/new-here';
 
 import { useEffect, useState } from 'react';
 import { useForm } from '@mantine/form';
@@ -17,35 +18,39 @@ import {
   TextInput,
 } from '@mantine/core';
 
-import { REASON_DISPLAY_RECORD, Reasons, States } from '../../types/new-here';
-
 interface CreateCardProps {
+  isEdit: boolean;
+  card?: NextStepsCard;
   onSubmit(): void;
 }
 
-export default function CreateCard({ onSubmit }: CreateCardProps) {
+export default function CreateCard({
+  isEdit,
+  card,
+  onSubmit,
+}: CreateCardProps) {
   const form = useForm({
     initialValues: {
-      name: '',
-      gender: 'male',
-      dob: new Date(),
-      phoneNum: '',
-      email: '',
-      address: '',
-      city: '',
-      state: '',
-      zip: '',
-      firstTime: false,
-      followJesus: false,
-      baptism: false,
-      membership: false,
-      discipleship: false,
-      serve: false,
-      joinGroup: false,
-      prayerRequests: '',
-      confidential: false,
-      host: '',
-      otherHost: '',
+      name: card?.name || '',
+      gender: (card?.gender === 1 ? 'female' : 'male') || 'male',
+      dob: new Date(card?.dob || new Date()),
+      phoneNum: card?.phoneNum || '',
+      email: card?.email || '',
+      address: card?.address || '',
+      city: card?.city || '',
+      state: card?.state || '',
+      zip: card?.zip || '',
+      firstTime: card?.reasons.includes(Reasons.firstTime) || false,
+      followJesus: card?.reasons.includes(Reasons.followJesus) || false,
+      baptism: card?.reasons.includes(Reasons.baptism) || false,
+      membership: card?.reasons.includes(Reasons.membership) || false,
+      discipleship: card?.reasons.includes(Reasons.discipleship) || false,
+      serve: card?.reasons.includes(Reasons.serve) || false,
+      joinGroup: card?.reasons.includes(Reasons.joinGroup) || false,
+      prayerRequests: card?.prayerRequests || '',
+      confidential: card?.confidential || false,
+      host: card?.whoHelped || '',
+      otherHost: card?.otherHelp || '',
     },
   });
 
@@ -77,7 +82,6 @@ export default function CreateCard({ onSubmit }: CreateCardProps) {
     new Promise((resolve) => setTimeout(resolve, ms));
 
   const submitCard = (values: any) => {
-    console.log(values);
     const checks: Reasons[] = [];
     if (values.firstTime) checks.push(Reasons.firstTime);
     if (values.followJesus) checks.push(Reasons.followJesus);
@@ -87,7 +91,7 @@ export default function CreateCard({ onSubmit }: CreateCardProps) {
     if (values.serve) checks.push(Reasons.serve);
     if (values.joinGroup) checks.push(Reasons.joinGroup);
 
-    const card: NextStepsCard = {
+    const newCard: NextStepsCard = {
       name: values.name,
       gender: values.gender === 'male' ? 0 : 1,
       dob: values.dob,
@@ -102,13 +106,20 @@ export default function CreateCard({ onSubmit }: CreateCardProps) {
       confidential: values.confidential,
       whoHelped: values.host,
       otherHelp: values.otherHelp,
-      date: new Date(),
-      completed: false,
+      date: card?.date ? new Date(card.date) : new Date(),
+      completed: card?.completed || false,
     };
-
-    fetch('/api/cards', { method: 'POST', body: JSON.stringify(card) }).then(
-      () => onSubmit(),
-    );
+    if (isEdit) {
+      fetch(`/api/cards/${card?.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(newCard),
+      }).then(() => onSubmit());
+    } else {
+      fetch('/api/cards', {
+        method: 'POST',
+        body: JSON.stringify(newCard),
+      }).then(() => onSubmit());
+    }
   };
 
   return (

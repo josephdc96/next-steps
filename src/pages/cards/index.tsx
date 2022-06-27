@@ -74,7 +74,7 @@ const REASONS_VALUES = [
 
 export default function CardsPage() {
   const isMobile = useMediaQuery('(max-width: 1200px)');
-  const is850 = useMediaQuery('(max-width: 850px)');
+  const is1000 = useMediaQuery('(max-width: 1000px)');
   const is300 = useMediaQuery('(max-width: 350px)');
   const { colorScheme } = useMantineColorScheme();
   const theme = useMantineTheme();
@@ -84,6 +84,11 @@ export default function CardsPage() {
   );
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [editCard, setEditCard] = useState<NextStepsCard | undefined>(
+    undefined,
+  );
+
   const [filterOpen, setFilterOpen] = useState(false);
 
   const [sort, setSort] = useState('name');
@@ -220,7 +225,7 @@ export default function CardsPage() {
     <>
       <MobileHeader
         center={
-          is300 ? (
+          !is300 ? (
             <Tooltip
               label="Coming Soon"
               style={{ maxWidth: 800, width: '40%' }}
@@ -240,7 +245,7 @@ export default function CardsPage() {
           ) : undefined
         }
         right={
-          is850 ? (
+          is1000 ? (
             <Group spacing="sm" noWrap>
               {is300 && <HeaderButton icon="search" caption="Search" />}
               <Popover
@@ -273,7 +278,11 @@ export default function CardsPage() {
               >
                 <Menu.Item
                   icon={<FontAwesomeIcon icon="plus" />}
-                  onClick={() => setCreateModalVisible(true)}
+                  onClick={() => {
+                    setEditCard(undefined);
+                    setIsEdit(false);
+                    setCreateModalVisible(true);
+                  }}
                 >
                   Add Card
                 </Menu.Item>
@@ -363,7 +372,11 @@ export default function CardsPage() {
                 size="sm"
                 variant="subtle"
                 color="dark"
-                onClick={() => setCreateModalVisible(true)}
+                onClick={() => {
+                  setEditCard(undefined);
+                  setIsEdit(false);
+                  setCreateModalVisible(true);
+                }}
               >
                 <FontAwesomeIcon icon="plus" />
               </Button>
@@ -476,7 +489,7 @@ export default function CardsPage() {
             style={{ alignItems: 'flex-start', width: '100%' }}
             noWrap
           >
-            {!is850 && (
+            {!is1000 && (
               <ScrollArea
                 offsetScrollbars
                 type="auto"
@@ -516,6 +529,11 @@ export default function CardsPage() {
                         <CardsListCard
                           key={`${card.name}${card.date.toString()}`}
                           card={card}
+                          edit={() => {
+                            setEditCard(card);
+                            setIsEdit(true);
+                            setCreateModalVisible(true);
+                          }}
                           refresh={() => mutate()}
                         />
                       ))}
@@ -545,11 +563,21 @@ export default function CardsPage() {
       </Center>
       <Modal
         opened={createModalVisible}
-        onClose={() => setCreateModalVisible(false)}
+        onClose={() => {
+          setCreateModalVisible(false);
+          mutate();
+        }}
         title="Add Card"
         size="xl"
       >
-        <CreateCard onSubmit={() => setCreateModalVisible(false)} />
+        <CreateCard
+          isEdit={isEdit}
+          card={editCard}
+          onSubmit={() => {
+            setCreateModalVisible(false);
+            mutate();
+          }}
+        />
       </Modal>
     </>
   );

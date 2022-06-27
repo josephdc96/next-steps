@@ -35,7 +35,7 @@ export const MobileHeader = ({
   const theme = useMantineTheme();
   const { classes } = useStyles();
   const { colorScheme } = useMantineColorScheme();
-  const matches = useMediaQuery('(max-width: 1200px)');
+  const matches = useMediaQuery('(max-width: 1250px)');
   const is375 = useMediaQuery('(max-width: 375px)');
   const { opened, setOpened } = useMobile();
 
