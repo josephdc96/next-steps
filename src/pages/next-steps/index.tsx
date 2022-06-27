@@ -19,7 +19,7 @@ export default function CreateCardPage() {
                   "We're glad you're here! Please fill out our Next Steps card so we have a record of your visit!"
                 }
               </Text>
-              <CreateCard onSubmit={() => setComplete(true)} />
+              <CreateCard isEdit={false} onSubmit={() => setComplete(true)} />
             </>
           )}
           {complete && (
