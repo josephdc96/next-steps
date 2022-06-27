@@ -114,3 +114,11 @@ export const States: { label: string; value: string }[] = [
   { label: 'Wisconsin', value: 'WI' },
   { label: 'Wyoming', value: 'WY' },
 ];
+
+export interface FilterValues {
+  boxes: string[];
+  hosts: string[];
+  startDate: Date;
+  endDate: Date;
+  completed: boolean;
+}
