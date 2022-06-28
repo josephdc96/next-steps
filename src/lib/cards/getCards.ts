@@ -1,6 +1,6 @@
 import type { NextStepsCard } from '#/types/new-here';
 
-import { connectToDatabase } from '#/lib/mongo/conn';
+import clientPromise from '#/lib/mongo/conn';
 
 export const getCardsFromDb = async ({
   sort,
@@ -11,15 +11,15 @@ export const getCardsFromDb = async ({
   completed,
   boxes,
 }: any): Promise<NextStepsCard[]> => {
-  const { db } = await connectToDatabase();
+  const client = await clientPromise;
 
-  const docs = db.collection('cards').find({});
+  const docs = client.db('next-steps').collection('cards').find({});
 
   const cards: NextStepsCard[] = [];
 
   await docs.forEach((card) => {
     const data = card;
-    const date: Date = data.date.toDate();
+    const { date } = data;
     if (
       date < new Date(startDate as string) ||
       date > new Date(endDate as string)
@@ -49,7 +49,7 @@ export const getCardsFromDb = async ({
 
     const c: NextStepsCard = {
       ...(data as any),
-      id: card._id,
+      id: card._id.toString(),
     } as NextStepsCard;
     cards.push(c);
   });

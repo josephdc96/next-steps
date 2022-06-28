@@ -1,5 +1,3 @@
-import type { Db } from 'mongodb';
-
 import { MongoClient } from 'mongodb';
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
@@ -10,30 +8,27 @@ if (!MONGODB_URI) {
   throw new Error('Define the MONGODB_URI environmental variable');
 }
 
-let cachedClient: MongoClient | null = null;
-let cachedDb: Db | null = null;
+let client: MongoClient;
+// eslint-disable-next-line import/no-mutable-exports
+let clientPromise: Promise<MongoClient>;
+
+if (process.env.NODE_ENV === 'development') {
+  // @ts-ignore
+  if (!global._mongoClientPromise) {
+    client = new MongoClient(MONGODB_URI);
+    // @ts-ignore
+    global._mongoClientPromise = client.connect();
+  }
+  // @ts-ignore
+  clientPromise = global._mongoClientPromise;
+} else {
+  client = new MongoClient(MONGODB_URI);
+  clientPromise = client.connect();
+}
 
 export async function connectToDatabase() {
-  // check the cached.
-  if (cachedClient && cachedDb) {
-    // load from cache
-    return {
-      client: cachedClient,
-      db: cachedDb,
-    };
-  }
-
-  // Connect to cluster
-  const client = new MongoClient(MONGODB_URI);
-  await client.connect();
-  const db = client.db(MONGODB_DB);
-
-  // set cache
-  cachedClient = client;
-  cachedDb = db;
-
-  return {
-    client: cachedClient,
-    db: cachedDb,
-  };
+  const c = await clientPromise;
+  return { db: c.db(MONGODB_DB) };
 }
+
+export default clientPromise;

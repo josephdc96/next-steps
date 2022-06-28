@@ -10,18 +10,17 @@ export const getActivePersonnel = async (
 
   const docs = db
     .collection('personnel')
-    .find({ active: true, onBreak: false })
+    .find({ active: true, onBreak: false });
 
   const people: Personnel[] = [];
 
-  await docs.forEach((person) => {
-    const data = person.data();
+  await docs.forEach((data) => {
     if (data.roles && data.roles.includes(UserRole.Admin) && !include_admin)
       return;
 
     const p: Personnel = {
-      ...data,
-      id: person._id,
+      ...(data as any),
+      id: data._id,
       leader: data.leader,
     } as Personnel;
     people.push(p);

@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { Firestore } from '@google-cloud/firestore';
 import { getSession } from 'next-auth/react';
+import { connectToDatabase } from '#/lib/mongo/conn';
 
 const createPersonnel = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
@@ -17,9 +17,7 @@ const createPersonnel = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const db = new Firestore({
-    projectId: 'next-steps-350612',
-  });
+  const { db } = await connectToDatabase();
 
   const body = JSON.parse(req.body);
   body.signedCommitment = new Date(body.signedCommitment);
@@ -28,14 +26,15 @@ const createPersonnel = async (req: NextApiRequest, res: NextApiResponse) => {
   body.birthday = new Date(body.birthday);
 
   if (req.method === 'POST') {
-    await db.collection('personnel').add(body);
+    await db.collection('personnel').insertOne(body);
     res.status(200).end();
     return;
   }
 
   if (req.method === 'PUT') {
-    const doc = db.collection('personnel').doc(id as string);
-    await doc.update(body);
+    const doc = await db
+      .collection('personnel')
+      .updateOne({ _id: id }, { $set: body });
     res.status(200).end();
     return;
   }

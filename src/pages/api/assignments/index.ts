@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { Firestore } from '@google-cloud/firestore';
+import type { UpdateResult } from 'mongodb';
+
 import { getSession } from 'next-auth/react';
+
+import { connectToDatabase } from '#/lib/mongo/conn';
 
 const assignments = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'POST') {
@@ -20,17 +23,23 @@ const assignments = async (req: NextApiRequest, res: NextApiResponse) => {
     currentPosition: string | undefined;
   }[] = JSON.parse(req.body);
 
-  const db = new Firestore({
-    projectId: 'next-steps-350612',
-  });
+  const { db } = await connectToDatabase();
 
+  const fns: Promise<UpdateResult>[] = [];
   body.forEach((x) => {
-    const doc = db.collection('personnel').doc(x.id);
-    doc.update({
-      lastMonthAssign: x.currentPosition || null,
-      currentMonthAssign: x.position || null,
-    });
+    fns.push(
+      db.collection('personnel').updateOne(
+        { _id: x.id },
+        {
+          $set: {
+            lastMonthAssign: x.currentPosition || null,
+            currentMonthAssign: x.position || null,
+          },
+        },
+      ),
+    );
   });
+  await Promise.allSettled(fns);
   res.status(200).end();
 };
 
