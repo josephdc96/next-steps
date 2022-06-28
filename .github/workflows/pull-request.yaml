@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - 2.0-stable
 
 jobs:
   checks:
