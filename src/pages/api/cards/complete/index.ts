@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
-import { Firestore } from '@google-cloud/firestore';
+import { updateCardInDb } from '#/lib/cards/getCard';
 
 const completeCard = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id, status } = req.query;
@@ -16,12 +16,7 @@ const completeCard = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const db = new Firestore({
-    projectId: 'next-steps-350612',
-  });
-
-  const doc = db.collection('cards').doc(id as string);
-  await doc.update({ completed: status === 'true' });
+  await updateCardInDb(id as string, { completed: status === 'true' });
   res.status(200).end();
 };
 

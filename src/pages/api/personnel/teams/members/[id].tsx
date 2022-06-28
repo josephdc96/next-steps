@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { Personnel } from '../../../../../types/personnel';
-import type { Position } from '../../../../../types/position';
+import type { Personnel } from '#/types/personnel';
+import type { Position } from '#/types/position';
 
-import { Firestore } from '@google-cloud/firestore';
 import { getSession } from 'next-auth/react';
-import { UserRole } from '../../../../../types/personnel';
+import { UserRole } from '#/types/personnel';
+import { connectToDatabase } from '#/lib/mongo/conn';
 
 const getTeamMembers = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
@@ -16,48 +16,35 @@ const getTeamMembers = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   if (req.method === 'GET') {
-    const db = new Firestore({
-      projectId: 'next-steps-350612',
-    });
+    const { db } = await connectToDatabase();
 
-    const snapshot = await db
+    const snapshot = db
       .collection('personnel')
-      .where('active', '==', true)
-      .get();
+      .find({ active: true, roles: { $nin: [1, 2, 3] } });
 
     const people: Personnel[] = [];
     const positions: Map<string, Position> = new Map();
 
-    const snap2 = await db.collection('positions').get();
-    snap2.forEach((position) => {
-      positions.set(position.id, { ...position.data() } as Position);
+    const snap2 = await db.collection('positions').find({});
+    await snap2.forEach((position) => {
+      positions.set(position._id.toString(), {
+        ...(position as any),
+      } as Position);
     });
 
-    snapshot.forEach((person) => {
-      const data = person.data();
-      if (
-        data.roles &&
-        (data.roles.includes(UserRole.TeamLeader) ||
-          data.roles.includes(UserRole.SubTeamLeader) ||
-          data.roles.includes(UserRole.Admin))
-      )
-        return;
-      if (data.leader !== id) return;
+    await snapshot.forEach((person) => {
+      if (person.leader !== id) return;
 
       const p: Personnel = {
-        ...data,
+        ...(person as any),
         id: person.id,
-        commitedThru: data.commitedThru.toDate(),
-        signedCommitment: data.signedCommitment.toDate(),
-        ltClass: data.ltClass.toDate(),
-        birthday: data.birthday.toDate(),
-        currentMonthAssign: data.currentMonthAssign
-          ? positions.get(data.currentMonthassign)
+        currentMonthAssign: person.currentMonthAssign
+          ? positions.get(person.currentMonthassign)
           : undefined,
-        lastMonthAssign: data.lastMonthAssign
-          ? positions.get(data.lastMonthAssign)
+        lastMonthAssign: person.lastMonthAssign
+          ? positions.get(person.lastMonthAssign)
           : undefined,
-        leader: data.leader,
+        leader: person.leader,
       } as Personnel;
       people.push(p);
     });

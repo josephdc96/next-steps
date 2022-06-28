@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Document } from '../../../../types/documents';
 
-import { Firestore } from '@google-cloud/firestore';
+import { connectToDatabase } from '#/lib/mongo/conn';
 
 const document = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
@@ -11,15 +11,20 @@ const document = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const db = new Firestore({
-    projectId: 'next-steps-350612',
-  });
+  const { db } = await connectToDatabase();
 
-  const snapshot = await db.doc(`/documents/${id}`).get();
+  const snapshot = await db
+    .collection('documents')
+    .findOne({ _id: id as string });
+
+  if (!snapshot) {
+    res.status(404).end();
+    return;
+  }
 
   const doc = {
-    ...snapshot.data(),
-    id: snapshot.id,
+    ...(snapshot as any),
+    id: snapshot._id.toString(),
   };
 
   res.status(200).send(doc);

@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { Personnel } from '../../../../types/personnel';
+import type { Personnel } from '#/types/personnel';
 
 import { getPositions } from '#/lib/positions/positions';
 import { getActivePersonnel } from '#/lib/personnel/active';
-import { UserRole } from '../../../../types/personnel';
+import { UserRole } from '#/types/personnel';
 
 const randomAssignments = async (req: NextApiRequest, res: NextApiResponse) => {
   const getAssignment = (person: Personnel, nestedIndex: number): string => {

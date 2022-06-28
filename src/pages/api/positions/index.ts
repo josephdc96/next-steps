@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { Firestore } from '@google-cloud/firestore';
 import { getSession } from 'next-auth/react';
 
 import { getPositions } from '#/lib/positions/positions';
+import { connectToDatabase } from '#/lib/mongo/conn';
 
 const apiPositions = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
@@ -14,9 +14,7 @@ const apiPositions = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const db = new Firestore({
-    projectId: 'next-steps-350612',
-  });
+  const { db } = await connectToDatabase();
 
   if (req.method === 'GET') {
     const positions = await getPositions();
@@ -26,14 +24,15 @@ const apiPositions = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   if (req.method === 'POST') {
-    await db.collection('positions').add({ name: req.body });
+    await db.collection('positions').insertOne({ name: req.body });
     res.status(200).end();
     return;
   }
 
   if (req.method === 'PUT') {
-    const doc = db.collection('positions').doc(id as string);
-    await doc.update({ name: req.body });
+    const doc = await db
+      .collection('positions')
+      .updateOne({ _id: id }, { $set: { name: req.body } });
     res.status(200).end();
     return;
   }

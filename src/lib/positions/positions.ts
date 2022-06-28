@@ -1,20 +1,17 @@
 import type { Position } from '../../types/position';
-
-import { Firestore } from '@google-cloud/firestore';
+import { connectToDatabase } from '#/lib/mongo/conn';
 
 export const getPositions = async (): Promise<Position[]> => {
-  const db = new Firestore({
-    projectId: 'next-steps-350612',
-  });
+  const { db } = await connectToDatabase();
 
-  const snapshot = await db.collection('positions').get();
+  const docs = db.collection('positions').find({});
+
   const positions: Position[] = [];
 
-  snapshot.forEach((position) => {
-    const data = position.data();
+  await docs.forEach((data) => {
     const p: Position = {
-      ...data,
-      id: position.id,
+      ...(data as any),
+      id: data._id,
     } as Position;
     positions.push(p);
   });
@@ -23,17 +20,13 @@ export const getPositions = async (): Promise<Position[]> => {
 };
 
 export const getPosition = async (id: string): Promise<Position> => {
-  const db = new Firestore({
-    projectId: 'next-steps-350612',
-  });
+  const { db } = await connectToDatabase();
 
-  const snapshot = await db.doc(`/positions/${id}`).get();
-  const data = snapshot.data();
-  if (!data) throw Error('Position not found');
-  const p: Position = {
-    ...data,
-    id: snapshot.id,
+  const doc = await db.collection('positions').findOne({ _id: id });
+
+  if (!doc) throw Error('Position not found');
+  return {
+    ...(doc as any),
+    id: doc._id,
   } as Position;
-
-  return p;
 };
