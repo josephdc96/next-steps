@@ -54,8 +54,6 @@ export const getSingleUserById = async (id: string): Promise<Personnel> => {
     throw new Error('User not found');
   }
 
-  console.log(doc);
-
   return {
     ...(doc as any),
     id: doc._id,

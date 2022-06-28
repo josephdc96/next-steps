@@ -78,7 +78,6 @@ const CardsListCard = ({ card, refresh, edit }: RowProps) => {
 
     fetch(`/api/personnel/active/${card.whoHelped}`).then((x) =>
       x.json().then((person: Personnel) => {
-        console.log(person);
         setHost(`${person.firstName} ${person.lastName}`);
       }),
     );

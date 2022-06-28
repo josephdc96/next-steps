@@ -37,7 +37,8 @@ const activeLeaders = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   await snapshot.forEach((person) => {
-    if (leaders && !(leaders as string[]).includes(person._id.toString())) return;
+    if (leaders && !(leaders as string[]).includes(person._id.toString()))
+      return;
 
     const p: Personnel = {
       ...(person as any),
