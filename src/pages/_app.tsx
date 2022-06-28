@@ -13,6 +13,7 @@ import { CreateLayout } from '../CreateLayout/CreateLayout';
 import type { GetServerSidePropsContext } from 'next';
 import { getCookie } from 'cookies-next';
 import { MobileProvider } from '#/providers/MobileProvider';
+import { TeamProvider } from '#/providers/TeamProvider';
 
 export default function App({
   Component,
@@ -42,18 +43,20 @@ export default function App({
   return (
     <>
       <Head>
-        <title>Paradigm Next Steps</title>
+        <title>Paradigm Admin Panel</title>
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
       </Head>
       <SessionProvider session={session}>
-        <MobileProvider>
-          <Layout colorScheme={colorScheme}>
-            <Component {...pageProps} />
-          </Layout>
-        </MobileProvider>
+        <TeamProvider>
+          <MobileProvider>
+            <Layout colorScheme={colorScheme}>
+              <Component {...pageProps} />
+            </Layout>
+          </MobileProvider>
+        </TeamProvider>
       </SessionProvider>
     </>
   );

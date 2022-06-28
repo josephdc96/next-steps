@@ -17,17 +17,32 @@ import {
   Space,
   Text,
   Title,
+  UnstyledButton,
   useMantineColorScheme,
 } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import useMyTeams from '#/lib/hooks/useMyTeams';
 
+import useTeam from '#/lib/hooks/useTeam';
 import { NavBarItem } from '#/components/NavBar/NavBarItem';
 import FeedbackModal from '#/components/FeedbackModal/FeedbackModal';
 
 import useStyles from './NavBar.styles';
+import { Team } from '#/types/team';
 
 interface NavBarProps {
   opened: boolean;
+}
+
+export function formatTeamName(
+  tenants: Team[] | undefined,
+  teamId: string,
+) {
+  if (tenants) {
+    const tenant = tenants.find((team) => team.id === teamId);
+    return tenant ? tenant.name : teamId;
+  }
+  return teamId;
 }
 
 export const NavBar = ({ opened }: NavBarProps) => {
@@ -37,6 +52,10 @@ export const NavBar = ({ opened }: NavBarProps) => {
   const [person, setPerson] = useState<Personnel | undefined>(undefined);
   const [modalOpen, setModalOpen] = useState(false);
   const [navbarItems, setNavbarItems] = useState<NavBarRoute[]>([]);
+  const { teamId, setTeamId, openDrawer } = useTeam();
+  const { data: teams = [] } = useMyTeams();
+
+  const name = formatTeamName(teams, teamId);
 
   useEffect(() => {
     if (session) {
@@ -80,9 +99,14 @@ export const NavBar = ({ opened }: NavBarProps) => {
             />
           </Center>
           <Space h="sm" />
-          <Center>
-            <Title order={3}>Next Steps</Title>
-          </Center>
+          <UnstyledButton className={classes.teamSelector} onClick={openDrawer}>
+            <Group position="apart">
+              <Text size="md" weight={500}>
+                {name}
+              </Text>
+              <FontAwesomeIcon icon="sort" />
+            </Group>
+          </UnstyledButton>
           <Space h="sm" />
           <Divider />
         </Navbar.Section>

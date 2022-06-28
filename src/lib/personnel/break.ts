@@ -3,14 +3,12 @@ import type { Personnel } from '#/types/personnel';
 import { UserRole } from '#/types/personnel';
 import { connectToDatabase } from '#/lib/mongo/conn';
 
-export const getActivePersonnel = async (
+export const getBreakPersonnel = async (
   include_admin: boolean = false,
 ): Promise<Personnel[]> => {
   const { db } = await connectToDatabase();
 
-  const docs = db
-    .collection('personnel')
-    .find({ active: true, onBreak: false });
+  const docs = db.collection('personnel').find({ active: true, onBreak: true });
 
   const people: Personnel[] = [];
 
@@ -29,14 +27,14 @@ export const getActivePersonnel = async (
   return people;
 };
 
-export const getActivePersonnelByTeam = async (
+export const getBreakPersonnelByTeam = async (
   team: string,
 ): Promise<Personnel[]> => {
   const { db } = await connectToDatabase();
 
   const docs = db
     .collection('personnel')
-    .find({ active: true, onBreak: false, teams: team });
+    .find({ active: true, onBreak: true, teams: team });
 
   const people: Personnel[] = [];
 
@@ -50,4 +48,4 @@ export const getActivePersonnelByTeam = async (
   });
 
   return people;
-}
+};

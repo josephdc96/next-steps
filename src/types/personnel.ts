@@ -3,6 +3,7 @@ import type { Position } from './position';
 export interface Personnel {
   id?: string;
   currentMonthAssign?: string;
+  teams: string[];
   lastName: string;
   phoneNum: string;
   email: string;

@@ -17,7 +17,7 @@ export default NextAuth({
   callbacks: {
     async jwt({ token, account }): Promise<JWT | UsrJwt> {
       const usr = await getSingleUserByAuth0(token.sub as string);
-      Object.assign(token, { roles: usr.roles });
+      Object.assign(token, { roles: usr.roles, teams: usr.teams });
       return token;
     },
     async session({ session, token }): Promise<Session | UsrSession> {

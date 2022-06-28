@@ -1,18 +1,16 @@
 import type { Fetcher } from 'swr';
+import type { Personnel } from '#/types/personnel';
+
 import useSWR from 'swr';
-import type { Personnel } from '../../types/personnel';
-import { UserRole } from '../../types/personnel';
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import dayjs from 'dayjs';
 import { useMediaQuery } from '@mantine/hooks';
 import {
-  Affix,
   Anchor,
   Box,
-  Button,
   Center,
   Group,
-  Header,
   Loader,
   Menu,
   SegmentedControl,
@@ -20,7 +18,6 @@ import {
   Text,
   TextInput,
   Title,
-  Tooltip,
   useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';
@@ -28,10 +25,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import UserModal from '#/components/UserModal/UserModal';
 import RetireModal from '#/components/RetireModal/RetireModal';
-import BreakModal from '#/components/BreakModal/BreakModal';
-import { useSession } from 'next-auth/react';
 import { MobileHeader } from '#/components/MobileHeader/MobileHeader';
 import { HeaderButton } from '#/components/MobileHeader/HeaderButton';
+import BreakModal from '#/components/BreakModal/BreakModal';
+
+import { UserRole } from '#/types/personnel';
+import useTeam from '#/lib/hooks/useTeam';
 
 const fetcher: Fetcher<Personnel[], string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -51,6 +50,7 @@ export default function PersonnelPage() {
   const [breakVisible, setBreakVisible] = useState(false);
   const [retireVisible, setRetireVisible] = useState(false);
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const { teamId } = useTeam();
   const isMobile = useMediaQuery('(max-width: 1200px)');
   const is300 = useMediaQuery('(max-width: 350px)');
   const { data: session } = useSession();
@@ -84,7 +84,7 @@ export default function PersonnelPage() {
   };
 
   const { data, error, isValidating, mutate } = useSWR(
-    [`/api/personnel/${view}?include_admin=true`],
+    [`/api/personnel/${view}/team/${teamId}`],
     fetcher,
   );
 

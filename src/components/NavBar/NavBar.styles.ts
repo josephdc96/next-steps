@@ -21,4 +21,15 @@ export default createStyles((theme) => ({
     marginLeft: '1.25rem',
     marginTop: '.5rem',
   },
+  teamSelector: {
+    display: 'block',
+    width: '100%',
+    padding: theme.spacing.md,
+    color: theme.colors.dark[0],
+    backgroundColor: theme.colors.dark[4],
+
+    '&:hover': {
+      backgroundColor: theme.colors.dark[8],
+    },
+  },
 }));
