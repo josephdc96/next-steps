@@ -1,31 +1,33 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { Personnel } from '#/types/personnel';
 import type { Position } from '#/types/position';
+import type { Personnel } from '#/types/personnel';
 
 import { getSession } from 'next-auth/react';
-import { UserRole } from '#/types/personnel';
+
 import { connectToDatabase } from '#/lib/mongo/conn';
 
 const getTeamMembers = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { id } = req.query;
+  const { leaders, team } = req.query;
 
   const session = await getSession({ req });
   if (!session) {
-    res.status(404).end();
+    res.status(401).end();
     return;
   }
 
   if (req.method === 'GET') {
     const { db } = await connectToDatabase();
 
-    const snapshot = db
-      .collection('personnel')
-      .find({ active: true, roles: { $nin: [1, 2, 3] } });
+    const snapshot = db.collection('personnel').find({
+      active: true,
+      onBreak: false,
+      teams: team,
+    });
 
     const people: Personnel[] = [];
     const positions: Map<string, Position> = new Map();
 
-    const snap2 = await db.collection('positions').find({});
+    const snap2 = await db.collection('positions').find({ teams: team });
     await snap2.forEach((position) => {
       positions.set(position._id.toString(), {
         ...(position as any),
@@ -33,7 +35,7 @@ const getTeamMembers = async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     await snapshot.forEach((person) => {
-      if (person.leader !== id) return;
+      if (!(leaders as string[]).includes(person.leader)) return;
 
       const p: Personnel = {
         ...(person as any),

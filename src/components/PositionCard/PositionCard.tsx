@@ -1,11 +1,12 @@
-import type { Position } from '../../types/position';
-import type { Personnel } from '../../types/personnel';
+import type { Position } from '#/types/position';
+import type { Personnel } from '#/types/personnel';
 
 import { useEffect, useState } from 'react';
 import { Button, Card, Center, Group, Loader, Text } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { Fetcher } from 'swr';
 import useSWR from 'swr';
+import useTeam from '#/lib/hooks/useTeam';
 
 interface positionCardProps {
   position: Position;
@@ -26,8 +27,9 @@ export default function PositionCard({
   canEdit,
   edit,
 }: positionCardProps) {
+  const { teamId } = useTeam();
   const { data, error, isValidating } = useSWR(
-    [`/api/assignments/${position.id}/assignees`],
+    [`/api/assignments/teams/${teamId}/${position.id}/assignees`],
     fetcher,
   );
 

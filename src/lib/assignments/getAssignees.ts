@@ -3,16 +3,22 @@ import type { Personnel } from '#/types/personnel';
 
 import { connectToDatabase } from '#/lib/mongo/conn';
 
-export const getAssignees = async (id: string): Promise<Personnel[]> => {
+export const getAssignees = async (
+  id: string,
+  team: string,
+): Promise<Personnel[]> => {
   const { db } = await connectToDatabase();
 
   const people: Personnel[] = [];
-  const docPeople = db
-    .collection('personnel')
-    .find({ active: true, onBreak: false, currentMonthAssign: id });
+  const docPeople = db.collection('personnel').find({
+    active: true,
+    onBreak: false,
+    currentMonthAssign: id,
+    teams: team,
+  });
 
   const positions: Map<string, Position> = new Map();
-  const docPosition = db.collection('positions').find({});
+  const docPosition = db.collection('positions').find({ teams: team });
   await docPosition.forEach((position) => {
     positions.set(position._id.toString(), { ...(position as any) });
   });

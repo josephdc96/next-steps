@@ -31,18 +31,6 @@ const subteams = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const body = JSON.parse(req.body);
-  if (req.method === 'POST') {
-    await db.collection('subteams').insertOne(body);
-    res.status(200).end();
-  }
-
-  if (req.method === 'PUT') {
-    const doc = await db
-      .collection('subteams')
-      .updateOne({ _id: id }, { $set: body });
-    res.status(200).end();
-  }
   res.status(404).end();
 };
 

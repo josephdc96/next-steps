@@ -18,7 +18,7 @@ import { DatePicker } from '@mantine/dates';
 import type { Asset, UsrSession } from '#/lib/auth/contract';
 import { useSession } from 'next-auth/react';
 import { authorizeAction } from '#/lib/auth/authz';
-import Auth0 from 'next-auth/providers/auth0';
+import type { Team } from '#/types/team';
 
 interface UserModalProps {
   isEdit: boolean;
@@ -72,6 +72,7 @@ export default function UserModal({
         ? new Date(user?.signedCommitment)
         : new Date(),
       ltClass: user?.ltClass ? new Date(user?.ltClass) : new Date(),
+      teams: user?.teams || [],
       roles: (user?.roles || [UserRole.Leader]).map(
         (role) => ROLE_STRING_RECORD[role],
       ),
@@ -98,6 +99,7 @@ export default function UserModal({
   const [leaders, setLeaders] = useState<{ value: string; label: string }[]>(
     [],
   );
+  const [teams, setTeams] = useState<{ value: string; label: string }[]>([]);
   const [isSuperUser, setIsSuperUser] = useState(false);
 
   useEffect(() => {
@@ -115,6 +117,20 @@ export default function UserModal({
         setLeaders(data);
       }),
     );
+    fetch('/api/teams').then((res) => {
+      res.json().then((json) => {
+        const data: any[] = [];
+
+        json.forEach((team: Team) => {
+          data.push({
+            value: team.id,
+            label: team.name,
+          });
+        });
+
+        setTeams(data);
+      });
+    });
     form.reset();
     if (session) {
       setIsSuperUser(
@@ -177,6 +193,12 @@ export default function UserModal({
               {...form.getInputProps('email')}
             />
             <Divider />
+            <MultiSelect
+              data={teams}
+              label="Teams"
+              required
+              {...form.getInputProps('teams')}
+            />
             <MultiSelect
               data={ROLE_VALUES}
               label="Roles"

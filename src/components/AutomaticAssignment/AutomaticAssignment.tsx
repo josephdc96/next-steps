@@ -1,5 +1,5 @@
-import type { Position } from '../../types/position';
-import type { Personnel } from '../../types/personnel';
+import type { Position } from '#/types/position';
+import type { Personnel } from '#/types/personnel';
 
 import { useEffect, useState } from 'react';
 import {
@@ -12,6 +12,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import positions from '../../pages/api/positions';
+import useTeam from '#/lib/hooks/useTeam';
 
 interface AutomaticAssignmentProps {
   opened: boolean;
@@ -22,6 +23,7 @@ export default function AutomaticAssignment({
   opened,
   onClose,
 }: AutomaticAssignmentProps) {
+  const { teamId } = useTeam();
   const [personnelMap, setPersonnelMap] = useState(
     new Map<string, Personnel>(),
   );
@@ -33,21 +35,21 @@ export default function AutomaticAssignment({
   >([]);
 
   useEffect(() => {
-    fetch('/api/personnel/active').then((x) => {
+    fetch(`/api/personnel/active/team/${teamId}`).then((x) => {
       x.json().then((json) => {
         const map = new Map<string, Personnel>();
         json.forEach((y: Personnel) => {
           map.set(y.id || '', y);
         });
         setPersonnelMap(map);
-        fetch('/api/positions').then((y) => {
+        fetch(`/api/positions/team/${teamId}`).then((y) => {
           y.json().then((json2: Position[]) => {
             const map2 = new Map<string, string>();
             json2.forEach((z) => {
               map2.set(z.id || '', z.name || '');
             });
             setPositionMap(map2);
-            fetch('/api/assignments/random').then((z) => {
+            fetch(`/api/assignments/teams/${teamId}/random`).then((z) => {
               z.json().then((json3: { id: string; position: string }[]) => {
                 setAssignments(json3);
               });
@@ -67,7 +69,7 @@ export default function AutomaticAssignment({
       };
     });
 
-    fetch('/api/assignments', {
+    fetch(`/api/assignments/teams/${teamId}`, {
       method: 'POST',
       body: JSON.stringify(newPositions),
     }).then(() => {

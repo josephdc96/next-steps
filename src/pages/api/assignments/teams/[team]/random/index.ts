@@ -1,8 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Personnel } from '#/types/personnel';
 
-import { getPositions } from '#/lib/positions/positions';
-import { getActivePersonnel } from '#/lib/personnel/active';
+import { getPositions, getTeamPositions } from '#/lib/positions/positions';
+import {
+  getActivePersonnel,
+  getActivePersonnelByTeam,
+} from '#/lib/personnel/active';
 import { UserRole } from '#/types/personnel';
 
 const randomAssignments = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -21,14 +24,15 @@ const randomAssignments = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     return position?.id || '';
   };
+  const { team } = req.query;
 
   if (req.method !== 'GET') {
     res.status(404).end();
     return;
   }
 
-  const personnel = await getActivePersonnel();
-  const positions = await getPositions();
+  const personnel = await getActivePersonnelByTeam(team as string);
+  const positions = await getTeamPositions(team as string);
   const assignments = new Map<string | undefined, string[]>();
 
   positions.forEach((position) => {

@@ -1,5 +1,5 @@
 import type { Fetcher } from 'swr';
-import type { Document } from '../../types/documents';
+import type { Document } from '#/types/documents';
 import useSWR from 'swr';
 import {
   Button,
@@ -15,6 +15,7 @@ import {
 } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
+import useTeam from '#/lib/hooks/useTeam';
 
 const fetcher: Fetcher<Document[], string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -80,7 +81,11 @@ const DocumentCard = ({ card }: DocumentCardProps) => {
 };
 
 export default function DocumentsPage() {
-  const { data, error, isValidating } = useSWR(['/api/documents'], fetcher);
+  const { teamId } = useTeam();
+  const { data, error, isValidating } = useSWR(
+    [`/api/documents/team/${teamId}`],
+    fetcher,
+  );
 
   return (
     <>

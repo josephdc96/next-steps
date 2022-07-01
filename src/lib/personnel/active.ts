@@ -28,3 +28,26 @@ export const getActivePersonnel = async (
 
   return people;
 };
+
+export const getActivePersonnelByTeam = async (
+  team: string,
+): Promise<Personnel[]> => {
+  const { db } = await connectToDatabase();
+
+  const docs = db
+    .collection('personnel')
+    .find({ active: true, onBreak: false, teams: team });
+
+  const people: Personnel[] = [];
+
+  await docs.forEach((data) => {
+    const p: Personnel = {
+      ...(data as any),
+      id: data._id,
+      leader: data.leader,
+    } as Personnel;
+    people.push(p);
+  });
+
+  return people;
+};

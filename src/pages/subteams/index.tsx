@@ -22,6 +22,7 @@ import { useSession } from 'next-auth/react';
 import { MobileHeader } from '#/components/MobileHeader/MobileHeader';
 import { HeaderButton } from '#/components/MobileHeader/HeaderButton';
 import { useMediaQuery } from '@mantine/hooks';
+import useTeam from '#/lib/hooks/useTeam';
 
 const fetcher: Fetcher<Subteam[], string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -36,6 +37,7 @@ const editAsset: Asset = {
 };
 
 export default function SubteamsPage() {
+  const { teamId } = useTeam();
   const { data: session } = useSession();
   const isMobile = useMediaQuery('(max-width: 800px)');
 
@@ -45,7 +47,7 @@ export default function SubteamsPage() {
   const [canEdit, setCanEdit] = useState(false);
 
   const { data, error, isValidating, mutate } = useSWR(
-    ['/api/subteams'],
+    [`/api/subteams/team/${teamId}`],
     fetcher,
   );
 
