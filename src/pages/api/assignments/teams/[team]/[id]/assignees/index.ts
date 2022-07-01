@@ -5,7 +5,7 @@ import { getSession } from 'next-auth/react';
 import { getAssignees } from '#/lib/assignments/getAssignees';
 
 const assignees = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { id } = req.query;
+  const { id, team } = req.query;
 
   if (req.method !== 'GET') {
     res.status(404);
@@ -18,7 +18,7 @@ const assignees = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const people = await getAssignees(id as string);
+  const people = await getAssignees(id as string, team as string);
 
   res.status(200).json(people);
 };

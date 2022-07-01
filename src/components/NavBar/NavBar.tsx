@@ -28,16 +28,13 @@ import { NavBarItem } from '#/components/NavBar/NavBarItem';
 import FeedbackModal from '#/components/FeedbackModal/FeedbackModal';
 
 import useStyles from './NavBar.styles';
-import { Team } from '#/types/team';
+import type { Team } from '#/types/team';
 
 interface NavBarProps {
   opened: boolean;
 }
 
-export function formatTeamName(
-  tenants: Team[] | undefined,
-  teamId: string,
-) {
+export function formatTeamName(tenants: Team[] | undefined, teamId: string) {
   if (tenants) {
     const tenant = tenants.find((team) => team.id === teamId);
     return tenant ? tenant.name : teamId;

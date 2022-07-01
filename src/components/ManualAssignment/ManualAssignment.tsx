@@ -3,6 +3,7 @@ import type { Personnel } from '../../types/personnel';
 
 import { useEffect, useState } from 'react';
 import { Button, Group, Modal, ScrollArea, Select, Text } from '@mantine/core';
+import useTeam from '#/lib/hooks/useTeam';
 
 interface ManualAssignmentProps {
   opened: boolean;
@@ -13,6 +14,8 @@ export default function ManualAssignment({
   opened,
   onClose,
 }: ManualAssignmentProps) {
+  const { teamId } = useTeam();
+
   const [personnel, setPersonnel] = useState<Personnel[]>([]);
   const [positions, setPositions] = useState<
     { value: string; label: string }[]
@@ -29,7 +32,7 @@ export default function ManualAssignment({
   >([]);
 
   useEffect(() => {
-    fetch('/api/personnel/active').then((x) => {
+    fetch(`/api/personnel/active/team/${teamId}`).then((x) => {
       x.json().then((json) => {
         const ps: {
           id: string;
@@ -47,9 +50,8 @@ export default function ManualAssignment({
         setPersonnel(json);
       });
     });
-    fetch('/api/positions').then((x) => {
+    fetch(`/api/positions/team/${teamId}`).then((x) => {
       x.json().then((json: Position[]) => {
-        console.log(json);
         const map = new Map<string, string>();
         const data = json.map((y) => {
           map.set(y.id || '', y.name || '');
@@ -65,7 +67,7 @@ export default function ManualAssignment({
   }, [opened]);
 
   const submit = () => {
-    fetch('/api/assignments', {
+    fetch(`/api/assignments/teams/${teamId}`, {
       method: 'POST',
       body: JSON.stringify(newPositions),
     }).then(() => {

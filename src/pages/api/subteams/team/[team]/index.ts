@@ -4,8 +4,8 @@ import type { Subteam } from '#/types/subteam';
 import { getSession } from 'next-auth/react';
 import { connectToDatabase } from '#/lib/mongo/conn';
 
-const subteams = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { id } = req.query;
+const subteamsByTeam = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { id, team } = req.query;
 
   const session = await getSession({ req });
   if (!session) {
@@ -16,7 +16,7 @@ const subteams = async (req: NextApiRequest, res: NextApiResponse) => {
   const { db } = await connectToDatabase();
 
   if (req.method === 'GET') {
-    const snapshot = await db.collection('subteams').find({});
+    const snapshot = await db.collection('subteams').find({ teams: team });
 
     const sts: Subteam[] = [];
     await snapshot.forEach((subteam) => {
@@ -31,7 +31,20 @@ const subteams = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
+  const body = JSON.parse(req.body);
+  if (req.method === 'POST') {
+    body.teams = team;
+    await db.collection('subteams').insertOne(body);
+    res.status(200).end();
+  }
+
+  if (req.method === 'PUT') {
+    const doc = await db
+      .collection('subteams')
+      .updateOne({ _id: id }, { $set: body });
+    res.status(200).end();
+  }
   res.status(404).end();
 };
 
-export default subteams;
+export default subteamsByTeam;

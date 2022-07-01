@@ -9,6 +9,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useEffect } from 'react';
+import useTeam from '#/lib/hooks/useTeam';
 
 interface PositionModalProps {
   isEdit: boolean;
@@ -28,6 +29,7 @@ export default function PositionModal({
       name: position?.name || '',
     },
   });
+  const { teamId } = useTeam();
 
   useEffect(() => {
     form.reset();
@@ -35,12 +37,12 @@ export default function PositionModal({
 
   const submitForm = (values: Position) => {
     if (isEdit) {
-      fetch(`/api/positions?id=${position?.id}`, {
+      fetch(`/api/positions/team/${teamId}?id=${position?.id}`, {
         method: 'PUT',
         body: values.name,
       }).then(() => onClose());
     } else {
-      fetch('/api/positions', {
+      fetch(`/api/positions/team/${teamId}`, {
         method: 'POST',
         body: values.name,
       }).then(() => onClose());
