@@ -32,9 +32,7 @@ export const getRetiredPersonnelByTeam = async (
 ): Promise<Personnel[]> => {
   const { db } = await connectToDatabase();
 
-  const docs = db
-    .collection('personnel')
-    .find({ active: false, teams: team });
+  const docs = db.collection('personnel').find({ active: false, teams: team });
 
   const people: Personnel[] = [];
 

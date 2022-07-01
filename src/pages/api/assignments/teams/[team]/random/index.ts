@@ -2,7 +2,10 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Personnel } from '#/types/personnel';
 
 import { getPositions, getTeamPositions } from '#/lib/positions/positions';
-import { getActivePersonnel, getActivePersonnelByTeam } from '#/lib/personnel/active';
+import {
+  getActivePersonnel,
+  getActivePersonnelByTeam,
+} from '#/lib/personnel/active';
 import { UserRole } from '#/types/personnel';
 
 const randomAssignments = async (req: NextApiRequest, res: NextApiResponse) => {

@@ -15,7 +15,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { db } = await connectToDatabase();
 
   if (req.method === 'POST') {
-    await db.collection('positions').insertOne({ name: req.body, teams: [team] });
+    await db
+      .collection('positions')
+      .insertOne({ name: req.body, teams: [team] });
     res.status(200).end();
     return;
   }

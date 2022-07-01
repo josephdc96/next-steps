@@ -1,6 +1,13 @@
-import { Box, Center, Loader, Text, Title, useMantineTheme } from '@mantine/core';
+import {
+  Box,
+  Center,
+  Loader,
+  Text,
+  Title,
+  useMantineTheme,
+} from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Team } from '#/types/team';
+import type { Team } from '#/types/team';
 
 export type TeamErrProps = {
   error: any;

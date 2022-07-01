@@ -50,4 +50,4 @@ export const getActivePersonnelByTeam = async (
   });
 
   return people;
-}
+};

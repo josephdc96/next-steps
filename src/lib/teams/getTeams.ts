@@ -1,4 +1,4 @@
-import { Team } from '#/types/team';
+import type { Team } from '#/types/team';
 import { connectToDatabase } from '#/lib/mongo/conn';
 
 export const getTeams = async (): Promise<Team[]> => {
