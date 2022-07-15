@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 
 import { getAssignees } from '#/lib/assignments/getAssignees';
-import { UsrSession } from '#/lib/auth/contract';
+import type { UsrSession } from '#/lib/auth/contract';
 
 const assignees = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id, team } = req.query;

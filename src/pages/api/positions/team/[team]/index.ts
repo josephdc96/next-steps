@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { getTeamPositions } from '#/lib/positions/positions';
 import { connectToDatabase } from '#/lib/mongo/conn';
 import { getSession } from 'next-auth/react';
-import { UsrSession } from '#/lib/auth/contract';
+import type { UsrSession } from '#/lib/auth/contract';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { team, id } = req.query;

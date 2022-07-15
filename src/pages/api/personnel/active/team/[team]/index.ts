@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 
 import { getActivePersonnelByTeam } from '#/lib/personnel/active';
-import { UsrSession } from '#/lib/auth/contract';
+import type { UsrSession } from '#/lib/auth/contract';
 
 const activePersonnelByTeam = async (
   req: NextApiRequest,

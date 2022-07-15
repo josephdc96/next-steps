@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '#/lib/mongo/conn';
-import { UsrSession } from '#/lib/auth/contract';
+import type { UsrSession } from '#/lib/auth/contract';
 import { getSession } from 'next-auth/react';
 
 const document = async (req: NextApiRequest, res: NextApiResponse) => {

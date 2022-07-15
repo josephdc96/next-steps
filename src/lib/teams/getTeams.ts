@@ -28,4 +28,4 @@ export const getMyTeams = async (_teams: string[]): Promise<Team[]> => {
     });
   });
   return teams;
-}
+};

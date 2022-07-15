@@ -5,7 +5,7 @@ import type { Personnel } from '#/types/personnel';
 import { getSession } from 'next-auth/react';
 
 import { connectToDatabase } from '#/lib/mongo/conn';
-import { UsrSession } from '#/lib/auth/contract';
+import type { UsrSession } from '#/lib/auth/contract';
 
 const getTeamMembers = async (req: NextApiRequest, res: NextApiResponse) => {
   const { leaders, team } = req.query;

@@ -3,7 +3,7 @@ import type { Subteam } from '#/types/subteam';
 
 import { getSession } from 'next-auth/react';
 import { connectToDatabase } from '#/lib/mongo/conn';
-import { UsrSession } from '#/lib/auth/contract';
+import type { UsrSession } from '#/lib/auth/contract';
 
 const subteamsByTeam = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id, team } = req.query;
