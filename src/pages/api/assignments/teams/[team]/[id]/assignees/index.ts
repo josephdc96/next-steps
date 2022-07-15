@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 
 import { getAssignees } from '#/lib/assignments/getAssignees';
+import type { UsrSession } from '#/lib/auth/contract';
 
 const assignees = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id, team } = req.query;
@@ -13,7 +14,7 @@ const assignees = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const session = await getSession({ req });
-  if (!session) {
+  if (!session || (session as UsrSession).teams.includes(team as string)) {
     res.status(404).end();
     return;
   }

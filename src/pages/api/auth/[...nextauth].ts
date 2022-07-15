@@ -25,6 +25,7 @@ export default NextAuth({
         const { roles } = token;
         Object.assign(session, { roles });
       }
+      Object.assign(session, { teams: token.teams });
       Object.assign(session, { id: token.sub });
       return session;
     },

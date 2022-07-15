@@ -3,12 +3,13 @@ import type { Subteam } from '#/types/subteam';
 
 import { getSession } from 'next-auth/react';
 import { connectToDatabase } from '#/lib/mongo/conn';
+import type { UsrSession } from '#/lib/auth/contract';
 
 const subteamsByTeam = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id, team } = req.query;
 
   const session = await getSession({ req });
-  if (!session) {
+  if (!session || !(session as UsrSession).teams.includes(team as string)) {
     res.status(401).end();
     return;
   }

@@ -5,12 +5,17 @@ import type { Position } from '#/types/position';
 import { getSession } from 'next-auth/react';
 import { UserRole } from '#/types/personnel';
 import { connectToDatabase } from '#/lib/mongo/conn';
+import type { UsrSession } from '#/lib/auth/contract';
 
 const getTeamMembers = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id, team } = req.query;
 
   const session = await getSession({ req });
-  if (!session) {
+  if (
+    !session ||
+    !session ||
+    !(session as UsrSession).teams.includes(team as string)
+  ) {
     res.status(404).end();
     return;
   }

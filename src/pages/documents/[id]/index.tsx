@@ -1,10 +1,11 @@
-import useSWR, { Fetcher } from 'swr';
-import { ActionIcon, Button, Center, Group, Title } from '@mantine/core';
-import type { Document } from '../../../types/documents';
-import { useRouter } from 'next/router';
+import type { Document } from '#/types/documents';
+
 import { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { ActionIcon, Center, Group, Title } from '@mantine/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import useTeam from '#/lib/hooks/useTeam';
 
 export default function DocumentsPage() {
