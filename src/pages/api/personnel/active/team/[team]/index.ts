@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 
 import { getActivePersonnelByTeam } from '#/lib/personnel/active';
+import { UsrSession } from '#/lib/auth/contract';
 
 const activePersonnelByTeam = async (
   req: NextApiRequest,
@@ -16,7 +17,11 @@ const activePersonnelByTeam = async (
     return;
   }
 
-  if (req.method !== 'GET') {
+  if (
+    req.method !== 'GET' ||
+    !session ||
+    !(session as UsrSession).teams.includes(team as string)
+  ) {
     res.status(404);
     return;
   }

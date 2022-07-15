@@ -1,12 +1,20 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Document } from '#/types/documents';
+import type { UsrSession } from '#/lib/auth/contract';
+
+import { getSession } from 'next-auth/react';
 
 import { connectToDatabase } from '#/lib/mongo/conn';
 
 const documentsByTeam = async (req: NextApiRequest, res: NextApiResponse) => {
   const { team } = req.query;
+  const session = await getSession({ req });
 
-  if (req.method !== 'GET' && req.method !== 'POST') {
+  if (
+    (req.method !== 'GET' && req.method !== 'POST') ||
+    !session ||
+    !(session as UsrSession).teams.includes(team as string)
+  ) {
     res.status(404).end();
     return;
   }

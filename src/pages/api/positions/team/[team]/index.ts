@@ -1,9 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getTeamPositions } from '#/lib/positions/positions';
 import { connectToDatabase } from '#/lib/mongo/conn';
+import { getSession } from 'next-auth/react';
+import { UsrSession } from '#/lib/auth/contract';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { team, id } = req.query;
+  const session = await getSession({ req });
+
+  if (!session || !(session as UsrSession).teams.includes(team as string)) {
+    res.status(404).end();
+  }
 
   if (req.method === 'GET') {
     const positions = await getTeamPositions(team as string);

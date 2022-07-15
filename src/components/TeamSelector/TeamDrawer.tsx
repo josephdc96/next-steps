@@ -11,6 +11,7 @@ import {
   NoTeams,
   TeamErr,
 } from '#/components/TeamSelector/shared';
+import useMyTeams from '#/lib/hooks/useMyTeams';
 
 export default function TeamDrawer() {
   const { drawerOpened, closeDrawer } = useTeam();
@@ -23,7 +24,7 @@ export default function TeamDrawer() {
 }
 
 function TenantResults() {
-  const { data, error, mutate, isValidating } = useOrgInfo();
+  const { data, error, mutate, isValidating } = useMyTeams();
 
   if (error) {
     return <TeamErr error={error} refresh={mutate} />;

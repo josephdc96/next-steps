@@ -4,16 +4,18 @@ import type { UpdateResult } from 'mongodb';
 import { getSession } from 'next-auth/react';
 
 import { connectToDatabase } from '#/lib/mongo/conn';
+import type { UsrSession } from '#/lib/auth/contract';
 
 const assignments = async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method !== 'POST') {
-    res.status(404).end();
-    return;
-  }
-
+  const { team } = req.query;
   const session = await getSession({ req });
-  if (!session) {
-    res.status(401).end();
+
+  if (
+    req.method !== 'POST' ||
+    !session ||
+    !(session as UsrSession).teams.includes(team as string)
+  ) {
+    res.status(404).end();
     return;
   }
 

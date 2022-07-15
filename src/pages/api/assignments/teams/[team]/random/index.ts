@@ -1,12 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Personnel } from '#/types/personnel';
 
-import { getPositions, getTeamPositions } from '#/lib/positions/positions';
-import {
-  getActivePersonnel,
-  getActivePersonnelByTeam,
-} from '#/lib/personnel/active';
+import { getSession, useSession } from 'next-auth/react';
 import { UserRole } from '#/types/personnel';
+import { getTeamPositions } from '#/lib/positions/positions';
+import { getActivePersonnelByTeam } from '#/lib/personnel/active';
+import type { UsrSession } from '#/lib/auth/contract';
 
 const randomAssignments = async (req: NextApiRequest, res: NextApiResponse) => {
   const getAssignment = (person: Personnel, nestedIndex: number): string => {
@@ -25,8 +24,13 @@ const randomAssignments = async (req: NextApiRequest, res: NextApiResponse) => {
     return position?.id || '';
   };
   const { team } = req.query;
+  const session = await getSession({ req });
 
-  if (req.method !== 'GET') {
+  if (
+    req.method !== 'GET' ||
+    !session ||
+    !(session as UsrSession).teams.includes(team as string)
+  ) {
     res.status(404).end();
     return;
   }

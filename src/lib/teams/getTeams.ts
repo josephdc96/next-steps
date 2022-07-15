@@ -14,3 +14,18 @@ export const getTeams = async (): Promise<Team[]> => {
   });
   return teams;
 };
+
+export const getMyTeams = async (_teams: string[]): Promise<Team[]> => {
+  const { db } = await connectToDatabase();
+  const docs = db.collection('teams').find();
+
+  const teams: Team[] = [];
+  await docs.forEach((doc) => {
+    if (!_teams.includes(doc._id.toString())) return;
+    teams.push({
+      id: doc._id.toString(),
+      ...(doc as any),
+    });
+  });
+  return teams;
+}
