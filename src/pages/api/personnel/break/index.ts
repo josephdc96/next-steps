@@ -2,8 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Personnel } from '../../../../types/personnel';
 import type { Position } from '../../../../types/position';
 
-import { Firestore } from '@google-cloud/firestore';
 import { getSession } from 'next-auth/react';
+import { connectToDatabase } from '#/lib/mongo/conn';
 
 const onBreakPersonnel = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
@@ -14,47 +14,44 @@ const onBreakPersonnel = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const db = new Firestore({
-    projectId: 'next-steps-350612',
-  });
+  const { db } = await connectToDatabase();
 
   if (req.method === 'PUT') {
-    const doc = db.collection('personnel').doc(id as string);
-    await doc.update({ onBreak: true, reason: req.body });
+    const doc = await db
+      .collection('personnel')
+      .updateOne(
+        { _id: id as string },
+        { $set: { onBreak: true, reason: req.body } },
+      );
     res.status(200).end();
   }
 
   if (req.method === 'GET') {
-    const snapshot = await db
+    const snapshot = db
       .collection('personnel')
-      .where('active', '==', true)
-      .where('onBreak', '==', true)
-      .get();
+      .find({ active: true, onBreak: true });
 
     const people: Personnel[] = [];
     const positions: Map<string, Position> = new Map();
 
-    const snap2 = await db.collection('positions').get();
-    snap2.forEach((position) => {
-      positions.set(position.id, { ...position.data() } as Position);
+    const snap2 = await db.collection('positions').find({});
+    await snap2.forEach((position) => {
+      positions.set(position._id.toString(), {
+        ...position.data(),
+      } as Position);
     });
 
-    snapshot.forEach((person) => {
-      const data = person.data();
+    await snapshot.forEach((person) => {
       const p: Personnel = {
-        ...data,
-        id: person.id,
-        commitedThru: data.commitedThru.toDate(),
-        signedCommitment: data.signedCommitment.toDate(),
-        ltClass: data.ltClass.toDate(),
-        birthday: data.birthday.toDate(),
-        currentMonthAssign: data.currentMonthAssign
-          ? positions.get(data.currentMonthassign)
+        ...(person as any),
+        id: person._id.toString(),
+        currentMonthAssign: person.currentMonthAssign
+          ? positions.get(person.currentMonthassign)
           : undefined,
-        lastMonthAssign: data.lastMonthAssign
-          ? positions.get(data.lastMonthAssign)
+        lastMonthAssign: person.lastMonthAssign
+          ? positions.get(person.lastMonthAssign)
           : undefined,
-        leader: data.leader,
+        leader: person.leader,
       } as Personnel;
       people.push(p);
     });

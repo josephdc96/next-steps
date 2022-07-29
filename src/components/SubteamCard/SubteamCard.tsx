@@ -6,6 +6,7 @@ import useSWR from 'swr';
 import { useEffect, useState } from 'react';
 import { Button, Card, Center, Group, Loader, Text } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import useTeam from '#/lib/hooks/useTeam';
 
 interface subteamCardProps {
   subteam: Subteam;
@@ -26,12 +27,13 @@ export default function SubteamCard({
   canEdit,
   edit,
 }: subteamCardProps) {
+  const { teamId } = useTeam();
   const {
     data: leaders,
     error: leaderError,
     isValidating: leaderValidating,
   } = useSWR(
-    [`/api/personnel/active/leaders?leaders=${subteam.leaders}`],
+    [`/api/personnel/active/team/${teamId}/leaders?leaders=${subteam.leaders}`],
     fetcher,
   );
   const {
@@ -39,7 +41,9 @@ export default function SubteamCard({
     error: memberError,
     isValidating: memberValidating,
   } = useSWR(
-    [`/api/personnel/teams/members?leaders=${subteam.leaders}`],
+    [
+      `/api/personnel/active/team/${teamId}/subteams/members?leaders=${subteam.leaders}`,
+    ],
     fetcher,
   );
 

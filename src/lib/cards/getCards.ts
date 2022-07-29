@@ -1,5 +1,6 @@
 import type { NextStepsCard } from '#/types/new-here';
-import { Firestore } from '@google-cloud/firestore';
+
+import clientPromise from '#/lib/mongo/conn';
 
 export const getCardsFromDb = async ({
   sort,
@@ -10,17 +11,15 @@ export const getCardsFromDb = async ({
   completed,
   boxes,
 }: any): Promise<NextStepsCard[]> => {
-  const db = new Firestore({
-    projectId: 'next-steps-350612',
-  });
+  const client = await clientPromise;
 
-  const snapshot = await db.collection('cards').get();
+  const docs = client.db('next-steps').collection('cards').find({});
 
   const cards: NextStepsCard[] = [];
 
-  snapshot.forEach((card) => {
-    const data = card.data();
-    const date: Date = data.date.toDate();
+  await docs.forEach((card) => {
+    const data = card;
+    const { date } = data;
     if (
       date < new Date(startDate as string) ||
       date > new Date(endDate as string)
@@ -49,10 +48,8 @@ export const getCardsFromDb = async ({
     }
 
     const c: NextStepsCard = {
-      ...data,
-      dob: data.dob.toDate(),
-      date: data.date.toDate(),
-      id: card.id,
+      ...(data as any),
+      id: card._id.toString(),
     } as NextStepsCard;
     cards.push(c);
   });

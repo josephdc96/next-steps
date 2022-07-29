@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { getSession } from 'next-auth/react';
-import { Firestore } from '@google-cloud/firestore';
+import { connectToDatabase } from '#/lib/mongo/conn';
 
 const sendFeedback = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'POST') {
@@ -14,14 +14,12 @@ const sendFeedback = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const db = new Firestore({
-    projectId: 'next-steps-350612',
-  });
+  const { db } = await connectToDatabase();
 
   const body = JSON.parse(req.body);
   body.date = new Date();
 
-  await db.collection('feedback').add(body);
+  await db.collection('feedback').insertOne(body);
   res.status(200).end();
 };
 

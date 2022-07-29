@@ -1,18 +1,25 @@
-import useSWR, { Fetcher } from 'swr';
-import { ActionIcon, Button, Center, Group, Title } from '@mantine/core';
-import type { Document } from '../../../types/documents';
-import { useRouter } from 'next/router';
+import type { Document } from '#/types/documents';
+
 import { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { ActionIcon, Center, Group, Title } from '@mantine/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import useTeam from '#/lib/hooks/useTeam';
 
 export default function DocumentsPage() {
+  const { teamId } = useTeam();
   const router = useRouter();
   const { id } = router.query;
   const [data, setData] = useState<Document | undefined>(undefined);
 
   useEffect(() => {
-    fetch(`/api/documents/${id}`).then((x) => {
+    fetch(`/api/documents/team/${teamId}/${id}`).then((x) => {
+      if (x.status === 404) {
+        router.push('/documents');
+        return;
+      }
       x.json().then((json) => {
         setData(json);
       });

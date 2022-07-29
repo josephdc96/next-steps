@@ -1,8 +1,9 @@
 import type { Session } from 'next-auth';
-import type { UserRole } from '../../types/personnel';
+import type { UserRole } from '#/types/personnel';
 
 export interface UsrSession extends Session {
   roles: UserRole[];
+  teams: string[];
 }
 
 export type UsrJwt = {

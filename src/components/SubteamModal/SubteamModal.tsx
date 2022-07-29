@@ -1,5 +1,5 @@
-import type { Subteam } from '../../types/subteam';
-import type { Personnel } from '../../types/personnel';
+import type { Subteam } from '#/types/subteam';
+import type { Personnel } from '#/types/personnel';
 
 import { useEffect, useState } from 'react';
 import { useForm } from '@mantine/form';
@@ -11,6 +11,7 @@ import {
   MultiSelect,
   TextInput,
 } from '@mantine/core';
+import useTeam from '#/lib/hooks/useTeam';
 
 interface SubteamModalProps {
   isEdit: boolean;
@@ -31,12 +32,13 @@ export default function SubteamModal({
       leaders: subteam?.leaders || [],
     },
   });
+  const { teamId } = useTeam();
 
   const [leaders, setLeaders] = useState<{ value: string; label: string }[]>(
     [],
   );
   useEffect(() => {
-    fetch('/api/personnel/active/leaders').then((res) =>
+    fetch(`/api/personnel/active/team/${teamId}/leaders`).then((res) =>
       res.json().then((json) => {
         const data: any[] = [];
 
@@ -55,12 +57,12 @@ export default function SubteamModal({
 
   const submitForm = (values: Subteam) => {
     if (isEdit) {
-      fetch(`/api/subteams?id=${subteam?.id}`, {
+      fetch(`/api/subteams/team/${teamId}?id=${subteam?.id}`, {
         method: 'PUT',
         body: JSON.stringify(values),
       }).then(() => onClose());
     } else {
-      fetch('/api/subteams', {
+      fetch(`/api/subteams/team/${teamId}`, {
         method: 'POST',
         body: JSON.stringify(values),
       }).then(() => onClose());

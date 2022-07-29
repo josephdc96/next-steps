@@ -25,6 +25,7 @@ import ManualAssignment from '#/components/ManualAssignment/ManualAssignment';
 import AutomaticAssignment from '#/components/AutomaticAssignment/AutomaticAssignment';
 import { HeaderButton } from '#/components/MobileHeader/HeaderButton';
 import { useMediaQuery } from '@mantine/hooks';
+import useTeam from '#/lib/hooks/useTeam';
 
 const fetcher: Fetcher<Position[], string[]> = async (url: string) => {
   const res = await fetch(url);
@@ -40,6 +41,7 @@ const editAsset: Asset = {
 
 export default function AssignmentsPage() {
   const { data: session } = useSession();
+  const { teamId } = useTeam();
   const isMobile = useMediaQuery('(max-width: 800px)');
 
   const [editModal, setEditModal] = useState(false);
@@ -51,7 +53,7 @@ export default function AssignmentsPage() {
   const [canEdit, setCanEdit] = useState(false);
 
   const { data, error, isValidating, mutate } = useSWR(
-    ['/api/positions'],
+    [`/api/positions/team/${teamId}`],
     fetcher,
   );
 

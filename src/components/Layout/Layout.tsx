@@ -14,6 +14,7 @@ import { themeObject } from '../../styles/theme';
 import { signIn, useSession } from 'next-auth/react';
 import { MobileProvider } from '#/providers/MobileProvider';
 import useMobile from '#/lib/hooks/useMobile';
+import TeamDrawer from '#/components/TeamSelector/TeamDrawer';
 
 interface LayoutProps {
   children: ReactNode;
@@ -72,6 +73,7 @@ export const Layout = ({ children, colorScheme }: LayoutProps) => {
             header={<MobileHeader />}
           >
             {children}
+            <TeamDrawer />
           </AppShell>
         </MantineProvider>
       </ColorSchemeProvider>
