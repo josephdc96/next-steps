@@ -17,7 +17,7 @@ import {
   Table,
   Text,
   TextInput,
-  Title,
+  Title, Tooltip,
   useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';
@@ -152,6 +152,11 @@ export default function PersonnelPage() {
                   On Break
                 </Menu.Item>
               )}
+              {view === 'active' && !person.accountActive && (
+                <Menu.Item icon={<FontAwesomeIcon icon="refresh" />}>
+                  Resend Activation Email
+                </Menu.Item>
+              )}
               {view === 'break' && (
                 <Menu.Item
                   icon={<FontAwesomeIcon icon="person-circle-check" />}
@@ -170,6 +175,11 @@ export default function PersonnelPage() {
                 </Menu.Item>
               )}
             </Menu>
+            {!person.accountActive && (
+              <Tooltip label="Account inactive">
+                <FontAwesomeIcon icon="exclamation-triangle" color="yellow" />
+              </Tooltip>
+            )}
           </td>
         </tr>
       );

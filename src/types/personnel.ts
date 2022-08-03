@@ -20,7 +20,7 @@ export interface Personnel {
   onBreak: boolean;
   auth0id?: string;
   roles?: UserRole[];
-  auth0Id?: string;
+  accountActive: boolean;
 }
 
 export enum UserRole {

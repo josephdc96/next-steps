@@ -2,10 +2,10 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { getSession } from 'next-auth/react';
 
-import { getSingleUserByAuth0 } from '#/lib/personnel/single';
+import { getSingleUserByEmail } from '#/lib/personnel/single';
 
 const getPerson = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { id } = req.query;
+  const { email } = req.query;
 
   const session = await getSession({ req });
   if (!session) {
@@ -19,7 +19,7 @@ const getPerson = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
-    const p = await getSingleUserByAuth0(id as string);
+    const p = await getSingleUserByEmail(email as string);
     res.status(200).json(p);
   } catch (e) {
     res.status(404).end();
