@@ -1,4 +1,5 @@
 import { hash, compare } from 'bcryptjs';
+import { connectToDatabase } from '#/lib/mongo/conn';
 
 export async function hashPassword(password: string) {
   const hashedPassword = await hash(password, 12);

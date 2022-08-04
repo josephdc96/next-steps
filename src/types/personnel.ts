@@ -21,6 +21,8 @@ export interface Personnel {
   auth0id?: string;
   roles?: UserRole[];
   accountActive: boolean;
+  activationCode?: string;
+  codeExpires?: Date;
 }
 
 export enum UserRole {

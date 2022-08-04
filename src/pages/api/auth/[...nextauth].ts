@@ -10,7 +10,8 @@ import { getSingleUserByEmail } from '#/lib/personnel/single';
 
 import { hasRoles } from '#/lib/auth/authn';
 import { connectToDatabase } from '#/lib/mongo/conn';
-import { verifyPassword } from '#/lib/auth/middleware/passwd';
+import { verifyPassword } from '#/lib/auth/passwd';
+import pages from '../../index';
 
 export default NextAuth({
   theme: {
@@ -69,4 +70,7 @@ export default NextAuth({
       },
     }),
   ],
+  pages: {
+    signIn: '/auth/signin',
+  },
 });
