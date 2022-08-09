@@ -44,11 +44,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Center style={{ width: '100%', marginTop: 20 }}>
-        <Group
-          direction="column"
-          spacing="xl"
-          style={{ width: is1000 ? '80%' : '95%' }}
-        >
+        <Stack spacing="xl" style={{ width: is1000 ? '80%' : '95%' }}>
           {data && !error && !isValidating && (
             <>
               <Title order={1}>Welcome {data.user.firstName}!</Title>
@@ -96,7 +92,7 @@ const Home: NextPage = () => {
               later.
             </Alert>
           )}
-        </Group>
+        </Stack>
       </Center>
     </>
   );

@@ -7,7 +7,7 @@ import {
   Group,
   Modal,
   ScrollArea,
-  Select,
+  Select, Stack,
   Text,
   TextInput,
 } from '@mantine/core';
@@ -85,9 +85,9 @@ export default function AutomaticAssignment({
         title="Assign Positions"
         size="xl"
       >
-        <Group direction="column" spacing="sm" grow>
+        <Stack spacing="sm">
           <ScrollArea style={{ height: 'calc(100vh - 300px)' }}>
-            <Group direction="column" spacing="sm" grow>
+            <Stack spacing="sm">
               {assignments.map((assignment) => {
                 return (
                   <Group key={assignment.id} spacing="md" grow>
@@ -111,7 +111,7 @@ export default function AutomaticAssignment({
                   </Group>
                 );
               })}
-            </Group>
+            </Stack>
           </ScrollArea>
           <Group position="right" spacing="sm">
             <Button onClick={submit}>Apply</Button>
@@ -119,7 +119,7 @@ export default function AutomaticAssignment({
               Cancel
             </Button>
           </Group>
-        </Group>
+        </Stack>
       </Modal>
     </>
   );

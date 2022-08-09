@@ -1,16 +1,22 @@
+import type { FilterValues } from '#/types/new-here';
+
+import { useEffect, useState } from 'react';
+import { string } from 'prop-types';
+import { DatePicker } from '@mantine/dates';
 import {
   Button,
   Checkbox,
-  CheckboxGroup,
   Divider,
   Group,
   ScrollArea,
   SegmentedControl,
   Stack,
+  TextInput,
+  Text,
+  ActionIcon,
 } from '@mantine/core';
-import { DatePicker } from '@mantine/dates';
-import { useState } from 'react';
-import type { FilterValues } from '#/types/new-here';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import { REASON_DISPLAY_RECORD, Reasons } from '#/types/new-here';
 
 interface FilterPanelProps {
@@ -35,6 +41,25 @@ export const FilterPanel = ({ values, leaders, apply }: FilterPanelProps) => {
   const [startDate, setStartDate] = useState(values.startDate);
   const [endDate, setEndDate] = useState(values.endDate);
   const [completed, setCompleted] = useState(values.completed);
+  const [hostSearch, setHostSearch] = useState('');
+  const [leaderList, setLeaderList] = useState(leaders);
+
+  const searchHosts = (query: string) => {
+    setHostSearch(query);
+    if (query !== '') {
+      setLeaderList(
+        leaders.filter((x) =>
+          x.label.toLowerCase().includes(query.toLowerCase()),
+        ),
+      );
+    } else {
+      setLeaderList(leaders);
+    }
+  };
+
+  useEffect(() => {
+    setLeaderList(leaders);
+  }, [leaders]);
 
   return (
     <Stack>
@@ -71,24 +96,38 @@ export const FilterPanel = ({ values, leaders, apply }: FilterPanelProps) => {
           </Button>
         </Group>
       )}
+      <Text size="sm">Hosts</Text>
+      <TextInput
+        icon={<FontAwesomeIcon icon="search" />}
+        size="xs"
+        value={hostSearch}
+        onChange={(x) => searchHosts(x.target.value)}
+        rightSection={
+          hostSearch !== '' && (
+            <ActionIcon onClick={() => setHostSearch('')}>
+              <FontAwesomeIcon icon="close" />
+            </ActionIcon>
+          )
+        }
+      />
       <ScrollArea style={{ height: 400 }}>
-        <CheckboxGroup
-          label="Hosts"
+        <Checkbox.Group
           value={hostFilter}
           orientation="vertical"
           onChange={(value) => setHostFilter(value)}
         >
-          {leaders.map((leader) => (
+          {leaderList.map((leader) => (
             <Checkbox
               key={`chk_${leader.value}`}
               label={leader.label}
               value={leader.value}
             />
           ))}
-        </CheckboxGroup>
+        </Checkbox.Group>
+        {leaderList.length === 0 && <Text>No Results</Text>}
       </ScrollArea>
       <Divider />
-      <CheckboxGroup
+      <Checkbox.Group
         label="Reasons"
         value={boxesFilter}
         onChange={setBoxesFilter}
@@ -101,7 +140,7 @@ export const FilterPanel = ({ values, leaders, apply }: FilterPanelProps) => {
             value={reason.value}
           />
         ))}
-      </CheckboxGroup>
+      </Checkbox.Group>
       <Divider />
       <DatePicker
         value={startDate}

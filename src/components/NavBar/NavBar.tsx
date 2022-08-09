@@ -15,6 +15,7 @@ import {
   Navbar,
   ScrollArea,
   Space,
+  Stack,
   Text,
   Title,
   UnstyledButton,
@@ -112,7 +113,7 @@ export const NavBar = ({ opened }: NavBarProps) => {
           {person && (
             <>
               <Space h="md" />
-              <Group spacing="sm" direction="column">
+              <Stack spacing="sm">
                 {navbarItems.map((item) => (
                   <NavBarItem
                     key={item.caption}
@@ -128,7 +129,7 @@ export const NavBar = ({ opened }: NavBarProps) => {
                     setModalOpen(true);
                   }}
                 />
-              </Group>
+              </Stack>
             </>
           )}
         </Navbar.Section>
@@ -137,8 +138,8 @@ export const NavBar = ({ opened }: NavBarProps) => {
           <Space h="sm" />
           {person && session && (
             <Group spacing="xs" noWrap>
-              <Menu
-                control={
+              <Menu>
+                <Menu.Target>
                   <Center className={classes.user} aria-label="user">
                     <Box className={classes.userInfo}>
                       <Group>
@@ -165,9 +166,10 @@ export const NavBar = ({ opened }: NavBarProps) => {
                       </Group>
                     </Box>
                   </Center>
-                }
-              >
-                <Menu.Item onClick={() => signOut()}>Log out</Menu.Item>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item onClick={() => signOut()}>Log out</Menu.Item>
+                </Menu.Dropdown>
               </Menu>
               <Button
                 variant="filled"

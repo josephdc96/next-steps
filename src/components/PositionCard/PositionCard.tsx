@@ -2,7 +2,7 @@ import type { Position } from '#/types/position';
 import type { Personnel } from '#/types/personnel';
 
 import { useEffect, useState } from 'react';
-import { Button, Card, Center, Group, Loader, Text } from '@mantine/core';
+import { Button, Card, Center, Group, Loader, Stack, Text } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { Fetcher } from 'swr';
 import useSWR from 'swr';
@@ -44,7 +44,7 @@ export default function PositionCard({
             : theme.colors.gray[0],
       })}
     >
-      <Group direction="column" spacing="md">
+      <Stack spacing="md">
         <Group position="apart" style={{ width: '100%' }}>
           <Text size="xl">{position.name}</Text>
           {canEdit && (
@@ -77,7 +77,7 @@ export default function PositionCard({
             </Center>
           </>
         )}
-      </Group>
+      </Stack>
     </Card>
   );
 }

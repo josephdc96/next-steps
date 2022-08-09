@@ -13,7 +13,7 @@ import {
   Modal,
   MultiSelect,
   Select,
-  SimpleGrid,
+  SimpleGrid, Stack,
   Text,
   TextInput,
 } from '@mantine/core';
@@ -158,7 +158,7 @@ export default function UserModal({
         size="xl"
       >
         <form onSubmit={form.onSubmit((values) => submitForm(values))}>
-          <Group direction="column" spacing="sm" grow>
+          <Stack spacing="sm">
             <TextInput
               required
               label="First Name"
@@ -262,7 +262,7 @@ export default function UserModal({
                 Save
               </Button>
             </Group>
-          </Group>
+          </Stack>
         </form>
       </Modal>
     </>

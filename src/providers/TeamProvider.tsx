@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { createContext, useState } from 'react';
-import { useLocalStorageValue } from '@mantine/hooks';
+import { useLocalStorage } from '@mantine/hooks';
 
 export type TeamContextState = {
   teamId: string;
@@ -22,7 +22,7 @@ export const TeamContext =
   createContext<TeamContextState>(TEAM_CONTEXT_DEFAULT);
 
 export function TeamProvider({ children }: { children: ReactNode }) {
-  const [teamId, _setTeamId] = useLocalStorageValue<string>({
+  const [teamId, _setTeamId] = useLocalStorage<string>({
     key: 'selected-team',
     defaultValue: '',
   });

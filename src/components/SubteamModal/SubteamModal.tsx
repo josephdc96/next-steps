@@ -8,7 +8,7 @@ import {
   Divider,
   Group,
   Modal,
-  MultiSelect,
+  MultiSelect, Stack,
   TextInput,
 } from '@mantine/core';
 import useTeam from '#/lib/hooks/useTeam';
@@ -78,7 +78,7 @@ export default function SubteamModal({
         size="lg"
       >
         <form onSubmit={form.onSubmit((values) => submitForm(values))}>
-          <Group direction="column" spacing="sm" grow>
+          <Stack spacing="sm">
             <TextInput
               required
               label="Team Name"
@@ -101,7 +101,7 @@ export default function SubteamModal({
                 Save
               </Button>
             </Group>
-          </Group>
+          </Stack>
         </form>
       </Modal>
     </>

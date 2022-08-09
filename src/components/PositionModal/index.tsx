@@ -5,7 +5,7 @@ import {
   Divider,
   Group,
   Modal,
-  MultiSelect,
+  MultiSelect, Stack,
   TextInput,
 } from '@mantine/core';
 import { useEffect } from 'react';
@@ -58,7 +58,7 @@ export default function PositionModal({
         size="md"
       >
         <form onSubmit={form.onSubmit((values) => submitForm(values))}>
-          <Group direction="column" spacing="sm" grow>
+          <Stack spacing="sm">
             <TextInput
               required
               label="Team Name"
@@ -74,7 +74,7 @@ export default function PositionModal({
                 Save
               </Button>
             </Group>
-          </Group>
+          </Stack>
         </form>
       </Modal>
     </>
