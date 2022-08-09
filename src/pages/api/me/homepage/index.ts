@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 import { hasRoles } from '#/lib/auth/authn';
 import {
-  getSingleUserByAuth0,
+  getSingleUserByEmail,
   getSingleUserById,
 } from '#/lib/personnel/single';
 import type { UsrSession } from '#/lib/auth/contract';
@@ -13,9 +13,7 @@ import type { Homepage } from '#/types/homepage';
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getSession({ req });
   if (hasRoles(session)) {
-    const user = await getSingleUserByAuth0(
-      (session as UsrSession).id as string,
-    );
+    const user = await getSingleUserByEmail(session?.user?.email as string);
     const leader = user.leader
       ? await getSingleUserById(user.leader)
       : undefined;

@@ -56,7 +56,8 @@ export const NavBar = ({ opened }: NavBarProps) => {
 
   useEffect(() => {
     if (session) {
-      fetch(`/api/personnel/active/auth0/${session?.id}`).then((x) => {
+      console.log(session);
+      fetch(`/api/personnel/active/email/${session?.user?.email}`).then((x) => {
         x.json()
           .then((json) => {
             setPerson(json);

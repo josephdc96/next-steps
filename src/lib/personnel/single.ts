@@ -3,10 +3,10 @@ import type { Personnel } from '#/types/personnel';
 
 import { connectToDatabase } from '#/lib/mongo/conn';
 
-export const getSingleUserByAuth0 = async (id: string): Promise<Personnel> => {
+export const getSingleUserByEmail = async (id: string): Promise<Personnel> => {
   const { db } = await connectToDatabase();
 
-  const doc = await db.collection('personnel').findOne({ auth0Id: id });
+  const doc = await db.collection('personnel').findOne({ email: id });
   const positions: Map<string, Position> = new Map();
 
   const snap2 = await db.collection('positions').find({});

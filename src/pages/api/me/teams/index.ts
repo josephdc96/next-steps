@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Team } from '#/types/team';
 import type { UsrSession } from '#/lib/auth/contract';
 
 import { getSession } from 'next-auth/react';
 
-import { getMyTeams, getTeams } from '#/lib/teams/getTeams';
-import type { Team } from '#/types/team';
 import { UserRole } from '#/types/personnel';
+import { getMyTeams, getTeams } from '#/lib/teams/getTeams';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getSession({ req });
