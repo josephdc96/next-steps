@@ -17,7 +17,8 @@ import {
   Table,
   Text,
   TextInput,
-  Title, Tooltip,
+  Title,
+  Tooltip,
   useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';

@@ -1,7 +1,8 @@
 import { signIn } from 'next-auth/react';
 import { useForm } from '@mantine/form';
 import {
-  Alert, Anchor,
+  Alert,
+  Anchor,
   Button,
   Card,
   Center,
@@ -39,7 +40,8 @@ export default function SignInPage() {
                 title="Incorrect Credentials"
                 color="red"
               >
-                The credentials you input are incorrect. Please try again or click the link below to reset your password.
+                The credentials you input are incorrect. Please try again or
+                click the link below to reset your password.
               </Alert>
             )}
           </>

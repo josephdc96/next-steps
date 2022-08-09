@@ -98,7 +98,10 @@ export default function InvitePage() {
           </>
         )}
         {!validCode && (
-          <Alert color="red" title="Invalid Invite Code">You have an invalid invite code. Please reach out to an administrator to get a new code.</Alert>
+          <Alert color="red" title="Invalid Invite Code">
+            You have an invalid invite code. Please reach out to an
+            administrator to get a new code.
+          </Alert>
         )}
       </Card>
     </Center>

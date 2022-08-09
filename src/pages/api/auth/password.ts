@@ -31,7 +31,10 @@ const passwordReset = async (req: NextApiRequest, res: NextApiResponse) => {
 
       const doc = await db
         .collection('personnel')
-        .updateOne({ email }, { $set: { password: passwd, activationCode: null } });
+        .updateOne(
+          { email },
+          { $set: { password: passwd, activationCode: null } },
+        );
       res.status(200).end();
     }
   } else {
