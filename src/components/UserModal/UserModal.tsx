@@ -13,7 +13,8 @@ import {
   Modal,
   MultiSelect,
   Select,
-  SimpleGrid, Stack,
+  SimpleGrid,
+  Stack,
   Text,
   TextInput,
 } from '@mantine/core';

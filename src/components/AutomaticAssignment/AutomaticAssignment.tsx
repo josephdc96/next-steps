@@ -7,7 +7,8 @@ import {
   Group,
   Modal,
   ScrollArea,
-  Select, Stack,
+  Select,
+  Stack,
   Text,
   TextInput,
 } from '@mantine/core';

@@ -2,7 +2,15 @@ import type { Position } from '../../types/position';
 import type { Personnel } from '../../types/personnel';
 
 import { useEffect, useState } from 'react';
-import { Button, Group, Modal, ScrollArea, Select, Stack, Text } from '@mantine/core';
+import {
+  Button,
+  Group,
+  Modal,
+  ScrollArea,
+  Select,
+  Stack,
+  Text,
+} from '@mantine/core';
 import useTeam from '#/lib/hooks/useTeam';
 
 interface ManualAssignmentProps {

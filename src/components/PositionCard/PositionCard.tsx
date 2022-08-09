@@ -2,7 +2,15 @@ import type { Position } from '#/types/position';
 import type { Personnel } from '#/types/personnel';
 
 import { useEffect, useState } from 'react';
-import { Button, Card, Center, Group, Loader, Stack, Text } from '@mantine/core';
+import {
+  Button,
+  Card,
+  Center,
+  Group,
+  Loader,
+  Stack,
+  Text,
+} from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { Fetcher } from 'swr';
 import useSWR from 'swr';

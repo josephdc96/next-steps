@@ -1,6 +1,13 @@
 import { useEffect } from 'react';
 import { useForm } from '@mantine/form';
-import { Button, Group, Modal, Stack, Textarea, TextInput } from '@mantine/core';
+import {
+  Button,
+  Group,
+  Modal,
+  Stack,
+  Textarea,
+  TextInput,
+} from '@mantine/core';
 
 interface FeedbackModalProps {
   opened: boolean;

@@ -8,7 +8,8 @@ import {
   Divider,
   Group,
   Modal,
-  MultiSelect, Stack,
+  MultiSelect,
+  Stack,
   TextInput,
 } from '@mantine/core';
 import useTeam from '#/lib/hooks/useTeam';

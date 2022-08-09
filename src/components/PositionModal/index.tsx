@@ -5,7 +5,8 @@ import {
   Divider,
   Group,
   Modal,
-  MultiSelect, Stack,
+  MultiSelect,
+  Stack,
   TextInput,
 } from '@mantine/core';
 import { useEffect } from 'react';
