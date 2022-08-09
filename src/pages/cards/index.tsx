@@ -18,7 +18,6 @@ import {
   Card as MantineCard,
   Center,
   Checkbox,
-  CheckboxGroup,
   Divider,
   Group,
   Loader,
@@ -172,101 +171,102 @@ export default function CardsPage() {
                 caption="Filter"
                 onClick={() => setFilterOpen(!filterOpen)}
               />
-              <Menu
-                control={
+              <Menu>
+                <Menu.Target>
                   <Button radius="xl">
                     <FontAwesomeIcon icon="ellipsis-vertical" />
                   </Button>
-                }
-              >
-                <Menu.Item
-                  icon={<FontAwesomeIcon icon="plus" />}
-                  onClick={() => {
-                    setEditCard(undefined);
-                    setIsEdit(false);
-                    setCreateModalVisible(true);
-                  }}
-                >
-                  Add Card
-                </Menu.Item>
-                <Menu.Item
-                  icon={<FontAwesomeIcon icon="refresh" />}
-                  onClick={() => mutate()}
-                >
-                  Refresh
-                </Menu.Item>
-                <Menu.Item
-                  icon={<FontAwesomeIcon icon="file-excel" />}
-                  component="a"
-                  href={csv}
-                  color="green"
-                >
-                  Export
-                </Menu.Item>
-                <Divider />
-                <Menu.Label>Sort Direction</Menu.Label>
-                <Menu.Item
-                  icon={
-                    sortDirection === 'ascending' ? (
-                      <FontAwesomeIcon icon="check" />
-                    ) : undefined
-                  }
-                  onClick={() => setSortDirection('ascending')}
-                >
-                  Ascending
-                </Menu.Item>
-                <Menu.Item
-                  icon={
-                    sortDirection === 'descending' ? (
-                      <FontAwesomeIcon icon="check" />
-                    ) : undefined
-                  }
-                  onClick={() => setSortDirection('descending')}
-                >
-                  Descending
-                </Menu.Item>
-                <Divider />
-                <Menu.Label>Sort</Menu.Label>
-                <Menu.Item
-                  icon={
-                    sort === 'name' ? (
-                      <FontAwesomeIcon icon="check" />
-                    ) : undefined
-                  }
-                  onClick={() => setSort('name')}
-                >
-                  Name
-                </Menu.Item>
-                <Menu.Item
-                  icon={
-                    sort === 'host' ? (
-                      <FontAwesomeIcon icon="check" />
-                    ) : undefined
-                  }
-                  onClick={() => setSort('host')}
-                >
-                  Host
-                </Menu.Item>
-                <Menu.Item
-                  icon={
-                    sort === 'date' ? (
-                      <FontAwesomeIcon icon="check" />
-                    ) : undefined
-                  }
-                  onClick={() => setSort('date')}
-                >
-                  Date
-                </Menu.Item>
-                <Menu.Item
-                  icon={
-                    sort === 'completed' ? (
-                      <FontAwesomeIcon icon="check" />
-                    ) : undefined
-                  }
-                  onClick={() => setSort('completed')}
-                >
-                  Completed
-                </Menu.Item>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    icon={<FontAwesomeIcon icon="plus" />}
+                    onClick={() => {
+                      setEditCard(undefined);
+                      setIsEdit(false);
+                      setCreateModalVisible(true);
+                    }}
+                  >
+                    Add Card
+                  </Menu.Item>
+                  <Menu.Item
+                    icon={<FontAwesomeIcon icon="refresh" />}
+                    onClick={() => mutate()}
+                  >
+                    Refresh
+                  </Menu.Item>
+                  <Menu.Item
+                    icon={<FontAwesomeIcon icon="file-excel" />}
+                    component="a"
+                    href={csv}
+                    color="green"
+                  >
+                    Export
+                  </Menu.Item>
+                  <Menu.Divider />
+                  <Menu.Label>Sort Direction</Menu.Label>
+                  <Menu.Item
+                    icon={
+                      sortDirection === 'ascending' ? (
+                        <FontAwesomeIcon icon="check" />
+                      ) : undefined
+                    }
+                    onClick={() => setSortDirection('ascending')}
+                  >
+                    Ascending
+                  </Menu.Item>
+                  <Menu.Item
+                    icon={
+                      sortDirection === 'descending' ? (
+                        <FontAwesomeIcon icon="check" />
+                      ) : undefined
+                    }
+                    onClick={() => setSortDirection('descending')}
+                  >
+                    Descending
+                  </Menu.Item>
+                  <Menu.Divider />
+                  <Menu.Label>Sort</Menu.Label>
+                  <Menu.Item
+                    icon={
+                      sort === 'name' ? (
+                        <FontAwesomeIcon icon="check" />
+                      ) : undefined
+                    }
+                    onClick={() => setSort('name')}
+                  >
+                    Name
+                  </Menu.Item>
+                  <Menu.Item
+                    icon={
+                      sort === 'host' ? (
+                        <FontAwesomeIcon icon="check" />
+                      ) : undefined
+                    }
+                    onClick={() => setSort('host')}
+                  >
+                    Host
+                  </Menu.Item>
+                  <Menu.Item
+                    icon={
+                      sort === 'date' ? (
+                        <FontAwesomeIcon icon="check" />
+                      ) : undefined
+                    }
+                    onClick={() => setSort('date')}
+                  >
+                    Date
+                  </Menu.Item>
+                  <Menu.Item
+                    icon={
+                      sort === 'completed' ? (
+                        <FontAwesomeIcon icon="check" />
+                      ) : undefined
+                    }
+                    onClick={() => setSort('completed')}
+                  >
+                    Completed
+                  </Menu.Item>
+                </Menu.Dropdown>
               </Menu>
             </Group>
           ) : (
@@ -291,8 +291,8 @@ export default function CardsPage() {
               >
                 <FontAwesomeIcon icon="refresh" />
               </Button>
-              <Menu
-                control={
+              <Menu>
+                <Menu.Target>
                   <Button
                     size="sm"
                     variant="subtle"
@@ -301,69 +301,70 @@ export default function CardsPage() {
                   >
                     Sort by
                   </Button>
-                }
-              >
-                <Menu.Item
-                  icon={
-                    sortDirection === 'ascending' ? (
-                      <FontAwesomeIcon icon="check" />
-                    ) : undefined
-                  }
-                  onClick={() => setSortDirection('ascending')}
-                >
-                  Ascending
-                </Menu.Item>
-                <Menu.Item
-                  icon={
-                    sortDirection === 'descending' ? (
-                      <FontAwesomeIcon icon="check" />
-                    ) : undefined
-                  }
-                  onClick={() => setSortDirection('descending')}
-                >
-                  Descending
-                </Menu.Item>
-                <Divider />
-                <Menu.Item
-                  icon={
-                    sort === 'name' ? (
-                      <FontAwesomeIcon icon="check" />
-                    ) : undefined
-                  }
-                  onClick={() => setSort('name')}
-                >
-                  Name
-                </Menu.Item>
-                <Menu.Item
-                  icon={
-                    sort === 'host' ? (
-                      <FontAwesomeIcon icon="check" />
-                    ) : undefined
-                  }
-                  onClick={() => setSort('host')}
-                >
-                  Host
-                </Menu.Item>
-                <Menu.Item
-                  icon={
-                    sort === 'date' ? (
-                      <FontAwesomeIcon icon="check" />
-                    ) : undefined
-                  }
-                  onClick={() => setSort('date')}
-                >
-                  Date
-                </Menu.Item>
-                <Menu.Item
-                  icon={
-                    sort === 'completed' ? (
-                      <FontAwesomeIcon icon="check" />
-                    ) : undefined
-                  }
-                  onClick={() => setSort('completed')}
-                >
-                  Completed
-                </Menu.Item>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    icon={
+                      sortDirection === 'ascending' ? (
+                        <FontAwesomeIcon icon="check" />
+                      ) : undefined
+                    }
+                    onClick={() => setSortDirection('ascending')}
+                  >
+                    Ascending
+                  </Menu.Item>
+                  <Menu.Item
+                    icon={
+                      sortDirection === 'descending' ? (
+                        <FontAwesomeIcon icon="check" />
+                      ) : undefined
+                    }
+                    onClick={() => setSortDirection('descending')}
+                  >
+                    Descending
+                  </Menu.Item>
+                  <Menu.Divider />
+                  <Menu.Item
+                    icon={
+                      sort === 'name' ? (
+                        <FontAwesomeIcon icon="check" />
+                      ) : undefined
+                    }
+                    onClick={() => setSort('name')}
+                  >
+                    Name
+                  </Menu.Item>
+                  <Menu.Item
+                    icon={
+                      sort === 'host' ? (
+                        <FontAwesomeIcon icon="check" />
+                      ) : undefined
+                    }
+                    onClick={() => setSort('host')}
+                  >
+                    Host
+                  </Menu.Item>
+                  <Menu.Item
+                    icon={
+                      sort === 'date' ? (
+                        <FontAwesomeIcon icon="check" />
+                      ) : undefined
+                    }
+                    onClick={() => setSort('date')}
+                  >
+                    Date
+                  </Menu.Item>
+                  <Menu.Item
+                    icon={
+                      sort === 'completed' ? (
+                        <FontAwesomeIcon icon="check" />
+                      ) : undefined
+                    }
+                    onClick={() => setSort('completed')}
+                  >
+                    Completed
+                  </Menu.Item>
+                </Menu.Dropdown>
               </Menu>
               <Button
                 size="sm"
@@ -380,14 +381,13 @@ export default function CardsPage() {
         }
       />
       <Center style={{ width: '100%', marginTop: 20 }}>
-        <Group direction="column" spacing={40} style={{ width: '95%' }}>
+        <Stack spacing={40} style={{ width: '95%' }}>
           <Box style={{ width: '100%' }}>
             <Group position="apart" style={{ width: '100%' }} noWrap>
               <Title order={3}>Next Steps Cards</Title>
             </Group>
           </Box>
           <Group
-            direction="row"
             spacing="xl"
             style={{ alignItems: 'flex-start', width: '100%' }}
             noWrap
@@ -480,7 +480,7 @@ export default function CardsPage() {
               )}
             </ScrollArea>
           </Group>
-        </Group>
+        </Stack>
       </Center>
       <Modal
         opened={createModalVisible}

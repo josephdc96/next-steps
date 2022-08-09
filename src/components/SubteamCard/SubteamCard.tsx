@@ -4,7 +4,15 @@ import type { Personnel } from '../../types/personnel';
 
 import useSWR from 'swr';
 import { useEffect, useState } from 'react';
-import { Button, Card, Center, Group, Loader, Text } from '@mantine/core';
+import {
+  Button,
+  Card,
+  Center,
+  Group,
+  Loader,
+  Stack,
+  Text,
+} from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useTeam from '#/lib/hooks/useTeam';
 
@@ -58,7 +66,7 @@ export default function SubteamCard({
             : theme.colors.gray[0],
       })}
     >
-      <Group direction="column" spacing="md">
+      <Stack spacing="md">
         <Group position="apart" style={{ width: '100%' }}>
           <Text size="xl">{subteam.name}</Text>
           {canEdit && (
@@ -106,7 +114,7 @@ export default function SubteamCard({
             </Center>
           </>
         )}
-      </Group>
+      </Stack>
     </Card>
   );
 }

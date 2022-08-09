@@ -1,4 +1,4 @@
-import { Button, Center, Group, Text, Title } from '@mantine/core';
+import { Button, Center, Group, Stack, Text, Title } from '@mantine/core';
 
 import CreateCard from '#/components/CreateCard/CreateCard';
 import { useState } from 'react';
@@ -10,7 +10,7 @@ export default function CreateCardPage() {
   return (
     <>
       <Center style={{ width: '100%' }}>
-        <Group direction="column" spacing="md" style={{ width: '80%' }} grow>
+        <Stack spacing="md" style={{ width: '80%' }}>
           <Title order={1}>Welcome to Paradigm!</Title>
           {!complete && (
             <>
@@ -34,7 +34,7 @@ export default function CreateCardPage() {
               </Button>
             </>
           )}
-        </Group>
+        </Stack>
       </Center>
     </>
   );

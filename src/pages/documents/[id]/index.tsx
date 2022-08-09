@@ -3,7 +3,7 @@ import type { Document } from '#/types/documents';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { ActionIcon, Center, Group, Title } from '@mantine/core';
+import { ActionIcon, Center, Group, Stack, Title } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import useTeam from '#/lib/hooks/useTeam';
@@ -29,7 +29,7 @@ export default function DocumentsPage() {
   return (
     <>
       <Center style={{ width: '100%', marginTop: 80 }}>
-        <Group direction="column" spacing="md" style={{ width: '80%' }}>
+        <Stack spacing="md" style={{ width: '80%' }}>
           {data && (
             <>
               <Group spacing="md">
@@ -55,7 +55,7 @@ export default function DocumentsPage() {
               />
             </>
           )}
-        </Group>
+        </Stack>
       </Center>
     </>
   );

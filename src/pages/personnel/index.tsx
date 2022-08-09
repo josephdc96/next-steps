@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import dayjs from 'dayjs';
 import { useMediaQuery } from '@mantine/hooks';
 import {
+  ActionIcon,
   Anchor,
   Box,
   Center,
@@ -14,6 +15,7 @@ import {
   Loader,
   Menu,
   SegmentedControl,
+  Stack,
   Table,
   Text,
   TextInput,
@@ -138,49 +140,58 @@ export default function PersonnelPage() {
           {view !== 'active' && <td>{person.reason}</td>}
           {view !== 'active' && view !== 'break' && <td>{person.followUp}</td>}
           <td>
-            <Menu>
-              <Menu.Item
-                icon={<FontAwesomeIcon icon={'edit'} />}
-                onClick={() => editUser(person)}
-              >
-                Edit
-              </Menu.Item>
-              {view === 'active' && (
-                <Menu.Item
-                  icon={<FontAwesomeIcon icon={'bed'} />}
-                  onClick={() => breakUser(person.id || '')}
-                >
-                  On Break
-                </Menu.Item>
+            <Group spacing="xs">
+              <Menu>
+                <Menu.Target>
+                  <ActionIcon>
+                    <FontAwesomeIcon icon="ellipsis-v" />
+                  </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    icon={<FontAwesomeIcon icon={'edit'} />}
+                    onClick={() => editUser(person)}
+                  >
+                    Edit
+                  </Menu.Item>
+                  {view === 'active' && (
+                    <Menu.Item
+                      icon={<FontAwesomeIcon icon={'bed'} />}
+                      onClick={() => breakUser(person.id || '')}
+                    >
+                      On Break
+                    </Menu.Item>
+                  )}
+                  {view === 'active' && !person.accountActive && (
+                    <Menu.Item icon={<FontAwesomeIcon icon="refresh" />}>
+                      Resend Activation Email
+                    </Menu.Item>
+                  )}
+                  {view === 'break' && (
+                    <Menu.Item
+                      icon={<FontAwesomeIcon icon="person-circle-check" />}
+                      onClick={() => unBreakUser(person.id || '')}
+                    >
+                      Reactivate User
+                    </Menu.Item>
+                  )}
+                  {(view === 'active' || view === 'break') && (
+                    <Menu.Item
+                      icon={<FontAwesomeIcon icon={'user-slash'} />}
+                      color="red"
+                      onClick={() => retireUser(person.id || '')}
+                    >
+                      Retire
+                    </Menu.Item>
+                  )}
+                </Menu.Dropdown>
+              </Menu>
+              {!person.accountActive && (
+                <Tooltip label="Account inactive">
+                  <FontAwesomeIcon icon="exclamation-triangle" color="yellow" />
+                </Tooltip>
               )}
-              {view === 'active' && !person.accountActive && (
-                <Menu.Item icon={<FontAwesomeIcon icon="refresh" />}>
-                  Resend Activation Email
-                </Menu.Item>
-              )}
-              {view === 'break' && (
-                <Menu.Item
-                  icon={<FontAwesomeIcon icon="person-circle-check" />}
-                  onClick={() => unBreakUser(person.id || '')}
-                >
-                  Reactivate User
-                </Menu.Item>
-              )}
-              {(view === 'active' || view === 'break') && (
-                <Menu.Item
-                  icon={<FontAwesomeIcon icon={'user-slash'} />}
-                  color="red"
-                  onClick={() => retireUser(person.id || '')}
-                >
-                  Retire
-                </Menu.Item>
-              )}
-            </Menu>
-            {!person.accountActive && (
-              <Tooltip label="Account inactive">
-                <FontAwesomeIcon icon="exclamation-triangle" color="yellow" />
-              </Tooltip>
-            )}
+            </Group>
           </td>
         </tr>
       );
@@ -218,7 +229,7 @@ export default function PersonnelPage() {
         }
       />
       <Center style={{ width: '100%', marginTop: isMobile ? 20 : 80 }}>
-        <Group direction="column" spacing="md" style={{ width: '80%' }}>
+        <Stack spacing="md" style={{ width: '80%' }}>
           <Box style={{ width: '100%' }}>
             <Group position="apart" style={{ width: '100%' }}>
               <Title order={3}>Personnel</Title>
@@ -286,7 +297,7 @@ export default function PersonnelPage() {
               <i>Bold Italics: Paradigm Staff Member</i>
             </b>
           </Text>
-        </Group>
+        </Stack>
       </Center>
       <UserModal
         isEdit={editModal}

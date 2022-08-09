@@ -1,6 +1,13 @@
 import { useEffect } from 'react';
 import { useForm } from '@mantine/form';
-import { Button, Group, Modal, Textarea, TextInput } from '@mantine/core';
+import {
+  Button,
+  Group,
+  Modal,
+  Stack,
+  Textarea,
+  TextInput,
+} from '@mantine/core';
 
 interface FeedbackModalProps {
   opened: boolean;
@@ -37,7 +44,7 @@ export default function FeedbackModal({ opened, onClose }: FeedbackModalProps) {
         size="lg"
       >
         <form onSubmit={form.onSubmit((values) => submitForm(values))}>
-          <Group direction="column" spacing="sm" grow>
+          <Stack spacing="sm">
             <TextInput
               required
               label="Name"
@@ -58,7 +65,7 @@ export default function FeedbackModal({ opened, onClose }: FeedbackModalProps) {
                 Send
               </Button>
             </Group>
-          </Group>
+          </Stack>
         </form>
       </Modal>
     </>

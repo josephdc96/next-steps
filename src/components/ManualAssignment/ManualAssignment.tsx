@@ -2,7 +2,15 @@ import type { Position } from '../../types/position';
 import type { Personnel } from '../../types/personnel';
 
 import { useEffect, useState } from 'react';
-import { Button, Group, Modal, ScrollArea, Select, Text } from '@mantine/core';
+import {
+  Button,
+  Group,
+  Modal,
+  ScrollArea,
+  Select,
+  Stack,
+  Text,
+} from '@mantine/core';
 import useTeam from '#/lib/hooks/useTeam';
 
 interface ManualAssignmentProps {
@@ -83,9 +91,9 @@ export default function ManualAssignment({
         title="Assign Positions"
         size="xl"
       >
-        <Group direction="column" spacing="sm" grow>
+        <Stack spacing="sm">
           <ScrollArea style={{ height: 'calc(100vh - 300px)' }}>
-            <Group direction="column" spacing="sm" grow>
+            <Stack spacing="sm">
               {personnel.map((person, index) => {
                 return (
                   <Group key={person.id} spacing="md" grow>
@@ -117,7 +125,7 @@ export default function ManualAssignment({
                   </Group>
                 );
               })}
-            </Group>
+            </Stack>
           </ScrollArea>
           <Group position="right" spacing="sm">
             <Button onClick={submit}>Apply</Button>
@@ -125,7 +133,7 @@ export default function ManualAssignment({
               Cancel
             </Button>
           </Group>
-        </Group>
+        </Stack>
       </Modal>
     </>
   );

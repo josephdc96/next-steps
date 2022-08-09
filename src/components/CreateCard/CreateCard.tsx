@@ -13,6 +13,7 @@ import {
   SegmentedControl,
   Select,
   SimpleGrid,
+  Stack,
   Text,
   Textarea,
   TextInput,
@@ -33,7 +34,7 @@ export default function CreateCard({
     initialValues: {
       name: card?.name || '',
       gender: (card?.gender === 1 ? 'female' : 'male') || 'male',
-      dob: new Date(card?.dob || new Date()),
+      dob: card?.dob ? new Date(card?.dob || new Date()) : '',
       phoneNum: card?.phoneNum || '',
       email: card?.email || '',
       address: card?.address || '',
@@ -126,7 +127,7 @@ export default function CreateCard({
     <>
       <Box>
         <form onSubmit={form.onSubmit(submitCard)}>
-          <Group direction="column" spacing="sm" grow>
+          <Stack spacing="sm">
             <TextInput
               style={{ flexGrow: 1 }}
               required
@@ -142,6 +143,7 @@ export default function CreateCard({
               {...form.getInputProps('gender')}
             />
             <DatePicker
+              allowFreeInput
               required
               placeholder="Pick date"
               label="Date of Birth"
@@ -172,6 +174,7 @@ export default function CreateCard({
               {...form.getInputProps('city')}
             />
             <Select
+              searchable
               required
               data={States}
               label="State"
@@ -215,6 +218,7 @@ export default function CreateCard({
               />
             </SimpleGrid>
             <Select
+              searchable
               data={leaders}
               label="Who hosted you tonight?"
               required
@@ -239,7 +243,7 @@ export default function CreateCard({
             <Group position="right">
               <Button type="submit">Submit</Button>
             </Group>
-          </Group>
+          </Stack>
         </form>
       </Box>
     </>

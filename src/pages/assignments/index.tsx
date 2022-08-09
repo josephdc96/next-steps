@@ -88,8 +88,8 @@ export default function AssignmentsPage() {
           <>
             {canEdit && (
               <Group spacing="md">
-                <Menu
-                  control={
+                <Menu>
+                  <Menu.Target>
                     <Button
                       radius="xl"
                       leftIcon={
@@ -103,16 +103,17 @@ export default function AssignmentsPage() {
                         {isMobile && <FontAwesomeIcon icon="arrows-rotate" />}
                       </>
                     </Button>
-                  }
-                >
-                  <Menu.Item onClick={() => setManualAssignmentVisible(true)}>
-                    Manually Assign
-                  </Menu.Item>
-                  <Menu.Item
-                    onClick={() => setAutomaticAssignmentVisible(true)}
-                  >
-                    Automatically Assign
-                  </Menu.Item>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Item onClick={() => setManualAssignmentVisible(true)}>
+                      Manually Assign
+                    </Menu.Item>
+                    <Menu.Item
+                      onClick={() => setAutomaticAssignmentVisible(true)}
+                    >
+                      Automatically Assign
+                    </Menu.Item>
+                  </Menu.Dropdown>
                 </Menu>
                 <HeaderButton
                   caption="New Position"

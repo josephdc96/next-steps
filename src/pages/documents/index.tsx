@@ -8,6 +8,7 @@ import {
   createStyles,
   Grid,
   Group,
+  Stack,
   Text,
   Title,
   UnstyledButton,
@@ -66,14 +67,14 @@ const DocumentCard = ({ card }: DocumentCardProps) => {
         }}
       >
         <Center style={{ width: '100%', height: '100%', textAlign: 'center' }}>
-          <Group direction="column" grow>
+          <Stack>
             <FontAwesomeIcon
               icon={card.icon}
               fontSize={64}
               color={getColor()}
             />
             <Text size="md">{card.name}</Text>
-          </Group>
+          </Stack>
         </Center>
       </Card>
     </Link>
@@ -90,7 +91,7 @@ export default function DocumentsPage() {
   return (
     <>
       <Center style={{ width: '100%', marginTop: 80 }}>
-        <Group direction="column" spacing="md" style={{ width: '80%' }}>
+        <Stack spacing="md" style={{ width: '80%' }}>
           <Title order={3}>Documents</Title>
           <Grid style={{ width: '100%' }}>
             {data && !error && !isValidating && (
@@ -105,7 +106,7 @@ export default function DocumentsPage() {
               </>
             )}
           </Grid>
-        </Group>
+        </Stack>
       </Center>
     </>
   );
